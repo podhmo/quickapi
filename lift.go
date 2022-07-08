@@ -12,17 +12,10 @@ import (
 
 type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
 
+// Empty is zero Input
 type Empty struct{}
 
-type ErrorResponse struct {
-	Error string `json:"error"`
-	Code  int    `json:"Code"`
-}
-
-var (
-	Pretty bool
-)
-
+// Lift transforms Action to http.Handler
 func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 	var iz I
 	isEmpty := reflect.TypeOf(iz).NumField() == 0
@@ -60,8 +53,13 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 	}
 }
 
+type errorResponse struct {
+	Error string `json:"error"`
+	Code  int    `json:"Code"`
+}
+
 func writeJSONError(w http.ResponseWriter, req *http.Request, err error, code int) {
-	v := ErrorResponse{Error: "internal server error", Code: code}
+	v := errorResponse{Error: "internal server error", Code: code}
 	if code != 500 {
 		v.Error = err.Error()
 	}
