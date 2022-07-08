@@ -50,7 +50,7 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 
 type errorResponse struct {
 	Error string `json:"error"`
-	Code  int    `json:"Code"`
+	Code  int    `json:"code"`
 }
 
 func writeJSONError(w http.ResponseWriter, req *http.Request, err error, code int) {
