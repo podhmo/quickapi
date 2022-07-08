@@ -49,6 +49,12 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 			}
 		}
 
+		// TODO: support recursive structure (for openAPI)
+		// Force to return empty JSON array [] instead of null in case of zero slice.
+		if val := reflect.ValueOf(output); val.Kind() == reflect.Slice && val.IsNil() {
+			output = reflect.MakeSlice(val.Type(), 0, 0).Interface().(O)
+		}
+
 		ctx := context.WithValue(req.Context(), render.ContentTypeCtxKey, code)
 		render.JSON(w, req.WithContext(ctx), output)
 	}
