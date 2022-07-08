@@ -30,16 +30,13 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 			}
 		}
 
-		code := 500
 		output, err := action(req.Context(), input)
 		if err != nil {
-			// TODO: handling status code
-			if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
-				if code == 500 {
-					log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
-				}
-				writeJSONError(w, req, err, code)
+			code := StatusCodeOf(err)
+			if code == 500 {
+				log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
 			}
+			writeJSONError(w, req, err, code)
 		}
 
 		// TODO: support recursive structure (for openAPI)
@@ -47,9 +44,7 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 		if val := reflect.ValueOf(output); val.Kind() == reflect.Slice && val.IsNil() {
 			output = reflect.MakeSlice(val.Type(), 0, 0).Interface().(O)
 		}
-
-		ctx := context.WithValue(req.Context(), render.ContentTypeCtxKey, code)
-		render.JSON(w, req.WithContext(ctx), output)
+		render.JSON(w, req, output)
 	}
 }
 
@@ -64,6 +59,6 @@ func writeJSONError(w http.ResponseWriter, req *http.Request, err error, code in
 		v.Error = err.Error()
 	}
 
-	ctx := context.WithValue(req.Context(), render.ContentTypeCtxKey, code)
-	render.JSON(w, req.WithContext(ctx), v)
+	render.Status(req, code)
+	render.JSON(w, req, v)
 }
