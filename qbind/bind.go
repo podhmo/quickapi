@@ -47,7 +47,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 	}
 
 	// TODO: handling metadata (header tag)
-	if err := queryDecoder.Decode(&input, req.Header); err != nil {
+	if err := headerDecoder.Decode(&input, req.Header); err != nil {
 		if DEBUG {
 			log.Printf("[DEBUG] unexpected header: %+v, on %T", err, input)
 		}
@@ -56,9 +56,11 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 }
 
 type Metadata struct {
-	HasData bool     // Action is empty
-	Queries []string // query string keys (recursive structure is not supported, also embedded)
-	Headers []string // header keys (recursive structure is not supported, also embedded)
+	HasData bool // Action is empty
+
+	JSONFields []string
+	Queries    []string // query string keys (recursive structure is not supported, also embedded)
+	Headers    []string // header keys (recursive structure is not supported, also embedded)
 }
 
 func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
@@ -70,19 +72,32 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 
 	var queries []string
 	var headers []string
+	var jsonfields []string
 	for i, n := 0, rt.NumField(); i < n; i++ {
-		if v, ok := rt.Field(i).Tag.Lookup("query"); ok {
+		field := rt.Field(i)
+		if v, ok := field.Tag.Lookup("query"); ok {
 			queries = append(queries, v)
 			continue
 		}
-		if v, ok := rt.Field(i).Tag.Lookup("header"); ok {
+		if v, ok := field.Tag.Lookup("header"); ok {
 			headers = append(headers, v)
 			continue
 		}
+		name := field.Name
+		if v, ok := field.Tag.Lookup("json"); ok {
+			name = v
+		}
+		jsonfields = append(jsonfields, name)
 	}
-	return Metadata{
-		HasData: rt.NumField()-len(queries)-len(headers) == 0,
-		Queries: queries,
-		Headers: headers,
+
+	metadata := Metadata{
+		HasData:    len(jsonfields) > 0,
+		JSONFields: jsonfields,
+		Queries:    queries,
+		Headers:    headers,
 	}
+	if DEBUG {
+		log.Printf("[DEBUG] on %T, metadata=%+v", iz, metadata)
+	}
+	return metadata
 }
