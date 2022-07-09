@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
+	"strings"
 
 	"github.com/podhmo/quickapi"
 )
 
 type Todo struct {
+	ID    int    `json:"id"`
 	Title string `json:"title"`
 	Done  bool   `json:"bool"`
 }
@@ -18,15 +21,17 @@ var todos []Todo
 
 func init() {
 	todos = []Todo{
-		{Title: "hello", Done: false},
-		{Title: "boo", Done: true},
-		{Title: "byebye", Done: false},
+		{ID: 1, Title: "hello", Done: false},
+		{ID: 2, Title: "boo", Done: true},
+		{ID: 3, Title: "byebye", Done: false},
 	}
 }
 
 func ListTodo(
 	ctx context.Context,
-	input quickapi.Empty,
+	input struct {
+		Sort string `query:"sort"` // enum -id, id
+	},
 ) (output struct {
 	Items []Todo `json:"items"`
 }, err error) {
@@ -36,6 +41,9 @@ func ListTodo(
 			continue
 		}
 		items = append(items, x)
+	}
+	if strings.HasPrefix(input.Sort, "-") {
+		sort.Slice(items, func(i, j int) bool { return items[i].ID > items[j].ID })
 	}
 	output.Items = items
 	return
