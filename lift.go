@@ -37,6 +37,7 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 				log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
 			}
 			writeJSONError(w, req, err, code)
+			return
 		}
 
 		// TODO: support recursive structure (for openAPI)
