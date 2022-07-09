@@ -18,7 +18,10 @@ func StatusCodeOf(err error) int {
 	return code
 }
 
-func NewAPIError(err error, code int) error {
+func NewAPIError(err error, code int) interface {
+	HasStatusCode
+	error
+} {
 	return &apiError{err: err, code: code}
 }
 

@@ -9,6 +9,13 @@ import (
 	"github.com/podhmo/quickapi/qdump"
 )
 
+func NewAPIError(err error, code int) interface {
+	error
+	qdump.HasStatusCode
+} {
+	return qdump.NewAPIError(err, code)
+}
+
 type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
 
 // Empty is zero Input
