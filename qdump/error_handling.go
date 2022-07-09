@@ -1,4 +1,4 @@
-package quickapi
+package qdump
 
 import (
 	"errors"
