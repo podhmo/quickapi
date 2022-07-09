@@ -27,6 +27,7 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 		input, err := qbind.Bind[I](req, metadata)
 		if err != nil {
 			qdump.DumpError(w, req, err, 400)
+			return
 		}
 
 		output, err := action(req.Context(), input)
