@@ -3,7 +3,6 @@ package quickapi
 import (
 	"context"
 	"net/http"
-	"reflect"
 
 	"github.com/podhmo/quickapi/qbind"
 	"github.com/podhmo/quickapi/qdump"
@@ -23,11 +22,9 @@ type Empty struct{}
 
 // Lift transforms Action to http.Handler
 func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
-	var iz I
-	isEmpty := reflect.TypeOf(iz).NumField() == 0
-
+	metadata := qbind.Scan(action)
 	return func(w http.ResponseWriter, req *http.Request) {
-		input, err := qbind.Bind[I](req, isEmpty)
+		input, err := qbind.Bind[I](req, metadata)
 		if err != nil {
 			qdump.DumpError(w, req, err, 400)
 		}
