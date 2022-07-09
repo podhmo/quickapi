@@ -25,7 +25,7 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 		if !isEmpty {
 			if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
 				log.Printf("[ERROR] unexpected error (json.Decode): %+v", err) // TODO: structured logging
-				writeJSONError(w, req, err, 500)
+				writeJSONError(w, req, err, 400)
 				return
 			}
 		}
