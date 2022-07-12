@@ -12,12 +12,12 @@ import (
 // DecodeResponse decodes json response
 func DecodeResponse[T any](
 	t *testing.T,
+	path string,
 	res *http.Response,
 	code int,
 ) T {
 	t.Helper()
 
-	path := res.Request.URL.Path
 	defer res.Body.Close()
 	var got T
 	if wantCode, gotCode := code, res.StatusCode; wantCode != gotCode {
@@ -47,7 +47,7 @@ func DoRequest[T any](
 	handler.ServeHTTP(rec, req)
 	res := rec.Result()
 
-	got := DecodeResponse[T](t, res, http.StatusOK)
+	got := DecodeResponse[T](t, req.URL.Path, res, http.StatusOK)
 	for _, opt := range options {
 		opt(t, res)
 	}

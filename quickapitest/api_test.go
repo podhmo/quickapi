@@ -28,7 +28,7 @@ func TestDecodeResponse(t *testing.T) {
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
 
-	got := DecodeResponse[person](t, rec.Result(), http.StatusOK)
+	got := DecodeResponse[person](t, path, rec.Result(), http.StatusOK)
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("DecodeResponse(), path=%q mismatch (-want +got):\n%s", path, diff)
 	}
