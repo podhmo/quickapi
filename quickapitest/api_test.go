@@ -9,13 +9,14 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestDecodeResponse(t *testing.T) {
-	type person struct {
-		Name string `json:"name"`
-		Age  int    `json:"age"`
-	}
+type person struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
 
+func TestDecodeResponse(t *testing.T) {
 	want := person{Name: "foo", Age: 20}
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if err := json.NewEncoder(w).Encode(want); err != nil {
 			t.Fatalf("unexpected error (json.Encode): %+v", err)
@@ -27,8 +28,25 @@ func TestDecodeResponse(t *testing.T) {
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
 
-	got := DecodeResponse[person](t, path, rec.Result(), http.StatusOK)
+	got := DecodeResponse[person](t, rec.Result(), http.StatusOK)
 	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("DecodeResponse() mismatch (-want +got):\n%s", diff)
+		t.Errorf("DecodeResponse(), path=%q mismatch (-want +got):\n%s", path, diff)
+	}
+}
+
+func TestDoRequest(t *testing.T) {
+	want := person{Name: "foo", Age: 20}
+
+	path := "/users/1"
+	req := httptest.NewRequest("GET", path, nil)
+	got := DoRequest[person](
+		t, req, http.StatusOK,
+		http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			if err := json.NewEncoder(w).Encode(want); err != nil {
+				t.Fatalf("unexpected error (json.Encode): %+v", err)
+			}
+		}))
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("DoRequest(), path=%q mismatch (-want +got):\n%s", path, diff)
 	}
 }
