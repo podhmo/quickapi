@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
 )
 
@@ -49,9 +50,13 @@ func ListTodo(
 	return
 }
 
+func mount(r chi.Router) {
+	r.Get("/todos", quickapi.Lift(ListTodo))
+}
+
 func main() {
 	r := quickapi.DefaultRouter()
-	r.Get("/todos", quickapi.Lift(ListTodo))
+	mount(r)
 
 	port := 8080
 	log.Printf("[Info]  listening: :%d", port)
