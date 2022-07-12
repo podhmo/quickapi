@@ -3,7 +3,6 @@ package qbind
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -23,7 +22,6 @@ func init() {
 	queryDecoder.SetAliasTag("query")
 	headerDecoder.SetAliasTag("header")
 	if ok, _ := strconv.ParseBool(os.Getenv("DEBUG")); ok {
-		fmt.Println("ok")
 		DEBUG = ok
 	}
 
@@ -32,7 +30,9 @@ func init() {
 func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 	var input I
 	if metadata.HasData {
-		if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
+		if req.Body == nil {
+			log.Printf("[INFO] decode json is neaded, but request body is nil, metadata=%+v, on %T", metadata, input) // TODO: structured logging
+		} else if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
 			log.Printf("[ERROR] unexpected error (json.Decode): %+v, on %T", err, input) // TODO: structured logging
 			return input, err
 		}
