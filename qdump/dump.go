@@ -10,6 +10,14 @@ import (
 
 func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) {
 	if err != nil {
+		select {
+		case <-req.Context().Done():
+			// [http headers - Possible reason for NGINX 499 error codes - Stack Overflow](https://stackoverflow.com/questions/12973304/possible-reason-for-nginx-499-error-codes)
+			DumpError(w, req, err, 499)
+			return
+		default:
+		}
+
 		code := StatusCodeOf(err)
 		if code == 500 {
 			log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
