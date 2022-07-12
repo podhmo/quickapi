@@ -9,13 +9,24 @@ import (
 
 func Fill[O any](ob O) O {
 	switch rv := reflect.ValueOf(ob); rv.Kind() {
-	case reflect.Slice, reflect.Map:
+	case reflect.Slice, reflect.Map, reflect.Struct:
 		if sv, changed := fill(rv); changed {
 			return sv.Interface().(O)
 		}
 		return ob
+	case reflect.Invalid,
+		reflect.Bool,
+		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Uintptr,
+		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
+		reflect.Array, reflect.Chan,
+		reflect.Func, reflect.Interface, reflect.Pointer,
+		reflect.String,
+		reflect.UnsafePointer:
+		return ob
 	default:
-		log.Printf("unsupported kind=%s, value=%v", rv.Kind(), rv)
+		log.Printf("[ERROR] unsupported kind=%s, value=%v", rv.Kind(), rv)
 		return ob
 	}
 }
