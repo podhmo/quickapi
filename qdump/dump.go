@@ -10,6 +10,13 @@ import (
 
 func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) {
 	if err != nil {
+		select {
+		case <-req.Context().Done():
+			DumpError(w, req, err, 499)
+			return
+		default:
+		}
+
 		code := StatusCodeOf(err)
 		if code == 500 {
 			log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
