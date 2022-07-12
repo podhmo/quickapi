@@ -9,9 +9,23 @@ import (
 
 func Fill[O any](ob O) O {
 	switch rv := reflect.ValueOf(ob); rv.Kind() {
-	case reflect.Slice, reflect.Map, reflect.Struct:
-		if sv, changed := fill(rv); changed {
+	case reflect.Slice, reflect.Map:
+		if sv, changed := fill(rv, 1); changed {
 			return sv.Interface().(O)
+		}
+		return ob
+	case reflect.Struct:
+		log.Printf("[WARN ] can-set fields, kind=%s, value=%v", rv.Kind(), rv)
+		return ob
+	case reflect.Pointer:
+		if rv.IsNil() {
+			return ob
+		}
+		elem := rv.Elem()
+		if elem.Type().Kind() == reflect.Struct {
+			if sv, changed := fill(elem, 2); changed {
+				_ = sv // TODO: FIXME: side effect
+			}
 		}
 		return ob
 	case reflect.Invalid,
@@ -21,7 +35,7 @@ func Fill[O any](ob O) O {
 		reflect.Uintptr,
 		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
 		reflect.Array, reflect.Chan,
-		reflect.Func, reflect.Interface, reflect.Pointer,
+		reflect.Func, reflect.Interface,
 		reflect.String,
 		reflect.UnsafePointer:
 		return ob
@@ -31,7 +45,16 @@ func Fill[O any](ob O) O {
 	}
 }
 
-func fill(rv reflect.Value) (ret reflect.Value, changed bool) {
+var (
+	MAX_RECURSION int = 100
+)
+
+func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
+	if MAX_RECURSION <= lv {
+		log.Printf("[INFO] too deep lv=%d, kind=%s, value=%v", lv, rv.Kind(), rv)
+		return rv, false
+	}
+
 	switch rv.Kind() {
 	case reflect.Slice:
 		if rv.IsNil() {
@@ -44,7 +67,7 @@ func fill(rv reflect.Value) (ret reflect.Value, changed bool) {
 		case reflect.Slice, reflect.Map:
 			for i, n := 0, rv.Len(); i < n; i++ {
 				rf := rv.Index(i)
-				sv, subchanged := fill(rf)
+				sv, subchanged := fill(rf, lv+1)
 				if subchanged {
 					changed = true
 					rf.Set(sv)
@@ -65,7 +88,7 @@ func fill(rv reflect.Value) (ret reflect.Value, changed bool) {
 			for iter.Next() {
 				// skip key (because: JSON's notation)
 				rf := iter.Value()
-				sv, subchanged := fill(rf)
+				sv, subchanged := fill(rf, lv+1)
 				if subchanged {
 					changed = true
 					rv.SetMapIndex(iter.Key(), sv)
@@ -73,8 +96,21 @@ func fill(rv reflect.Value) (ret reflect.Value, changed bool) {
 			}
 		}
 		return rv, changed
+	case reflect.Struct:
+		for i, n := 0, rv.NumField(); i < n; i++ {
+			rf := rv.Field(i)
+			switch rf.Type().Kind() {
+			case reflect.Slice, reflect.Map, reflect.Struct:
+				sv, subchanged := fill(rf, lv+1)
+				if subchanged {
+					changed = true
+					rf.Set(sv)
+				}
+			}
+		}
+		return rv, changed
 	default:
-		log.Printf("unsupported kind=%s, value=%v ...", rv.Kind(), rv)
+		log.Printf("[ERROR] unsupported kind=%s, value=%v ...", rv.Kind(), rv)
 		return rv, false
 	}
 }

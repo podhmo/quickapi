@@ -139,25 +139,25 @@ func TestFill_Map2(t *testing.T) {
 	})
 }
 
-// func TestFill_Struct(t *testing.T) {
-// 	type S struct {
-// 		Name    string
-// 		Friends []string
-// 	}
+func TestFill_Struct(t *testing.T) {
+	type S struct {
+		Name    string
+		Friends []string
+	}
 
-// 	want := S{Name: "Foo", Friends: []string{}}
+	t.Run("nil", func(t *testing.T) {
+		var want *S
+		got := Fill[*S](nil)
+		if !reflect.DeepEqual(want, got) {
+			t.Errorf("Fill(), want=%#+v != got=%#+v", want, got)
+		}
+	})
 
-// 	// t.Run("pointer", func(t *testing.T) {
-// 	// 	got := Fill[*S](nil)
-// 	// 	if !reflect.DeepEqual(nil, got) {
-// 	// 		t.Errorf("Fill(), want=%#+v != got=%#+v", want, got)
-// 	// 	}
-// 	// })
-
-// 	t.Run("nil", func(t *testing.T) {
-// 		got := Fill(S{Name: "Foo"})
-// 		if !reflect.DeepEqual(want, got) {
-// 			t.Errorf("Fill(), want=%#+v != got=%#+v", want, got)
-// 		}
-// 	})
-// }
+	t.Run("member-nil", func(t *testing.T) {
+		want := S{Name: "Foo", Friends: []string{}}
+		got := Fill(&S{Name: "Foo"}) // FIXME: support not pointer value
+		if !reflect.DeepEqual(want, *got) {
+			t.Errorf("Fill(), want=%#+v != got=%#+v", want, got)
+		}
+	})
+}
