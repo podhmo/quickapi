@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestFill_Slice(t *testing.T) {
+func TestFillNil_Slice(t *testing.T) {
 	type T = []int
 
 	cases := []struct {
@@ -21,15 +21,15 @@ func TestFill_Slice(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := Fill(c.input)
+			got := FillNil(c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestFill_Slice2(t *testing.T) {
+func TestFillNil_Slice2(t *testing.T) {
 	type T = [][]int
 	cases := []struct {
 		msg   string
@@ -43,34 +43,34 @@ func TestFill_Slice2(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := Fill(c.input)
+			got := FillNil(c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
 }
-func TestFill_Slice3(t *testing.T) {
+func TestFillNil_Slice3(t *testing.T) {
 	type T = [][][]int
 
 	t.Run("nil", func(t *testing.T) {
 		want := T{}
-		got := Fill[T](nil)
+		got := FillNil[T](nil)
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("values", func(t *testing.T) {
 		want := T{{{1}, {}, {2}}, {}, {{}}}
-		got := Fill(T{{{1}, nil, {2}}, nil, {nil}})
+		got := FillNil(T{{{1}, nil, {2}}, nil, {nil}})
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 }
 
-func TestFill_Map(t *testing.T) {
+func TestFillNil_Map(t *testing.T) {
 	type T map[string]int
 
 	cases := []struct {
@@ -85,15 +85,15 @@ func TestFill_Map(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := Fill(c.input)
+			got := FillNil(c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestFill_Map2(t *testing.T) {
+func TestFillNil_Map2(t *testing.T) {
 	type T map[string]map[string]int
 
 	cases := []struct {
@@ -110,15 +110,15 @@ func TestFill_Map2(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := Fill(c.input)
+			got := FillNil(c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestFill_Map3(t *testing.T) {
+func TestFillNil_Map3(t *testing.T) {
 	type T map[string]map[string]map[string]int
 
 	cases := []struct {
@@ -141,15 +141,15 @@ func TestFill_Map3(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := Fill(c.input)
+			got := FillNil(c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func TestFill_Struct(t *testing.T) {
+func TestFillNil_Struct(t *testing.T) {
 	type S struct {
 		Name    string
 		Friends []string
@@ -157,30 +157,30 @@ func TestFill_Struct(t *testing.T) {
 
 	t.Run("nil", func(t *testing.T) {
 		var want *S
-		got := Fill[*S](nil)
+		got := FillNil[*S](nil)
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("self-member-nil", func(t *testing.T) {
 		want := S{Name: "Foo", Friends: []string{}}
-		got := Fill(S{Name: "Foo"})
+		got := FillNil(S{Name: "Foo"})
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("p-self-member-nil", func(t *testing.T) {
 		want := &S{Name: "Foo", Friends: []string{}}
-		got := Fill(&S{Name: "Foo"})
+		got := FillNil(&S{Name: "Foo"})
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 }
 
-func TestFill_Struct_Recursive(t *testing.T) {
+func TestFillNil_Struct_Recursive(t *testing.T) {
 	type S struct {
 		Name   string
 		Father *S // nil -> nil
@@ -192,33 +192,33 @@ func TestFill_Struct_Recursive(t *testing.T) {
 
 	t.Run("nil", func(t *testing.T) {
 		var want *S
-		got := Fill[*S](nil)
+		got := FillNil[*S](nil)
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("self", func(t *testing.T) {
 		want := S{Name: "foo", Friends: []S{}}
-		got := Fill(S{Name: "foo"})
+		got := FillNil(S{Name: "foo"})
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("pointer-slice", func(t *testing.T) {
 		want := S{Name: "foo", Friends: []S{}, Father: &S{Friends: []S{}, Name: "father"}}
-		got := Fill(S{Name: "foo", Father: &S{Friends: nil, Name: "father"}})
+		got := FillNil(S{Name: "foo", Father: &S{Friends: nil, Name: "father"}})
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("pointer-slice-slice", func(t *testing.T) {
 		want := S{Name: "foo", Friends: []S{}, Father: &S{Friends: []S{{Name: "moo", Friends: []S{}}}, Name: "father"}}
-		got := Fill(S{Name: "foo", Father: &S{Friends: []S{{Name: "moo"}}, Name: "father"}})
+		got := FillNil(S{Name: "foo", Father: &S{Friends: []S{{Name: "moo"}}, Name: "father"}})
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
 	})
 }

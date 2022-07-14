@@ -3,7 +3,6 @@ package qdump
 import (
 	"log"
 	"net/http"
-	"reflect"
 
 	"github.com/go-chi/render"
 )
@@ -26,11 +25,9 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 		return
 	}
 
-	// TODO: support recursive structure (for openAPI)
 	// Force to return empty JSON array [] instead of null in case of zero slice.
-	if val := reflect.ValueOf(output); val.Kind() == reflect.Slice && val.IsNil() {
-		output = reflect.MakeSlice(val.Type(), 0, 0).Interface().(O)
-	}
+	output = FillNil(output)
+
 	render.JSON(w, req, output)
 }
 

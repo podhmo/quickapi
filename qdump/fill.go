@@ -7,8 +7,8 @@ import (
 
 // TODO: performance up by qbind.Metadata
 
-// Fill modifies the nil slice and maps it to an empty one, but this has side effects.
-func Fill[O any](ob O) (output O) {
+// FillNil modifies the nil slice and maps it to an empty one, but this has side effects.
+func FillNil[O any](ob O) (output O) {
 	output = ob
 
 	rv := reflect.ValueOf(ob)
