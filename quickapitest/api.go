@@ -47,7 +47,7 @@ func DoRequest[T any](
 	handler.ServeHTTP(rec, req)
 	res := rec.Result()
 
-	got := DecodeResponse[T](t, req.URL.Path, res, http.StatusOK)
+	got := DecodeResponse[T](t, req.URL.Path, res, code)
 	for _, opt := range options {
 		opt(t, res)
 	}
