@@ -7,12 +7,12 @@ import (
 
 // TODO: performance up by qbind.Metadata
 
+// Fill modifies the nil slice and maps it to an empty one, but this has side effects.
 func Fill[O any](ob O) O {
 	rv := reflect.ValueOf(ob)
 	if rv.Kind() == reflect.Struct {
 		rv = reflect.ValueOf(&ob).Elem() // for CanSet()
 	}
-
 	rv, changed := fillToplevel(rv)
 	if !changed {
 		return ob
@@ -33,6 +33,9 @@ func fillToplevel(rv reflect.Value) (ret reflect.Value, changed bool) {
 		return rv, false
 	case reflect.Struct:
 		return fill(rv, 1)
+	case reflect.Pointer:
+		_, changed := fillToplevel(rv.Elem())
+		return rv, changed
 	case reflect.Invalid,
 		reflect.Bool,
 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
@@ -43,8 +46,6 @@ func fillToplevel(rv reflect.Value) (ret reflect.Value, changed bool) {
 		reflect.Func, reflect.Interface,
 		reflect.String,
 		reflect.UnsafePointer:
-		return rv, false
-	case reflect.Pointer:
 		return rv, false
 	default:
 		log.Printf("[ERROR] unsupported kind=%s, value=%v", rv.Kind(), rv)
