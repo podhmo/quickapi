@@ -31,7 +31,9 @@ func main() {
 		log.Fatalf("!! %+v", err)
 	}
 
-	qopenapi.Get(r, "/todo", ListTodo)
+	qopenapi.Get(r, "/todo", ListTodo) //.After(func(op *openapi3.Operation)){
+	// 	op.Description = "List" // FIXME: ignored
+	// })
 
 	ctx := context.Background()
 	if err := qopenapi.EmitDoc(ctx, r); err != nil {
