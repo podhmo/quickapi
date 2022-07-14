@@ -27,6 +27,12 @@ func ListTodo(ctx context.Context, input TodoInput) (output ListTodoOutput, err 
 	return
 }
 
+////////////////////////////////////////
+type APIError struct {
+	Code  int    `json:"code"`
+	Error string `json:"error"`
+}
+
 //go:embed skeleton.json
 var docSkeleton []byte
 
@@ -38,6 +44,7 @@ func main() {
 
 	c := reflectopenapi.Config{
 		Doc:          doc,
+		DefaultError: APIError{},
 		StrictSchema: true,
 	}
 	c.EmitDoc(func(m *reflectopenapi.Manager) {
