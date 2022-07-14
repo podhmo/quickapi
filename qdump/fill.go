@@ -64,7 +64,7 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 		// slice,map,struct
 		st := rv.Type().Elem()
 		switch st.Kind() {
-		case reflect.Slice, reflect.Map:
+		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Pointer:
 			for i, n := 0, rv.Len(); i < n; i++ {
 				rf := rv.Index(i)
 				sv, subchanged := fill(rf, lv+1)
@@ -83,7 +83,7 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 		// slice,map,struct
 		st := rv.Type().Elem()
 		switch st.Kind() {
-		case reflect.Slice, reflect.Map:
+		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Pointer:
 			iter := rv.MapRange()
 			for iter.Next() {
 				// skip key (because: JSON's notation)

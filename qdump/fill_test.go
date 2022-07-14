@@ -189,9 +189,18 @@ func TestFill_Struct_Recursive(t *testing.T) {
 			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
 		}
 	})
+
 	t.Run("pointer-slice", func(t *testing.T) {
 		want := S{Name: "foo", Friends: []S{}, Father: &S{Friends: []S{}, Name: "father"}}
 		got := Fill(S{Name: "foo", Father: &S{Friends: nil, Name: "father"}})
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("pointer-slice-pointer-slice", func(t *testing.T) {
+		want := S{Name: "foo", Friends: []S{}, Father: &S{Friends: []S{{Name: "moo", Friends: []S{}}}, Name: "father"}}
+		got := Fill(S{Name: "foo", Father: &S{Friends: []S{{Name: "moo"}}, Name: "father"}})
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
 		}
