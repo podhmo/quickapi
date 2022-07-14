@@ -3,15 +3,13 @@ package qopenapi
 import (
 	"context"
 	_ "embed"
-	"net/http"
 	"reflect"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
+	"github.com/podhmo/quickapi"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
-
-type Action[I any, O any] func(context.Context, I) (O, error)
 
 type APIError struct {
 	Code  int    `json:"code"`
@@ -65,8 +63,8 @@ func EmitDoc(ctx context.Context, r *Router) error {
 	return nil
 }
 
-func Method[I any, O any](r *Router, method, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	h := http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
+func Method[I any, O any](r *Router, method, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	h := quickapi.Lift(action)
 	r.r.Method(method, path, h)
 	m := r.m
 	return m.RegisterFunc(action).After(func(op *openapi3.Operation) {
@@ -74,24 +72,24 @@ func Method[I any, O any](r *Router, method, path string, action Action[I, O]) *
 	})
 }
 
-func Get[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Get[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "GET", path, action)
 }
-func Post[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Post[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "POST", path, action)
 }
-func Put[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Put[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "PUT", path, action)
 }
-func Patch[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Patch[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "PATCH", path, action)
 }
-func Delete[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Delete[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "DELETE", path, action)
 }
-func Head[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Head[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "HEAD", path, action)
 }
-func Options[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Options[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "OPTIONS", path, action)
 }
