@@ -3,6 +3,8 @@ package qdump
 import (
 	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestFill_Slice(t *testing.T) {
@@ -166,6 +168,32 @@ func TestFill_Struct(t *testing.T) {
 		got := Fill(&S{Name: "Foo"})
 		if !reflect.DeepEqual(want, got) {
 			t.Errorf("Fill(), want=%#+v != got=%#+v", want, got)
+		}
+	})
+}
+
+func TestFill_Struct_Recursive(t *testing.T) {
+	type S struct {
+		Name   string
+		Father *S
+		Mother *S
+
+		Friends  []S
+		Anothers *[]S
+	}
+
+	t.Run("nil", func(t *testing.T) {
+		var want *S
+		got := Fill[*S](nil)
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
+		}
+	})
+	t.Run("pointer-slice", func(t *testing.T) {
+		want := S{Name: "foo", Friends: []S{}, Father: &S{Friends: []S{}, Name: "father"}}
+		got := Fill(S{Name: "foo", Father: &S{Friends: nil, Name: "father"}})
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Fill() mismatch (-want +got):\n%s", diff)
 		}
 	})
 }

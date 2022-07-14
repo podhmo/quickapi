@@ -44,20 +44,8 @@ func fillToplevel(rv reflect.Value) (ret reflect.Value, changed bool) {
 	case reflect.Pointer:
 		_, changed := fillToplevel(rv.Elem())
 		return rv, changed
-	case reflect.Invalid,
-		reflect.Bool,
-		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
-		reflect.Uintptr,
-		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
-		reflect.Array, reflect.Chan,
-		reflect.Func, reflect.Interface,
-		reflect.String,
-		reflect.UnsafePointer:
-		return rv, false
 	default:
-		log.Printf("[ERROR] unsupported kind=%s, value=%v", rv.Kind(), rv)
-		return rv, false
+		return fill(rv, 1)
 	}
 }
 
@@ -111,15 +99,26 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 	case reflect.Struct:
 		for i, n := 0, rv.NumField(); i < n; i++ {
 			rf := rv.Field(i)
-			switch rf.Type().Kind() {
-			case reflect.Slice, reflect.Map, reflect.Struct:
-				sv, subchanged := fill(rf, lv+1)
-				if subchanged {
-					changed = true
-					rf.Set(sv)
-				}
+			sv, subchanged := fill(rf, lv+1)
+			if subchanged {
+				changed = true
+				rf.Set(sv)
 			}
 		}
+		return rv, changed
+	case reflect.Invalid,
+		reflect.Bool,
+		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Uintptr,
+		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
+		reflect.Array, reflect.Chan,
+		reflect.Func, reflect.Interface,
+		reflect.String,
+		reflect.UnsafePointer:
+		return rv, false
+	case reflect.Pointer:
+		_, changed := fill(rv.Elem(), lv+1)
 		return rv, changed
 	default:
 		log.Printf("[ERROR] unsupported kind=%s, value=%v ...", rv.Kind(), rv)
