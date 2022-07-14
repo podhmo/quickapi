@@ -61,10 +61,9 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 			return reflect.MakeSlice(rv.Type(), 0, 0), true
 		}
 
-		// slice,map,struct
 		st := rv.Type().Elem()
 		switch st.Kind() {
-		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Pointer:
+		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Pointer: // unsafe, but for performance improvement
 			for i, n := 0, rv.Len(); i < n; i++ {
 				rf := rv.Index(i)
 				sv, subchanged := fill(rf, lv+1)
@@ -80,10 +79,9 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 			return reflect.MakeMap(rv.Type()), true
 		}
 
-		// slice,map,struct
 		st := rv.Type().Elem()
 		switch st.Kind() {
-		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Pointer:
+		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Pointer: // unsafe, but for performance improvement
 			iter := rv.MapRange()
 			for iter.Next() {
 				// skip key (because: JSON's notation)
@@ -118,6 +116,7 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 		reflect.UnsafePointer:
 		return rv, false
 	case reflect.Pointer:
+		// side-effect! (not copied)
 		_, changed := fill(rv.Elem(), lv+1)
 		return rv, changed
 	default:
