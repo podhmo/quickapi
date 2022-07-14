@@ -8,14 +8,22 @@ import (
 // TODO: performance up by qbind.Metadata
 
 // Fill modifies the nil slice and maps it to an empty one, but this has side effects.
-func Fill[O any](ob O) O {
+func Fill[O any](ob O) (output O) {
+	output = ob
+
 	rv := reflect.ValueOf(ob)
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("[PANIC] unsupported kind=%s, value=%v", rv.Kind(), rv)
+		}
+	}()
+
 	if rv.Kind() == reflect.Struct {
 		rv = reflect.ValueOf(&ob).Elem() // for CanSet()
 	}
 	rv, changed := fillToplevel(rv)
 	if !changed {
-		return ob
+		return output
 	}
 	return rv.Interface().(O)
 }
