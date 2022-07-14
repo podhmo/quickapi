@@ -1,36 +1,18 @@
-package main
+package qopenapi
 
 import (
 	"context"
 	_ "embed"
-	"log"
+	"net/http"
 	"reflect"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/go-chi/chi/v5"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
 type Action[I any, O any] func(context.Context, I) (O, error)
 
-type Todo struct {
-	ID    string `json:"id"`
-	Title string `json:"title" optional:"true"`
-	Done  bool   `json:"done"`
-
-	ParentID *string `json:"parentId" optional:"true"` // todo: nullable?
-}
-type TodoInput struct {
-	Sort string `json:"Name"` // id, -id
-}
-type ListTodoOutput struct {
-	Items []Todo `json:"items"`
-}
-
-func ListTodo(ctx context.Context, input TodoInput) (output ListTodoOutput, err error) {
-	return
-}
-
-////////////////////////////////////////
 type APIError struct {
 	Code  int    `json:"code"`
 	Error string `json:"error"`
@@ -39,10 +21,19 @@ type APIError struct {
 //go:embed skeleton.json
 var docSkeleton []byte
 
-func main() {
+type Router struct {
+	m *reflectopenapi.Manager
+	c *reflectopenapi.Config
+
+	r chi.Router
+
+	commit func(context.Context) error
+}
+
+func NewRouter() (*Router, error) {
 	doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
 	if err != nil {
-		log.Fatalf("!! %+v", err)
+		return nil, err
 	}
 
 	c := reflectopenapi.Config{
@@ -57,9 +48,50 @@ func main() {
 			return ok
 		},
 	}
-	c.EmitDoc(func(m *reflectopenapi.Manager) {
-		m.RegisterFunc(ListTodo).After(func(op *openapi3.Operation) {
-			m.Doc.AddOperation("/Todo", "GET", op)
-		})
+
+	m, commit, err := c.NewManager()
+	if err != nil {
+		return nil, err
+	}
+	r := &Router{r: chi.NewRouter(), c: &c, m: m, commit: commit}
+	return r, nil
+}
+
+func EmitDoc(ctx context.Context, r *Router) error {
+	if err := r.commit(ctx); err != nil {
+		return err
+	}
+	r.c.EmitDoc(func(m *reflectopenapi.Manager) {})
+	return nil
+}
+
+func Method[I any, O any](r *Router, method, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	h := http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
+	r.r.Method(method, path, h)
+	m := r.m
+	return m.RegisterFunc(action).After(func(op *openapi3.Operation) {
+		m.Doc.AddOperation(path, method, op)
 	})
+}
+
+func Get[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(r, "GET", path, action)
+}
+func Post[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(r, "POST", path, action)
+}
+func Put[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(r, "PUT", path, action)
+}
+func Patch[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(r, "PATCH", path, action)
+}
+func Delete[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(r, "DELETE", path, action)
+}
+func Head[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(r, "HEAD", path, action)
+}
+func Options[I any, O any](r *Router, path string, action Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(r, "OPTIONS", path, action)
 }
