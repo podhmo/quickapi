@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"log"
+	"reflect"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
@@ -13,8 +14,10 @@ type Action[I any, O any] func(context.Context, I) (O, error)
 
 type Todo struct {
 	ID    string `json:"id"`
-	Title string `json:"title"`
+	Title string `json:"title" optional:"true"`
 	Done  bool   `json:"done"`
+
+	ParentID *string `json:"parentId" optional:"true"` // todo: nullable?
 }
 type TodoInput struct {
 	Sort string `json:"Name"` // id, -id
@@ -46,6 +49,13 @@ func main() {
 		Doc:          doc,
 		DefaultError: APIError{},
 		StrictSchema: true,
+		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
+			ok := true
+			if _, isOptional := tag.Lookup("optional"); isOptional {
+				ok = false
+			}
+			return ok
+		},
 	}
 	c.EmitDoc(func(m *reflectopenapi.Manager) {
 		m.RegisterFunc(ListTodo).After(func(op *openapi3.Operation) {
