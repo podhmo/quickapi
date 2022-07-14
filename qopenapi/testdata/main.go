@@ -15,7 +15,7 @@ type Todo struct {
 	ParentID *string `json:"parentId" optional:"true"` // todo: nullable?
 }
 type TodoInput struct {
-	Sort string `json:"Name"` // id, -id
+	Sort string `openapi:"query" query:"sort"` // id, -id
 }
 type ListTodoOutput struct {
 	Items []Todo `json:"items"`

@@ -73,18 +73,6 @@
           "done"
         ],
         "type": "object"
-      },
-      "TodoInput": {
-        "additionalProperties": false,
-        "properties": {
-          "Name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "Name"
-        ],
-        "type": "object"
       }
     }
   },
@@ -98,15 +86,16 @@
     "/todo": {
       "get": {
         "operationId": "main.ListTodo",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TodoInput"
-              }
+        "parameters": [
+          {
+            "in": "query",
+            "name": "Sort",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "content": {
