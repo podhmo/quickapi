@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	_ "embed"
+	"log"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
@@ -25,8 +27,17 @@ func ListTodo(ctx context.Context, input TodoInput) (output ListTodoOutput, err 
 	return
 }
 
+//go:embed skeleton.json
+var docSkeleton []byte
+
 func main() {
+	doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
+	if err != nil {
+		log.Fatalf("!! %+v", err)
+	}
+
 	c := reflectopenapi.Config{
+		Doc:          doc,
 		StrictSchema: true,
 	}
 	c.EmitDoc(func(m *reflectopenapi.Manager) {
