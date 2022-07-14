@@ -8,26 +8,31 @@ import (
 // TODO: performance up by qbind.Metadata
 
 func Fill[O any](ob O) O {
-	switch rv := reflect.ValueOf(ob); rv.Kind() {
+	rv := reflect.ValueOf(ob)
+	if rv.Kind() == reflect.Struct {
+		rv = reflect.ValueOf(&ob).Elem() // for CanSet()
+	}
+
+	rv, changed := fillToplevel(rv)
+	if !changed {
+		return ob
+	}
+	return rv.Interface().(O)
+}
+
+var (
+	MAX_RECURSION int = 100
+)
+
+func fillToplevel(rv reflect.Value) (ret reflect.Value, changed bool) {
+	switch rv.Kind() {
 	case reflect.Slice, reflect.Map:
 		if sv, changed := fill(rv, 1); changed {
-			return sv.Interface().(O)
+			return sv, true
 		}
-		return ob
+		return rv, false
 	case reflect.Struct:
-		log.Printf("[WARN ] can-set fields, kind=%s, value=%v", rv.Kind(), rv)
-		return ob
-	case reflect.Pointer:
-		if rv.IsNil() {
-			return ob
-		}
-		elem := rv.Elem()
-		if elem.Type().Kind() == reflect.Struct {
-			if sv, changed := fill(elem, 2); changed {
-				_ = sv // TODO: FIXME: side effect
-			}
-		}
-		return ob
+		return fill(rv, 1)
 	case reflect.Invalid,
 		reflect.Bool,
 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
@@ -38,16 +43,14 @@ func Fill[O any](ob O) O {
 		reflect.Func, reflect.Interface,
 		reflect.String,
 		reflect.UnsafePointer:
-		return ob
+		return rv, false
+	case reflect.Pointer:
+		return rv, false
 	default:
 		log.Printf("[ERROR] unsupported kind=%s, value=%v", rv.Kind(), rv)
-		return ob
+		return rv, false
 	}
 }
-
-var (
-	MAX_RECURSION int = 100
-)
 
 func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 	if MAX_RECURSION <= lv {

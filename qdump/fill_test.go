@@ -155,8 +155,8 @@ func TestFill_Struct(t *testing.T) {
 
 	t.Run("member-nil", func(t *testing.T) {
 		want := S{Name: "Foo", Friends: []string{}}
-		got := Fill(&S{Name: "Foo"}) // FIXME: support not pointer value
-		if !reflect.DeepEqual(want, *got) {
+		got := Fill(S{Name: "Foo"})
+		if !reflect.DeepEqual(want, got) {
 			t.Errorf("Fill(), want=%#+v != got=%#+v", want, got)
 		}
 	})
