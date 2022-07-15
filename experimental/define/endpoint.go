@@ -29,6 +29,13 @@ func (m *EndpointModifier) Status(code int) *EndpointModifier {
 		}
 	})
 }
+func (m *EndpointModifier) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier {
+	return m.After(func(op *openapi3.Operation) {
+		ref := bc.m.Visitor.VisitType(typ)
+		val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
+		op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
+	})
+}
 
 func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O]) *EndpointModifier {
 	h := quickapi.Lift(action)
