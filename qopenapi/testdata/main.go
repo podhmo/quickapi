@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi/qopenapi"
 )
 
@@ -31,9 +32,9 @@ func main() {
 		log.Fatalf("!! %+v", err)
 	}
 
-	qopenapi.Get(r, "/todo", ListTodo) //.After(func(op *openapi3.Operation)){
-	// 	op.Description = "List" // FIXME: ignored
-	// })
+	qopenapi.Get(r, "/todo", ListTodo).After(func(op *openapi3.Operation) {
+		op.Description = "List"
+	})
 
 	ctx := context.Background()
 	if err := qopenapi.EmitDoc(ctx, r); err != nil {

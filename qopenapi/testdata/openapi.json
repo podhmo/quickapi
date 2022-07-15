@@ -85,12 +85,12 @@
   "paths": {
     "/todo": {
       "get": {
+        "description": "List",
         "operationId": "main.ListTodo",
         "parameters": [
           {
             "in": "query",
             "name": "Sort",
-            "required": true,
             "schema": {
               "type": "string"
             }
