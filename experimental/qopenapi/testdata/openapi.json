@@ -1,0 +1,121 @@
+{
+  "components": {
+    "schemas": {
+      "APIError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "error"
+        ],
+        "title": "APIError",
+        "type": "object"
+      },
+      "ListTodoOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Todo"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "Todo": {
+        "additionalProperties": false,
+        "properties": {
+          "done": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "done"
+        ],
+        "type": "object"
+      },
+      "TodoInputSort": {
+        "default": "id",
+        "enum": [
+          "id",
+          "-id"
+        ],
+        "title": "TodoInputSort",
+        "type": "string",
+        "x-new-type": "main.TodoInputSort"
+      }
+    }
+  },
+  "info": {
+    "description": "-",
+    "title": "Sample API",
+    "version": "0.0.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/todo": {
+      "get": {
+        "description": "List",
+        "operationId": "main.ListTodo",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "Sort",
+            "schema": {
+              "$ref": "#/components/schemas/TodoInputSort"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTodoOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIError"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "local development server",
+      "url": "http://localhost:8080"
+    }
+  ]
+}
