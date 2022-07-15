@@ -102,3 +102,32 @@ func Head[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *r
 func Options[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	return Method(r, "OPTIONS", path, action)
 }
+
+func DefineType(r *Router, typ interface{}) *reflectopenapi.RegisterTypeAction {
+	return r.m.RegisterType(typ)
+}
+
+func DefineStringEnum[T ~string](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+	dst := make([]interface{}, len(values)+1)
+	typedValue := T(defaultValue)
+	dst[0] = typedValue
+	for i, v := range values {
+		dst[i+1] = T(v)
+	}
+	return r.m.RegisterType(typedValue, func(ref *openapi3.Schema) {
+		ref.Default = dst[0]
+		ref.Enum = dst
+	})
+}
+func DefineIntEnum[T ~int](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+	dst := make([]interface{}, len(values)+1)
+	typedValue := T(defaultValue)
+	dst[0] = typedValue
+	for i, v := range values {
+		dst[i+1] = T(v)
+	}
+	return r.m.RegisterType(typedValue, func(ref *openapi3.Schema) {
+		ref.Default = dst[0]
+		ref.Enum = dst
+	})
+}

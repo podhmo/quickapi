@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi/qopenapi"
 )
 
@@ -15,8 +14,9 @@ type Todo struct {
 
 	ParentID *string `json:"parentId" optional:"true"` // todo: nullable?
 }
+type TodoInputSort string // enum
 type TodoInput struct {
-	Sort string `openapi:"query" query:"sort"` // id, -id
+	Sort TodoInputSort `openapi:"query" query:"sort"`
 }
 type ListTodoOutput struct {
 	Items []Todo `json:"items"`
@@ -32,9 +32,8 @@ func main() {
 		log.Fatalf("!! %+v", err)
 	}
 
-	qopenapi.Get(r, "/todo", ListTodo).After(func(op *openapi3.Operation) {
-		op.Description = "List"
-	})
+	qopenapi.Get(r, "/todo", ListTodo).Description("List")
+	qopenapi.DefineStringEnum[TodoInputSort](r, "id", "-id")
 
 	ctx := context.Background()
 	if err := qopenapi.EmitDoc(ctx, r); err != nil {

@@ -54,6 +54,16 @@
           "done"
         ],
         "type": "object"
+      },
+      "TodoInputSort": {
+        "default": "id",
+        "enum": [
+          "id",
+          "-id"
+        ],
+        "title": "TodoInputSort",
+        "type": "string",
+        "x-new-type": "main.TodoInputSort"
       }
     }
   },
@@ -73,7 +83,7 @@
             "in": "query",
             "name": "Sort",
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/TodoInputSort"
             }
           }
         ],
