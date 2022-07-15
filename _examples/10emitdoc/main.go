@@ -69,10 +69,12 @@ func DeletePet(context.Context, struct {
 }
 
 func main() {
-	bc, err := define.NewBuildContext(chi.NewRouter())
-	if err != nil {
-		log.Fatalf("!! %+v", err)
-	}
+	doc := define.Doc().
+		Title("Swagger Petstore").
+		Version("1.0.0").
+		Server("http://petstore.swagger.io/api", "")
+	router := chi.NewRouter()
+	bc := define.MustBuildContext(doc, router)
 
 	define.DefaultError(bc, Error{})
 
@@ -81,12 +83,13 @@ func main() {
 	Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.
 	`
 	define.Get(bc, "/pets", FindPets).Description(longDescription)
-	define.Post(bc, "/pets", AddPet).Description(`Creates a new pet in the store. Duplicates are allowed`)
+	define.Post(bc, "/pets", AddPet).Description(`Creates a new pet in the store. Duplicates are allowed`).
+		AnotherError(bc, 400, Error{}, "validation error")
 	define.Get(bc, "/pets/{id}", FindPetByID).Description(`Returns a pet based on a single ID`)
 	define.Delete(bc, "/pets/{id}", DeletePet).Status(204).Description(`delete a single pet based on the ID supplied`)
 
 	ctx := context.Background()
-	if err := define.EmitDoc(ctx, bc); err != nil {
+	if err := bc.EmitDoc(ctx); err != nil {
 		log.Fatalf("!! %+v", err)
 	}
 }
