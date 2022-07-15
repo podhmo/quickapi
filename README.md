@@ -21,6 +21,11 @@ func ListTodo(context.Context, quickapi.Empty) ([]Todo, error) {
 r.Get("/todos", quickapi.Lift(ListTodo))
 ```
 
+## experimental openapi support
+
+:warning: this is experimental feature, using quickapi/experimental/define package can be able to define openapi doc with define router.
+
+
 ## how to use
 
 see [examples](_examples)
