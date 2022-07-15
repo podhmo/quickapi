@@ -67,7 +67,7 @@ func EmitDoc(ctx context.Context, r *Router) error {
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	if err := enc.Encode(r.m.Doc); err != nil {
-		panic(err)
+		return err
 	}
 	return nil
 }
