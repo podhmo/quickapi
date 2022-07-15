@@ -9,7 +9,7 @@ import (
 
 type Todo struct {
 	ID    string `json:"id"`
-	Title string `json:"title" optional:"true"`
+	Title string `json:"title,omitempty"`
 	Done  bool   `json:"done"`
 
 	ParentID *string `json:"parentId" optional:"true"` // todo: nullable?

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"reflect"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
@@ -46,6 +47,9 @@ func NewRouter() (*Router, error) {
 				required = false
 			}
 			if _, isOptional := tag.Lookup("optional"); isOptional {
+				required = false
+			}
+			if val, ok := tag.Lookup("json"); ok && strings.Contains(val, "omitempty") {
 				required = false
 			}
 			return required
