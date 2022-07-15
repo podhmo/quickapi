@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"os"
 	"reflect"
 	"strings"
@@ -64,14 +65,17 @@ func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
 
 func (bc *BuildContext) EmitDoc(ctx context.Context) error {
 	if err := bc.commit(ctx); err != nil {
-		return err
+		return fmt.Errorf("emitDoc (commit): %w", err)
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	if err := enc.Encode(bc.m.Doc); err != nil {
-		return err
+		return fmt.Errorf("emitDoc (json encode): %w", err)
 	}
 	return nil
+}
+func (bc *BuildContext) Handler() chi.Router {
+	return bc.r
 }
 
 // ----------------------------------------

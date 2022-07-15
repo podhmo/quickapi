@@ -246,6 +246,10 @@
   "servers": [
     {
       "url": "http://petstore.swagger.io/api"
+    },
+    {
+      "description": "local development",
+      "url": "http://localhost:8080"
     }
   ]
 }

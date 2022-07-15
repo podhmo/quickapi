@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
@@ -68,11 +71,22 @@ func DeletePet(context.Context, struct {
 	return
 }
 
+var (
+	gendoc bool
+	port   int
+)
+
 func main() {
+	flag.BoolVar(&gendoc, "gendoc", false, "generate openapi doc")
+	flag.IntVar(&port, "port", 8080, "port")
+	flag.Parse()
+
 	doc := define.Doc().
 		Title("Swagger Petstore").
 		Version("1.0.0").
-		Server("http://petstore.swagger.io/api", "")
+		Server("http://petstore.swagger.io/api", "").
+		Server(fmt.Sprintf("http://localhost:%d", port), "local development")
+
 	router := chi.NewRouter()
 	bc := define.MustBuildContext(doc, router)
 
@@ -88,8 +102,16 @@ func main() {
 	define.Get(bc, "/pets/{id}", FindPetByID).Description(`Returns a pet based on a single ID`)
 	define.Delete(bc, "/pets/{id}", DeletePet).Status(204).Description(`delete a single pet based on the ID supplied`)
 
-	ctx := context.Background()
-	if err := bc.EmitDoc(ctx); err != nil {
-		log.Fatalf("!! %+v", err)
+	if gendoc {
+		ctx := context.Background()
+		if err := bc.EmitDoc(ctx); err != nil {
+			log.Fatalf("!! %+v", err)
+		}
+		return
+	}
+
+	log.Printf("[Info]  listening: :%d", port)
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), bc.Handler()); err != nil {
+		log.Printf("[Error] !! %+v", err)
 	}
 }
