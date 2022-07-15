@@ -3,6 +3,8 @@ package qopenapi
 import (
 	"context"
 	_ "embed"
+	"encoding/json"
+	"os"
 	"reflect"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -62,7 +64,11 @@ func EmitDoc(ctx context.Context, r *Router) error {
 	if err := r.commit(ctx); err != nil {
 		return err
 	}
-	r.c.EmitDoc(func(m *reflectopenapi.Manager) {})
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(r.m.Doc); err != nil {
+		panic(err)
+	}
 	return nil
 }
 

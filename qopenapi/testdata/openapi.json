@@ -16,26 +16,7 @@
           "error"
         ],
         "title": "APIError",
-        "type": "object",
-        "x-go-id": "github.com/podhmo/quickapi/qopenapi.APIError:qopenapi.APIError@24"
-      },
-      "APIError01": {
-        "additionalProperties": false,
-        "properties": {
-          "code": {
-            "type": "integer"
-          },
-          "error": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "code",
-          "error"
-        ],
-        "title": "APIError",
-        "type": "object",
-        "x-go-id": "github.com/podhmo/quickapi/qopenapi.APIError:qopenapi.APIError@24"
+        "type": "object"
       },
       "ListTodoOutput": {
         "additionalProperties": false,
