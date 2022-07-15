@@ -39,11 +39,14 @@ func NewRouter() (*Router, error) {
 		DefaultError: APIError{},
 		StrictSchema: true,
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
-			ok := true
-			if _, isOptional := tag.Lookup("optional"); isOptional {
-				ok = false
+			required := true
+			if val, ok := tag.Lookup("openapi"); ok && val != "body" {
+				required = false
 			}
-			return ok
+			if _, isOptional := tag.Lookup("optional"); isOptional {
+				required = false
+			}
+			return required
 		},
 	}
 
