@@ -107,7 +107,7 @@ func DefineType(r *Router, typ interface{}) *reflectopenapi.RegisterTypeAction {
 	return r.m.RegisterType(typ)
 }
 
-func DefineStringEnum[T ~string](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+func DefineEnum[T any](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
 	dst := make([]interface{}, len(values)+1)
 	typedValue := T(defaultValue)
 	dst[0] = typedValue
@@ -119,15 +119,9 @@ func DefineStringEnum[T ~string](r *Router, defaultValue T, values ...T) *reflec
 		ref.Enum = dst
 	})
 }
+func DefineStringEnum[T ~string](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+	return DefineEnum(r, defaultValue, values...)
+}
 func DefineIntEnum[T ~int](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
-	dst := make([]interface{}, len(values)+1)
-	typedValue := T(defaultValue)
-	dst[0] = typedValue
-	for i, v := range values {
-		dst[i+1] = T(v)
-	}
-	return r.m.RegisterType(typedValue, func(ref *openapi3.Schema) {
-		ref.Default = dst[0]
-		ref.Enum = dst
-	})
+	return DefineEnum(r, defaultValue, values...)
 }
