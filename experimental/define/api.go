@@ -17,9 +17,6 @@ type APIError struct {
 	Error string `json:"error"`
 }
 
-//go:embed skeleton.json
-var docSkeleton []byte
-
 type BuildContext struct {
 	m *reflectopenapi.Manager
 	c *reflectopenapi.Config
@@ -29,12 +26,8 @@ type BuildContext struct {
 	commit func(context.Context) error
 }
 
-func NewBuildContext(r chi.Router) (*BuildContext, error) {
-	doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
-	if err != nil {
-		return nil, err
-	}
-
+func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
+	doc := docM()
 	c := reflectopenapi.Config{
 		Doc:          doc,
 		DefaultError: APIError{},
@@ -61,7 +54,15 @@ func NewBuildContext(r chi.Router) (*BuildContext, error) {
 	return &BuildContext{r: r, c: &c, m: m, commit: commit}, nil
 }
 
-func EmitDoc(ctx context.Context, bc *BuildContext) error {
+func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
+	bc, err := NewBuildContext(docM, r)
+	if err != nil {
+		panic(err)
+	}
+	return bc
+}
+
+func (bc *BuildContext) EmitDoc(ctx context.Context) error {
 	if err := bc.commit(ctx); err != nil {
 		return err
 	}
