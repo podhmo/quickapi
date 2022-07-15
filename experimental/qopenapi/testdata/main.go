@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/podhmo/quickapi/qopenapi"
+	"github.com/podhmo/quickapi/experimental/qopenapi"
 )
 
 type Todo struct {
