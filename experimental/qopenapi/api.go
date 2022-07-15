@@ -22,7 +22,7 @@ type APIError struct {
 //go:embed skeleton.json
 var docSkeleton []byte
 
-type Router struct {
+type BuildContext struct {
 	m *reflectopenapi.Manager
 	c *reflectopenapi.Config
 
@@ -31,7 +31,7 @@ type Router struct {
 	commit func(context.Context) error
 }
 
-func NewRouter() (*Router, error) {
+func New(r chi.Router) (*BuildContext, error) {
 	doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
 	if err != nil {
 		return nil, err
@@ -60,72 +60,71 @@ func NewRouter() (*Router, error) {
 	if err != nil {
 		return nil, err
 	}
-	r := &Router{r: chi.NewRouter(), c: &c, m: m, commit: commit}
-	return r, nil
+	return &BuildContext{r: r, c: &c, m: m, commit: commit}, nil
 }
 
-func EmitDoc(ctx context.Context, r *Router) error {
-	if err := r.commit(ctx); err != nil {
+func EmitDoc(ctx context.Context, bc *BuildContext) error {
+	if err := bc.commit(ctx); err != nil {
 		return err
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
-	if err := enc.Encode(r.m.Doc); err != nil {
+	if err := enc.Encode(bc.m.Doc); err != nil {
 		return err
 	}
 	return nil
 }
 
-func Method[I any, O any](r *Router, method, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
 	h := quickapi.Lift(action)
-	r.r.Method(method, path, h)
-	m := r.m
+	bc.r.Method(method, path, h)
+	m := bc.m
 	return m.RegisterFunc(action).After(func(op *openapi3.Operation) {
 		m.Doc.AddOperation(path, method, op)
 	})
 }
 
-func Get[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	return Method(r, "GET", path, action)
+func Get[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(bc, "GET", path, action)
 }
-func Post[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	return Method(r, "POST", path, action)
+func Post[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(bc, "POST", path, action)
 }
-func Put[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	return Method(r, "PUT", path, action)
+func Put[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(bc, "PUT", path, action)
 }
-func Patch[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	return Method(r, "PATCH", path, action)
+func Patch[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(bc, "PATCH", path, action)
 }
-func Delete[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	return Method(r, "DELETE", path, action)
+func Delete[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(bc, "DELETE", path, action)
 }
-func Head[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	return Method(r, "HEAD", path, action)
+func Head[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(bc, "HEAD", path, action)
 }
-func Options[I any, O any](r *Router, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
-	return Method(r, "OPTIONS", path, action)
-}
-
-func DefineType(r *Router, typ interface{}) *reflectopenapi.RegisterTypeAction {
-	return r.m.RegisterType(typ)
+func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *reflectopenapi.RegisterFuncAction {
+	return Method(bc, "OPTIONS", path, action)
 }
 
-func DefineEnum[T any](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+func DefineType(bc *BuildContext, typ interface{}) *reflectopenapi.RegisterTypeAction {
+	return bc.m.RegisterType(typ)
+}
+
+func DefineEnum[T any](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
 	dst := make([]interface{}, len(values)+1)
 	typedValue := T(defaultValue)
 	dst[0] = typedValue
 	for i, v := range values {
 		dst[i+1] = T(v)
 	}
-	return r.m.RegisterType(typedValue, func(ref *openapi3.Schema) {
+	return bc.m.RegisterType(typedValue, func(ref *openapi3.Schema) {
 		ref.Default = dst[0]
 		ref.Enum = dst
 	})
 }
-func DefineStringEnum[T ~string](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
-	return DefineEnum(r, defaultValue, values...)
+func DefineStringEnum[T ~string](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+	return DefineEnum(bc, defaultValue, values...)
 }
-func DefineIntEnum[T ~int](r *Router, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
-	return DefineEnum(r, defaultValue, values...)
+func DefineIntEnum[T ~int](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+	return DefineEnum(bc, defaultValue, values...)
 }
