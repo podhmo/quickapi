@@ -1,4 +1,4 @@
-package qopenapi
+package define
 
 import (
 	"context"
@@ -31,7 +31,7 @@ type BuildContext struct {
 	commit func(context.Context) error
 }
 
-func New(r chi.Router) (*BuildContext, error) {
+func NewBuildContext(r chi.Router) (*BuildContext, error) {
 	doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
 	if err != nil {
 		return nil, err
@@ -106,11 +106,11 @@ func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action
 	return Method(bc, "OPTIONS", path, action)
 }
 
-func DefineType(bc *BuildContext, typ interface{}) *reflectopenapi.RegisterTypeAction {
+func Type(bc *BuildContext, typ interface{}) *reflectopenapi.RegisterTypeAction {
 	return bc.m.RegisterType(typ)
 }
 
-func DefineEnum[T any](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+func Enum[T any](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
 	dst := make([]interface{}, len(values)+1)
 	typedValue := T(defaultValue)
 	dst[0] = typedValue
@@ -122,9 +122,9 @@ func DefineEnum[T any](bc *BuildContext, defaultValue T, values ...T) *reflectop
 		ref.Enum = dst
 	})
 }
-func DefineStringEnum[T ~string](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
-	return DefineEnum(bc, defaultValue, values...)
+func StringEnum[T ~string](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+	return Enum(bc, defaultValue, values...)
 }
-func DefineIntEnum[T ~int](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
-	return DefineEnum(bc, defaultValue, values...)
+func IntEnum[T ~int](bc *BuildContext, defaultValue T, values ...T) *reflectopenapi.RegisterTypeAction {
+	return Enum(bc, defaultValue, values...)
 }

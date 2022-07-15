@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/podhmo/quickapi/experimental/qopenapi"
+	"github.com/podhmo/quickapi/experimental/define"
 )
 
 type Todo struct {
@@ -28,16 +28,16 @@ func ListTodo(ctx context.Context, input TodoInput) (output ListTodoOutput, err 
 }
 
 func main() {
-	bc, err := qopenapi.New(chi.NewRouter())
+	bc, err := define.NewBuildContext(chi.NewRouter())
 	if err != nil {
 		log.Fatalf("!! %+v", err)
 	}
 
-	qopenapi.Get(bc, "/todo", ListTodo).Description("List")
-	qopenapi.DefineStringEnum[TodoInputSort](bc, "id", "-id")
+	define.Get(bc, "/todo", ListTodo).Description("List")
+	define.StringEnum[TodoInputSort](bc, "id", "-id")
 
 	ctx := context.Background()
-	if err := qopenapi.EmitDoc(ctx, bc); err != nil {
+	if err := define.EmitDoc(ctx, bc); err != nil {
 		log.Fatalf("!! %+v", err)
 	}
 }
