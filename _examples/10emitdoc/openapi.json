@@ -163,7 +163,7 @@
         "parameters": [
           {
             "in": "path",
-            "name": "ID",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "integer"
@@ -200,7 +200,7 @@
         "parameters": [
           {
             "in": "path",
-            "name": "ID",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "integer"
