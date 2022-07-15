@@ -106,6 +106,13 @@ func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action
 	return Method(bc, "OPTIONS", path, action)
 }
 
+// ----------------------------------------
+func DefaultError(bc *BuildContext, typ interface{}) {
+	bc.c.DefaultError = typ
+}
+
+// ----------------------------------------
+
 func Type(bc *BuildContext, typ interface{}) *reflectopenapi.RegisterTypeAction {
 	return bc.m.RegisterType(typ)
 }
