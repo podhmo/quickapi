@@ -84,7 +84,7 @@ func main() {
 	define.Get(bc, "/pets", FindPets).Description(strings.TrimSpace(longDescription))
 	define.Post(bc, "/pets", AddPet).Description(strings.TrimSpace(`Creates a new pet in the store. Duplicates are allowed`))
 	define.Get(bc, "/pets/{id}", FindPetByID).Description(strings.TrimSpace(`Returns a pet based on a single ID`))
-	define.Delete(bc, "/pets/{id}", DeletePet).Description(strings.TrimSpace(`delete a single pet based on the ID supplied`))
+	define.Delete(bc, "/pets/{id}", DeletePet).Status(204).Description(strings.TrimSpace(`delete a single pet based on the ID supplied`))
 
 	ctx := context.Background()
 	if err := define.EmitDoc(ctx, bc); err != nil {
