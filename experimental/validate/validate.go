@@ -13,7 +13,7 @@ import (
 	"github.com/podhmo/quickapi/qdump"
 )
 
-func Middleare(doc *openapi3.T, op *openapi3.Operation, pattern string) func(http.Handler) http.Handler {
+func Middleware(doc *openapi3.T, op *openapi3.Operation, pattern string) func(http.Handler) http.Handler {
 	pathItem := doc.Paths.Find(pattern)
 	route := &routers.Route{
 		Spec:      doc,
@@ -43,6 +43,7 @@ func (v *Validator) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		code := http.StatusBadRequest
 		render.Status(req, code)
 		render.JSON(w, req, qdump.NewAPIError(reqResult.Error, code))
+		return
 	}
 	v.Next.ServeHTTP(w, req) // after qdump.Dump()
 }
