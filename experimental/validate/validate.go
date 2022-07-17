@@ -2,15 +2,16 @@ package validate
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/podhmo/quickapi/qdump"
 )
 
 func Middleware(doc *openapi3.T, op *openapi3.Operation, pattern string) func(http.Handler) http.Handler {
@@ -39,13 +40,22 @@ type Validator struct {
 func (v *Validator) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	reqResult := v.Extractor.ExtractRequestValidation(ctx, req, *v.BaseRoute)
-	if reqResult.Error != nil {
+	if err := reqResult.Error; err != nil {
 		code := http.StatusBadRequest
+		detail := strings.Split(fmt.Sprintf("%v", err), "\n")
+		value := &ErrorResponse{Code: code, Error: detail[0], Detail: detail}
+
 		render.Status(req, code)
-		render.JSON(w, req, qdump.NewAPIError(reqResult.Error, code))
+		render.JSON(w, req, value)
 		return
 	}
 	v.Next.ServeHTTP(w, req) // after qdump.Dump()
+}
+
+type ErrorResponse struct {
+	Code   int      `json:"code"`
+	Error  string   `json:"error"`
+	Detail []string `json:"detail"`
 }
 
 type Extractor struct {
