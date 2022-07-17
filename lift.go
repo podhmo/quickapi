@@ -15,27 +15,34 @@ func NewAPIError(err error, code int) interface {
 	return qdump.NewAPIError(err, code)
 }
 
-type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
-
 // Empty is zero Input
 type Empty struct{}
 
+type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
+
 // Lift transforms Action to http.Handler
-func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
+func Lift[I any, O any](action Action[I, O]) http.Handler {
 	metadata := qbind.Scan(action)
-	return func(w http.ResponseWriter, req *http.Request) {
-		req = req.WithContext(qbind.SetRequest(req.Context(), req)) // for qbind.GetRequest() in action
+	return &LiftedHandler[I, O]{Action: action, Metadata: metadata}
+}
 
-		// binding request body and query-string and headers to input.
-		input, err := qbind.Bind[I](req, metadata)
-		if err != nil {
-			qdump.DumpError(w, req, err, 400)
-			return
-		}
+type LiftedHandler[I any, O any] struct {
+	Action   Action[I, O]
+	Metadata qbind.Metadata
+}
 
-		output, err := action(req.Context(), input)
+func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	req = req.WithContext(qbind.SetRequest(req.Context(), req)) // for qbind.GetRequest() in action
 
-		// dumping result or error as json response
-		qdump.Dump(w, req, output, err)
+	// binding request body and query-string and headers to input.
+	input, err := qbind.Bind[I](req, h.Metadata)
+	if err != nil {
+		qdump.DumpError(w, req, err, 400)
+		return
 	}
+
+	output, err := h.Action(req.Context(), input)
+
+	// dumping result or error as json response
+	qdump.Dump(w, req, output, err)
 }
