@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/getkin/kin-openapi/routers/gorillamux"
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/experimental/define"
@@ -40,10 +42,29 @@ func run() error {
 	}
 
 	log.Printf("[Info]  listening: :%d", port)
-	handler, err := bc.BuildHandler(ctx)
+	router, err := bc.BuildHandler(ctx)
 	if err != nil {
 		return err
 	}
+	var handler http.Handler = router
+
+	// apply filter (schema validationmiddleware)
+	{
+		doc, err := bc.BuildOpenAPIDoc(ctx)
+		if err != nil {
+			return err
+		}
+		if err := doc.Validate(ctx); err != nil {
+			return err // doc validation
+		}
+		routing, err := gorillamux.NewRouter(doc)
+		if err != nil {
+			return err
+		}
+		validator := openapi3filter.NewValidator(routing, openapi3filter.Strict(true)) // with options?
+		handler = validator.Middleware(handler)
+	}
+
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), handler); err != nil {
 		log.Printf("[Error] !! %+v", err)
 	}
