@@ -61,6 +61,7 @@ type Metadata struct {
 	JSONFields []string
 	Queries    []string // query string keys (recursive structure is not supported, also embedded)
 	Headers    []string // header keys (recursive structure is not supported, also embedded)
+	PathVars   []string // path variables
 }
 
 func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
@@ -73,6 +74,7 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 	var queries []string
 	var headers []string
 	var jsonfields []string
+	var pathvars []string
 	for i, n := 0, rt.NumField(); i < n; i++ {
 		field := rt.Field(i)
 		if v, ok := field.Tag.Lookup("query"); ok {
@@ -81,6 +83,10 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 		}
 		if v, ok := field.Tag.Lookup("header"); ok {
 			headers = append(headers, v)
+			continue
+		}
+		if v, ok := field.Tag.Lookup("path"); ok {
+			pathvars = append(pathvars, v)
 			continue
 		}
 		name := field.Name
@@ -95,6 +101,7 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 		JSONFields: jsonfields,
 		Queries:    queries,
 		Headers:    headers,
+		PathVars:   pathvars,
 	}
 	if DEBUG {
 		log.Printf("[DEBUG] on %T, metadata=%+v", iz, metadata)
