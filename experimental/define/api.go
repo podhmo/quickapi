@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"reflect"
 	"strings"
 
@@ -65,6 +66,13 @@ func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
 	return bc
 }
 
+func (bc *BuildContext) Router() chi.Router {
+	return bc.r
+}
+func (bc *BuildContext) Doc() *openapi3.T {
+	return bc.m.Doc
+}
+
 func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
 	if err := bc.commit(ctx); err != nil {
 		return fmt.Errorf("EmitDoc (commit): %w", err)
@@ -78,7 +86,7 @@ func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
 	return nil
 }
 
-func (bc *BuildContext) BuildHandler(ctx context.Context) (chi.Router, error) {
+func (bc *BuildContext) BuildHandler(ctx context.Context) (http.Handler, error) {
 	if err := bc.commit(ctx); err != nil {
 		return nil, fmt.Errorf("BuildHandler (commit): %w", err)
 	}
