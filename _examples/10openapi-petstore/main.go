@@ -39,7 +39,7 @@ func run() error {
 		return nil
 	}
 
-	log.Printf("[Info]  listening: :%d", port)
+	log.Printf("[INFO]  listening: :%d", port)
 	handler, err := bc.BuildHandler(ctx)
 	if err != nil {
 		return err

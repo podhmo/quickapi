@@ -26,7 +26,7 @@ func Middleware(doc *openapi3.T, op *openapi3.Operation, pattern string) func(ht
 		return &Validator{
 			BaseRoute: route,
 			Next:      next,
-			Extractor: &Extractor{Debug: true},
+			Extractor: &Extractor{Debug: true}, // TODO: shared
 		}
 	}
 }
@@ -50,6 +50,7 @@ func (v *Validator) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	v.Next.ServeHTTP(w, req) // after qdump.Dump()
+	// TODO: response validation
 }
 
 type ErrorResponse struct {
@@ -87,12 +88,12 @@ func (e *Extractor) ExtractRequestValidation(ctx context.Context, req *http.Requ
 	}
 	if err := openapi3filter.ValidateRequest(ctx, input); err != nil {
 		if e.Debug {
-			log.Printf("[DEBUG]  validate request is failed: %T\n%+v", err, err)
+			log.Printf("[DEBUG] request is NG (%T) method=%s, path=%s, operationId=%s\n%+v", err, route.Method, route.Path, route.Operation.OperationID, err)
 		}
 		return RequestValidation{Route: &route, Input: input, Error: err}
 	}
 	if e.Debug {
-		log.Printf("[DEBUG] request is OK") // todo: path and parameters
+		log.Printf("[DEBUG] request is OK method=%s, path=%s, operationId=%s", route.Method, route.Path, route.Operation.OperationID)
 	}
 	return RequestValidation{Route: &route, Input: input}
 }
