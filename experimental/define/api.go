@@ -5,10 +5,12 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"os"
+	"io"
+	"log"
 	"reflect"
 	"strings"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
@@ -24,7 +26,7 @@ type BuildContext struct {
 
 	r chi.Router
 
-	commit func(context.Context) error
+	commitFunc func(context.Context) error
 }
 
 func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
@@ -52,7 +54,7 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &BuildContext{r: r, c: &c, m: m, commit: commit}, nil
+	return &BuildContext{r: r, c: &c, m: m, commitFunc: commit}, nil
 }
 
 func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
@@ -63,19 +65,44 @@ func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
 	return bc
 }
 
-func (bc *BuildContext) EmitDoc(ctx context.Context) error {
+func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
 	if err := bc.commit(ctx); err != nil {
-		return fmt.Errorf("emitDoc (commit): %w", err)
+		return fmt.Errorf("EmitDoc (commit): %w", err)
 	}
-	enc := json.NewEncoder(os.Stdout)
+
+	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 	if err := enc.Encode(bc.m.Doc); err != nil {
 		return fmt.Errorf("emitDoc (json encode): %w", err)
 	}
 	return nil
 }
-func (bc *BuildContext) Handler() chi.Router {
-	return bc.r
+
+func (bc *BuildContext) BuildHandler(ctx context.Context) (chi.Router, error) {
+	if err := bc.commit(ctx); err != nil {
+		return nil, fmt.Errorf("BuildHandler (commit): %w", err)
+	}
+	return bc.r, nil
+}
+
+func (bc *BuildContext) BuildOpenAPIDoc(ctx context.Context) (*openapi3.T, error) {
+	if err := bc.commit(ctx); err != nil {
+		return nil, fmt.Errorf("BuildOpenAPIDoc (commit): %w", err)
+	}
+	return bc.m.Doc, nil
+}
+
+func (bc *BuildContext) commit(ctx context.Context) error {
+	if bc.commitFunc == nil {
+		log.Printf("[WARN]  already committed")
+		return nil
+	}
+	defer func() { bc.commitFunc = nil }()
+	commit := bc.commitFunc
+	if err := commit(ctx); err != nil {
+		return err
+	}
+	return nil
 }
 
 // ----------------------------------------
