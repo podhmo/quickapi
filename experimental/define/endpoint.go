@@ -11,32 +11,6 @@ import (
 
 type EndpointModifier reflectopenapi.RegisterFuncAction
 
-func (m *EndpointModifier) After(f func(op *openapi3.Operation)) *EndpointModifier {
-	return (*EndpointModifier)((*reflectopenapi.RegisterFuncAction)(m).After(f))
-}
-
-func (m *EndpointModifier) Description(description string) *EndpointModifier {
-	return m.After(func(op *openapi3.Operation) {
-		op.Description = strings.TrimSpace(description)
-	})
-}
-func (m *EndpointModifier) Status(code int) *EndpointModifier {
-	return m.After(func(op *openapi3.Operation) {
-		def, ok := op.Responses["200"]
-		if ok {
-			delete(op.Responses, "200")
-			op.Responses[strconv.Itoa(code)] = def
-		}
-	})
-}
-func (m *EndpointModifier) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier {
-	return m.After(func(op *openapi3.Operation) {
-		ref := bc.m.Visitor.VisitType(typ)
-		val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
-		op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
-	})
-}
-
 func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O]) *EndpointModifier {
 	h := quickapi.Lift(action)
 	bc.r.Method(method, path, h)
@@ -66,4 +40,30 @@ func Head[I any, O any](bc *BuildContext, path string, action quickapi.Action[I,
 }
 func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
 	return Method(bc, "OPTIONS", path, action)
+}
+
+func (m *EndpointModifier) After(f func(op *openapi3.Operation)) *EndpointModifier {
+	return (*EndpointModifier)((*reflectopenapi.RegisterFuncAction)(m).After(f))
+}
+
+func (m *EndpointModifier) Description(description string) *EndpointModifier {
+	return m.After(func(op *openapi3.Operation) {
+		op.Description = strings.TrimSpace(description)
+	})
+}
+func (m *EndpointModifier) Status(code int) *EndpointModifier {
+	return m.After(func(op *openapi3.Operation) {
+		def, ok := op.Responses["200"]
+		if ok {
+			delete(op.Responses, "200")
+			op.Responses[strconv.Itoa(code)] = def
+		}
+	})
+}
+func (m *EndpointModifier) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier {
+	return m.After(func(op *openapi3.Operation) {
+		ref := bc.m.Visitor.VisitType(typ)
+		val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
+		op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
+	})
 }

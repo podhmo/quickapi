@@ -11,13 +11,6 @@ func Type(bc *BuildContext, typ interface{}) *TypeModifier {
 	return (*TypeModifier)(bc.m.RegisterType(typ))
 }
 
-func (m *TypeModifier) After(f func(ref *openapi3.SchemaRef)) *TypeModifier {
-	return (*TypeModifier)((*reflectopenapi.RegisterTypeAction)(m).After(f))
-}
-func (m *TypeModifier) Before(f func(s *openapi3.Schema)) *TypeModifier {
-	return (*TypeModifier)((*reflectopenapi.RegisterTypeAction)(m).Before(f))
-}
-
 func Enum[T any](bc *BuildContext, defaultValue T, values ...T) *TypeModifier {
 	dst := make([]interface{}, len(values)+1)
 	typedValue := T(defaultValue)
@@ -35,4 +28,11 @@ func StringEnum[T ~string](bc *BuildContext, defaultValue T, values ...T) *TypeM
 }
 func IntEnum[T ~int](bc *BuildContext, defaultValue T, values ...T) *TypeModifier {
 	return Enum(bc, defaultValue, values...)
+}
+
+func (m *TypeModifier) After(f func(ref *openapi3.SchemaRef)) *TypeModifier {
+	return (*TypeModifier)((*reflectopenapi.RegisterTypeAction)(m).After(f))
+}
+func (m *TypeModifier) Before(f func(s *openapi3.Schema)) *TypeModifier {
+	return (*TypeModifier)((*reflectopenapi.RegisterTypeAction)(m).Before(f))
 }
