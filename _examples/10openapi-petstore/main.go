@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
@@ -80,7 +81,35 @@ func main() {
 	flag.BoolVar(&gendoc, "gendoc", false, "generate openapi doc")
 	flag.IntVar(&port, "port", 8080, "port")
 	flag.Parse()
+	if err := run(); err != nil {
+		log.Fatalf("!! %+v", err)
+	}
 
+}
+
+func run() error {
+	ctx := context.Background()
+	bc := build(port)
+
+	if gendoc {
+		if err := bc.EmitDoc(ctx, os.Stdout); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	log.Printf("[Info]  listening: :%d", port)
+	handler, err := bc.BuildHandler(ctx)
+	if err != nil {
+		return err
+	}
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), handler); err != nil {
+		log.Printf("[Error] !! %+v", err)
+	}
+	return nil
+}
+
+func build(port int) *define.BuildContext {
 	doc := define.Doc().
 		Title("Swagger Petstore").
 		Version("1.0.0").
@@ -101,17 +130,5 @@ func main() {
 		AnotherError(bc, 400, Error{}, "validation error")
 	define.Get(bc, "/pets/{id}", FindPetByID).Description(`Returns a pet based on a single ID`)
 	define.Delete(bc, "/pets/{id}", DeletePet).Status(204).Description(`delete a single pet based on the ID supplied`)
-
-	if gendoc {
-		ctx := context.Background()
-		if err := bc.EmitDoc(ctx); err != nil {
-			log.Fatalf("!! %+v", err)
-		}
-		return
-	}
-
-	log.Printf("[Info]  listening: :%d", port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), bc.Handler()); err != nil {
-		log.Printf("[Error] !! %+v", err)
-	}
+	return bc
 }
