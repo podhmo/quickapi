@@ -1,6 +1,6 @@
 # quickapi (WIP)
 
-not fast, but quick
+not fast implementation, but quick web API development
 
 > **Warning**
 > 🚧 This package is under construction, so all examples may not work correctly.
