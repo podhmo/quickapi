@@ -65,7 +65,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 	}
 
 	if t, ok := any(input).(Validator); ok {
-		if err := t.Validate(); err != nil {
+		if err := t.Validate(req.Context()); err != nil {
 			if DEBUG {
 				log.Printf("[DEBUG] validation is failed: %+v, on %T", err, input)
 			}
@@ -131,5 +131,5 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 }
 
 type Validator interface {
-	Validate() error
+	Validate(context.Context) error
 }
