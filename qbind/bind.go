@@ -36,7 +36,6 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 			log.Printf("[ERROR] unexpected error (json.Decode): %+v, on %T", err, input) // TODO: structured logging
 			return input, err
 		}
-		// TODO: validation
 	}
 
 	if len(metadata.Queries) > 0 {
@@ -64,6 +63,16 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 		}
 
 	}
+
+	if t, ok := any(input).(Validator); ok {
+		if err := t.Validate(); err != nil {
+			if DEBUG {
+				log.Printf("[DEBUG] validation is failed: %+v, on %T", err, input)
+			}
+			return input, err
+		}
+	}
+
 	return input, nil
 }
 
@@ -119,4 +128,8 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 		log.Printf("[DEBUG] on %T, metadata=%+v", iz, metadata)
 	}
 	return metadata
+}
+
+type Validator interface {
+	Validate() error
 }
