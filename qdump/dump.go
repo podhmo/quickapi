@@ -37,13 +37,8 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 	render.JSON(w, req, output)
 }
 
-type errorResponse struct {
-	Error string `json:"error"`
-	Code  int    `json:"code"`
-}
-
 func DumpError(w http.ResponseWriter, req *http.Request, err error, code int) {
-	v := errorResponse{Error: "internal server error", Code: code}
+	v := shared.ErrorResponse{Error: "internal server error", Code: code}
 	if code != 500 {
 		v.Error = err.Error()
 	}
