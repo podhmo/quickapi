@@ -22,11 +22,17 @@
       },
       "Pet": {
         "additionalProperties": false,
+        "default": {
+          "id": "1",
+          "name": "foo",
+          "tag": "Cat"
+        },
         "properties": {
           "id": {
             "type": "string"
           },
           "name": {
+            "minLength": 1,
             "type": "string"
           },
           "tag": {
@@ -37,6 +43,7 @@
           "id",
           "name"
         ],
+        "title": "Pet",
         "type": "object"
       }
     }

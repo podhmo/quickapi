@@ -63,6 +63,7 @@ func build(port int) *define.BuildContext {
 	bc := define.MustBuildContext(doc, router)
 
 	define.DefaultError(bc, Error{})
+	define.Type(bc, Pet{ID: "1", Name: "foo", Tag: "Cat"})
 
 	longDescription := `Returns all pets from the system that the user has access to
 	Nam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.
@@ -80,7 +81,7 @@ func build(port int) *define.BuildContext {
 
 type Pet struct { // allOf is not supported
 	ID   string `json:"id"`            // unique id of the pet
-	Name string `json:"name"`          // name of the pet
+	Name string `json:"name" openapi-override:"{'minLength': 1}"`          // name of the pet
 	Tag  string `json:"tag,omitempty"` // id of the pet
 }
 
