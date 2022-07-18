@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/gorilla/schema v1.2.0
 	github.com/podhmo/or v0.0.2
-	github.com/podhmo/reflect-openapi v0.0.14
+	github.com/podhmo/reflect-openapi v0.1.0
 )
 
 require (
