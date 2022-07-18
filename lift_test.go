@@ -12,7 +12,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/quickapitest"
-	"github.com/podhmo/quickapi/shared"
 )
 
 func TestLift_OK(t *testing.T) {
@@ -48,8 +47,8 @@ func TestLift_NotFound(t *testing.T) {
 	handler := quickapi.Lift(action)
 	req := httptest.NewRequest("GET", "/", nil)
 
-	got := quickapitest.DoRequest[shared.ErrorResponse](t, req, code, handler)
-	want := shared.ErrorResponse{Code: code, Error: "api-error: hmm"}
+	got := quickapitest.DoRequest[quickapi.ErrorResponse](t, req, code, handler)
+	want := quickapi.ErrorResponse{Code: code, Error: "api-error: hmm"}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
 	}
@@ -72,8 +71,8 @@ func TestLift_UnprocessableEntity_withValidation(t *testing.T) {
 	handler := quickapi.Lift(action)
 	req := httptest.NewRequest("GET", "/", strings.NewReader(`{"name": "foo"}`))
 
-	got := quickapitest.DoRequest[shared.ErrorResponse](t, req, code, handler)
-	want := shared.ErrorResponse{Code: code, Error: "api-error: ill"}
+	got := quickapitest.DoRequest[quickapi.ErrorResponse](t, req, code, handler)
+	want := quickapi.ErrorResponse{Code: code, Error: "api-error: ill"}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
 	}
@@ -82,7 +81,7 @@ func TestLift_UnprocessableEntity_withValidation(t *testing.T) {
 func TestLift_Found_Redirect(t *testing.T) {
 	code := 302
 	action := func(ctx context.Context, input quickapi.Empty) ([]int, error) {
-		return nil, shared.Redirect(http.StatusFound, "http://example.net")
+		return nil, quickapi.Redirect(http.StatusFound, "http://example.net")
 	}
 
 	handler := quickapi.Lift(action)

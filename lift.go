@@ -11,9 +11,6 @@ import (
 
 type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
 
-// Empty is zero Input
-type Empty struct{}
-
 // Lift transforms Action to http.Handler
 func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 	metadata := qbind.Scan(action)
