@@ -10,7 +10,9 @@ type StatusCoder interface {
 }
 
 func StatusCodeOf(err error) int {
-	code := 500
+	return StatusCodeOfOrDefault(err, 500)
+}
+func StatusCodeOfOrDefault(err error, code int) int {
 	var t StatusCoder
 	if errors.As(err, &t) {
 		code = t.StatusCode()
