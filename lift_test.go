@@ -65,7 +65,7 @@ type Ill struct {
 }
 
 func (ob Ill) Validate(ctx context.Context) error {
-	return qdump.NewAPIError(fmt.Errorf("ill"), http.StatusUnprocessableEntity)
+	return quickapi.NewAPIError(fmt.Errorf("ill"), http.StatusUnprocessableEntity)
 }
 
 func TestLift_UnprocessableEntity_withValidation(t *testing.T) {

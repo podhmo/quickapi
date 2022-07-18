@@ -6,13 +6,14 @@ import (
 
 	"github.com/podhmo/quickapi/qbind"
 	"github.com/podhmo/quickapi/qdump"
+	"github.com/podhmo/quickapi/shared"
 )
 
 func NewAPIError(err error, code int) interface {
 	error
-	qdump.StatusCoder
+	shared.StatusCoder
 } {
-	return qdump.NewAPIError(err, code)
+	return shared.NewAPIError(err, code)
 }
 
 type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
@@ -29,7 +30,7 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 		// binding request body and query-string and headers to input.
 		input, err := qbind.Bind[I](req, metadata)
 		if err != nil {
-			code := qdump.StatusCodeOfOrDefault(err, 400)
+			code := shared.StatusCodeOfOrDefault(err, 400)
 			qdump.DumpError(w, req, err, code)
 			return
 		}

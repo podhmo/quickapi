@@ -1,4 +1,4 @@
-package qdump
+package shared
 
 import (
 	"fmt"

@@ -57,7 +57,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if err := reqResult.Error; err != nil {
 		code := http.StatusBadRequest
 		detail := strings.Split(fmt.Sprintf("%v", err), "\n")
-		value := &shared.APIError{Code: code, Error: detail[0], Detail: detail}
+		value := &shared.ErrorResponse{Code: code, Error: detail[0], Detail: detail}
 
 		render.Status(req, code)
 		render.JSON(w, req, value)

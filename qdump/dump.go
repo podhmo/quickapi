@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/podhmo/quickapi/shared"
 )
 
 func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) {
@@ -22,7 +23,7 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 			return
 		}
 
-		code := StatusCodeOf(err)
+		code := shared.StatusCodeOf(err)
 		if code == 500 {
 			log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
 		}
