@@ -1,4 +1,4 @@
-package qdump
+package shared
 
 import (
 	"errors"
@@ -20,26 +20,28 @@ func StatusCodeOfOrDefault(err error, code int) int {
 	return code
 }
 
-func NewAPIError(err error, code int) interface {
-	StatusCoder
-	error
-} {
-	return &apiError{err: err, code: code}
-}
-
-type apiError struct {
+type APIError struct {
 	code int
 	err  error
 }
 
-func (e *apiError) Error() string {
+func NewAPIError(err error, code int) *APIError {
+	return &APIError{err: err, code: code}
+}
+
+func (e *APIError) Error() string {
 	return fmt.Sprintf("api-error: %s", e.err.Error())
 }
 
-func (e *apiError) Unwrap() error {
+func (e *APIError) Unwrap() error {
 	return e.err
 }
 
-func (e *apiError) StatusCode() int {
+func (e *APIError) StatusCode() int {
 	return e.code
 }
+
+var _ interface {
+	StatusCoder
+	error
+} = &APIError{}

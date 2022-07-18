@@ -12,6 +12,7 @@ import (
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/podhmo/quickapi/shared"
 )
 
 func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
@@ -56,7 +57,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if err := reqResult.Error; err != nil {
 		code := http.StatusBadRequest
 		detail := strings.Split(fmt.Sprintf("%v", err), "\n")
-		value := &ErrorResponse{Code: code, Error: detail[0], Detail: detail}
+		value := &shared.ErrorResponse{Code: code, Error: detail[0], Detail: detail}
 
 		render.Status(req, code)
 		render.JSON(w, req, value)
@@ -64,12 +65,6 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	v.Next.ServeHTTP(w, req) // after qdump.Dump()
 	// TODO: response validation
-}
-
-type ErrorResponse struct {
-	Code   int      `json:"code"`
-	Error  string   `json:"error"`
-	Detail []string `json:"detail,omitempty"`
 }
 
 type Extractor struct {

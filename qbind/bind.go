@@ -40,7 +40,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 		}
 		if err := queryDecoder.Decode(&input, m); err != nil {
 			if shared.DEBUG {
-				log.Printf("[shared.DEBUG] unexpected query string: %+v, on %T", err, input)
+				log.Printf("[ERROR] unexpected query string: %+v, on %T", err, input)
 			}
 		}
 	}
@@ -52,7 +52,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 		}
 		if err := headerDecoder.Decode(&input, m); err != nil {
 			if shared.DEBUG {
-				log.Printf("[shared.DEBUG] unexpected header: %+v, on %T", err, input)
+				log.Printf("[ERROR] unexpected header: %+v, on %T", err, input)
 			}
 		}
 
@@ -61,7 +61,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 	if t, ok := any(input).(Validator); ok {
 		if err := t.Validate(req.Context()); err != nil {
 			if shared.DEBUG {
-				log.Printf("[shared.DEBUG] validation is failed: %+v, on %T", err, input)
+				log.Printf("[ERROR] validation is failed: %+v, on %T", err, input)
 			}
 			return input, err
 		}
@@ -119,7 +119,7 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 		PathVars:   pathvars,
 	}
 	if shared.DEBUG {
-		log.Printf("[shared.DEBUG] on %T, metadata=%+v", iz, metadata)
+		log.Printf("[ERROR] on %T, metadata=%+v", iz, metadata)
 	}
 	return metadata
 }

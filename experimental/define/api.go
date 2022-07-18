@@ -32,7 +32,7 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 	doc := docM()
 	c := reflectopenapi.Config{
 		Doc:          doc,
-		DefaultError: validate.ErrorResponse{},
+		DefaultError: shared.ErrorResponse{},
 		StrictSchema: true,
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
 			required := true

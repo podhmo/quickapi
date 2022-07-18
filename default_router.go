@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/podhmo/quickapi/qdump"
+	"github.com/podhmo/quickapi/shared"
 )
 
 // A good base middleware stack https://github.com/go-chi/chi
@@ -29,14 +29,14 @@ func DefaultRouter() chi.Router {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 
 		render.Status(req, 404)
-		v := qdump.NewAPIError(errNotFound, 404)
+		v := shared.NewAPIError(errNotFound, 404)
 		render.JSON(w, req, v)
 	})
 
 	errNotAllowed := fmt.Errorf(http.StatusText(http.StatusMethodNotAllowed))
 	r.MethodNotAllowed(func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(405)
-		v := qdump.NewAPIError(errNotAllowed, 405)
+		v := shared.NewAPIError(errNotAllowed, 405)
 		render.JSON(w, req, v)
 	})
 	return r
