@@ -9,13 +9,6 @@ import (
 	"github.com/podhmo/quickapi/shared"
 )
 
-func NewAPIError(err error, code int) interface {
-	error
-	shared.StatusCoder
-} {
-	return shared.NewAPIError(err, code)
-}
-
 type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
 
 // Empty is zero Input
