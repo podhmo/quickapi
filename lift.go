@@ -25,7 +25,7 @@ type Empty struct{}
 func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 	metadata := qbind.Scan(action)
 	return func(w http.ResponseWriter, req *http.Request) {
-		req = req.WithContext(qbind.SetRequest(req.Context(), req)) // for qbind.GetRequest() in action
+		req = req.WithContext(shared.SetRequest(req.Context(), req)) // for shared.GetRequest() in action
 
 		// binding request body and query-string and headers to input.
 		input, err := qbind.Bind[I](req, metadata)
