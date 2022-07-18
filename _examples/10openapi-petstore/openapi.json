@@ -145,6 +145,10 @@
           "400": {
             "content": {
               "application/json": {
+                "example": {
+                  "code": 400,
+                  "error": "validation error"
+                },
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }

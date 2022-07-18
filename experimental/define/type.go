@@ -36,3 +36,8 @@ func (m *TypeModifier) After(f func(ref *openapi3.SchemaRef)) *TypeModifier {
 func (m *TypeModifier) Before(f func(s *openapi3.Schema)) *TypeModifier {
 	return (*TypeModifier)((*reflectopenapi.RegisterTypeAction)(m).Before(f))
 }
+func (a *TypeModifier) Example(value interface{}) *TypeModifier {
+	return a.Before(func(s *openapi3.Schema) {
+		s.Example = value
+	})
+}

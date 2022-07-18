@@ -67,3 +67,7 @@ func (m *EndpointModifier) AnotherError(bc *BuildContext, code int, typ interfac
 		op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
 	})
 }
+func (a *EndpointModifier) Example(code int, title string, value interface{}) *EndpointModifier {
+	fn := (*reflectopenapi.RegisterFuncAction)(a)
+	return (*EndpointModifier)(fn.Example(code, "application/json", title, value))
+}
