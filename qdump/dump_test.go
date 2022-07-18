@@ -41,3 +41,20 @@ func TestConnectionIsClosed(t *testing.T) {
 		})
 	}
 }
+
+func TestRedirection(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/", nil)
+	redirectError := Redirect(http.StatusFound, "http://example.net")
+
+	Dump[any](rec, req, nil, redirectError)
+	res := rec.Result()
+
+	if want, got := http.StatusFound, res.StatusCode; want != got {
+		t.Errorf("status-code in Dump(), want=%d != got=%d", want, got)
+	}
+
+	if want, got := "http://example.net", res.Header.Get("Location"); want != got {
+		t.Errorf("location in Dump(), want=%q != got=%q", want, got)
+	}
+}
