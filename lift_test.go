@@ -56,7 +56,7 @@ func TestLift_NotFound(t *testing.T) {
 	got := quickapitest.DoRequest[errorResponse](t, req, code, handler)
 	want := errorResponse{Code: code, Error: "api-error: hmm"}
 	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
+		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -65,7 +65,6 @@ type Ill struct {
 }
 
 func (ob Ill) Validate(ctx context.Context) error {
-	fmt.Println("----------------------------------------")
 	return qdump.NewAPIError(fmt.Errorf("ill"), http.StatusUnprocessableEntity)
 }
 
@@ -81,6 +80,27 @@ func TestLift_UnprocessableEntity_withValidation(t *testing.T) {
 	got := quickapitest.DoRequest[errorResponse](t, req, code, handler)
 	want := errorResponse{Code: code, Error: "api-error: ill"}
 	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
+		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestLift_Found_Redirect(t *testing.T) {
+	code := 302
+	action := func(ctx context.Context, input quickapi.Empty) ([]int, error) {
+		return nil, qdump.Redirect(http.StatusFound, "http://example.net")
+	}
+
+	handler := quickapi.Lift(action)
+	req := httptest.NewRequest("GET", "/", nil)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+	res := rec.Result()
+
+	if want, got := code, res.StatusCode; want != got {
+		t.Errorf("Lift() status-code, want=%d != got=%d", want, got)
+	}
+	if want, got := "http://example.net", res.Header.Get("Location"); want != got {
+		t.Errorf("Lift() header location, want=%q != got=%q", want, got)
 	}
 }
