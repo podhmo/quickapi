@@ -3,12 +3,15 @@ package quickapi_test
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/podhmo/quickapi"
+	"github.com/podhmo/quickapi/qdump"
 	"github.com/podhmo/quickapi/quickapitest"
 )
 
@@ -36,6 +39,11 @@ func TestLift_OK_NilAsEmptySlice(t *testing.T) {
 	}
 }
 
+type errorResponse struct {
+	Code  int    `json:"code"`
+	Error string `json:"error"`
+}
+
 func TestLift_NotFound(t *testing.T) {
 	code := 404
 	action := func(context.Context, quickapi.Empty) ([]int, error) {
@@ -45,13 +53,33 @@ func TestLift_NotFound(t *testing.T) {
 	handler := quickapi.Lift(action)
 	req := httptest.NewRequest("GET", "/", nil)
 
-	type errorResponse struct {
-		Code  int    `json:"code"`
-		Error string `json:"error"`
-	}
-
 	got := quickapitest.DoRequest[errorResponse](t, req, code, handler)
 	want := errorResponse{Code: code, Error: "api-error: hmm"}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
+	}
+}
+
+type Ill struct {
+	Name string `json:"name"`
+}
+
+func (ob Ill) Validate(ctx context.Context) error {
+	fmt.Println("----------------------------------------")
+	return qdump.NewAPIError(fmt.Errorf("ill"), http.StatusUnprocessableEntity)
+}
+
+func TestLift_UnprocessableEntity_withValidation(t *testing.T) {
+	code := 422
+	action := func(ctx context.Context, input Ill) ([]int, error) {
+		return nil, nil
+	}
+
+	handler := quickapi.Lift(action)
+	req := httptest.NewRequest("GET", "/", strings.NewReader(`{"name": "foo"}`))
+
+	got := quickapitest.DoRequest[errorResponse](t, req, code, handler)
+	want := errorResponse{Code: code, Error: "api-error: ill"}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 	}
