@@ -10,7 +10,7 @@ import (
 
 func NewAPIError(err error, code int) interface {
 	error
-	qdump.HasStatusCode
+	qdump.StatusCoder
 } {
 	return qdump.NewAPIError(err, code)
 }

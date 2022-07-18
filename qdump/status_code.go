@@ -5,13 +5,13 @@ import (
 	"fmt"
 )
 
-type HasStatusCode interface {
+type StatusCoder interface {
 	StatusCode() int
 }
 
 func StatusCodeOf(err error) int {
 	code := 500
-	var t HasStatusCode
+	var t StatusCoder
 	if errors.As(err, &t) {
 		code = t.StatusCode()
 	}
@@ -19,7 +19,7 @@ func StatusCodeOf(err error) int {
 }
 
 func NewAPIError(err error, code int) interface {
-	HasStatusCode
+	StatusCoder
 	error
 } {
 	return &apiError{err: err, code: code}
