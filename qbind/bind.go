@@ -39,18 +39,30 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 		// TODO: validation
 	}
 
-	// TODO: handling metadata (query tag)
-	if err := queryDecoder.Decode(&input, req.URL.Query()); err != nil {
-		if DEBUG {
-			log.Printf("[DEBUG] unexpected query string: %+v, on %T", err, input)
+	if len(metadata.Queries) > 0 {
+		m := make(map[string][]string, len(metadata.Queries))
+		v := req.URL.Query()
+		for _, k := range metadata.Queries {
+			m[k] = []string{v.Get(k)}
+		}
+		if err := queryDecoder.Decode(&input, req.URL.Query()); err != nil {
+			if DEBUG {
+				log.Printf("[DEBUG] unexpected query string: %+v, on %T", err, input)
+			}
 		}
 	}
 
-	// TODO: handling metadata (header tag)
-	if err := headerDecoder.Decode(&input, req.Header); err != nil {
-		if DEBUG {
-			log.Printf("[DEBUG] unexpected header: %+v, on %T", err, input)
+	if len(metadata.Headers) > 0 {
+		m := make(map[string][]string, len(metadata.Headers))
+		for _, k := range metadata.Headers {
+			m[k] = []string{req.Header.Get(k)}
 		}
+		if err := headerDecoder.Decode(&input, m); err != nil {
+			if DEBUG {
+				log.Printf("[DEBUG] unexpected header: %+v, on %T", err, input)
+			}
+		}
+
 	}
 	return input, nil
 }
