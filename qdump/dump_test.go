@@ -45,9 +45,8 @@ func TestConnectionIsClosed(t *testing.T) {
 func TestRedirection(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
-	redirectError := Redirect(http.StatusFound, "http://example.net")
 
-	Dump[any](rec, req, nil, redirectError)
+	Dump[any](rec, req, nil, Redirect(http.StatusFound, "http://example.net"))
 	res := rec.Result()
 
 	if want, got := http.StatusFound, res.StatusCode; want != got {
