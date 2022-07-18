@@ -7,7 +7,6 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/experimental/validate"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
@@ -18,7 +17,7 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 	m := bc.m
 	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
 		m.Doc.AddOperation(path, method, op)
-		middleware := validate.Middleware(m.Doc, op, path)
+		middleware := bc.mb.BuildMiddleware(path, op)
 		middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
 		bc.r.With(middlewares...).Method(method, path, h)
 	}))

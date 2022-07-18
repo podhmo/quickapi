@@ -14,7 +14,20 @@ import (
 	"github.com/go-chi/render"
 )
 
-func Middleware(doc *openapi3.T, op *openapi3.Operation, pattern string) func(http.Handler) http.Handler {
+func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
+	return &MiddlewareBuilder{
+		Doc:       doc,
+		Extractor: &Extractor{Debug: debug},
+	}
+}
+
+type MiddlewareBuilder struct {
+	Doc       *openapi3.T
+	Extractor *Extractor
+}
+
+func (b *MiddlewareBuilder) BuildMiddleware(pattern string, op *openapi3.Operation) func(http.Handler) http.Handler {
+	doc := b.Doc
 	pathItem := doc.Paths.Find(pattern)
 	route := &routers.Route{
 		Spec:      doc,
@@ -23,21 +36,21 @@ func Middleware(doc *openapi3.T, op *openapi3.Operation, pattern string) func(ht
 		Operation: op,
 	}
 	return func(next http.Handler) http.Handler {
-		return &Validator{
+		return &Middleware{
 			BaseRoute: route,
 			Next:      next,
-			Extractor: &Extractor{Debug: true}, // TODO: shared
+			Extractor: b.Extractor,
 		}
 	}
 }
 
-type Validator struct {
+type Middleware struct {
 	BaseRoute *routers.Route
 	Next      http.Handler
 	Extractor *Extractor
 }
 
-func (v *Validator) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	reqResult := v.Extractor.ExtractRequestValidation(ctx, req, *v.BaseRoute)
 	if err := reqResult.Error; err != nil {

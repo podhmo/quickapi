@@ -13,13 +13,9 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
+	"github.com/podhmo/quickapi/experimental/validate"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
-
-type APIError struct {
-	Code  int    `json:"code"`
-	Error string `json:"error"`
-}
 
 type BuildContext struct {
 	m *reflectopenapi.Manager
@@ -27,6 +23,7 @@ type BuildContext struct {
 
 	r chi.Router
 
+	mb         *validate.MiddlewareBuilder
 	commitFunc func(context.Context) error
 }
 
@@ -34,7 +31,7 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 	doc := docM()
 	c := reflectopenapi.Config{
 		Doc:          doc,
-		DefaultError: APIError{},
+		DefaultError: validate.ErrorResponse{},
 		StrictSchema: true,
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
 			required := true
@@ -55,7 +52,13 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &BuildContext{r: r, c: &c, m: m, commitFunc: commit}, nil
+	return &BuildContext{
+		r:          r,
+		c:          &c,
+		m:          m,
+		mb:         validate.NewBuilder(doc /* debug */, true),
+		commitFunc: commit,
+	}, nil
 }
 
 func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
