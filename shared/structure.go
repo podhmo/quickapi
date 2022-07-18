@@ -1,20 +1,9 @@
 package shared
 
-import (
-	"os"
-	"strconv"
-)
+// Empty is zero Input
+type Empty struct{}
 
-var (
-	DEBUG = false
-)
-
-func init() {
-	if ok, _ := strconv.ParseBool(os.Getenv("DEBUG")); ok {
-		DEBUG = ok
-	}
-}
-
+// ErrorResponse represents a normal error response type
 type ErrorResponse struct {
 	Code   int      `json:"code"`
 	Error  string   `json:"error"`

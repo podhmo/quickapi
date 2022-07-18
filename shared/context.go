@@ -1,4 +1,4 @@
-package qbind
+package shared
 
 import (
 	"context"

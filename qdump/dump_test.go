@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/podhmo/quickapi/shared"
 )
 
 func TestConnectionIsClosed(t *testing.T) {
@@ -46,7 +48,7 @@ func TestRedirection(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
 
-	Dump[any](rec, req, nil, Redirect(http.StatusFound, "http://example.net"))
+	Dump[any](rec, req, nil, shared.Redirect(http.StatusFound, "http://example.net"))
 	res := rec.Result()
 
 	if want, got := http.StatusFound, res.StatusCode; want != got {

@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+var (
+	API_ERROR_FORMAT = "api-error: %s"
+)
+
 type StatusCoder interface {
 	StatusCode() int
 }
@@ -30,7 +34,7 @@ func NewAPIError(err error, code int) *APIError {
 }
 
 func (e *APIError) Error() string {
-	return fmt.Sprintf("api-error: %s", e.err.Error())
+	return fmt.Sprintf(API_ERROR_FORMAT, e.err.Error())
 }
 
 func (e *APIError) Unwrap() error {
