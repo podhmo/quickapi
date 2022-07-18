@@ -45,7 +45,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 		for _, k := range metadata.Queries {
 			m[k] = []string{v.Get(k)}
 		}
-		if err := queryDecoder.Decode(&input, req.URL.Query()); err != nil {
+		if err := queryDecoder.Decode(&input, m); err != nil {
 			if DEBUG {
 				log.Printf("[DEBUG] unexpected query string: %+v, on %T", err, input)
 			}
