@@ -1,6 +1,7 @@
 package define
 
 import (
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -11,35 +12,35 @@ import (
 
 type EndpointModifier reflectopenapi.RegisterFuncAction
 
-func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O]) *EndpointModifier {
+func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
 	h := quickapi.Lift(action)
-	bc.r.Method(method, path, h)
+	bc.r.With(middlewares...).Method(method, path, h)
 	m := bc.m
 	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
 		m.Doc.AddOperation(path, method, op)
 	}))
 }
 
-func Get[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
-	return Method(bc, "GET", path, action)
+func Get[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	return Method(bc, "GET", path, action, middlewares...)
 }
-func Post[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
-	return Method(bc, "POST", path, action)
+func Post[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	return Method(bc, "POST", path, action, middlewares...)
 }
-func Put[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
-	return Method(bc, "PUT", path, action)
+func Put[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	return Method(bc, "PUT", path, action, middlewares...)
 }
-func Patch[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
-	return Method(bc, "PATCH", path, action)
+func Patch[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	return Method(bc, "PATCH", path, action, middlewares...)
 }
-func Delete[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
-	return Method(bc, "DELETE", path, action)
+func Delete[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	return Method(bc, "DELETE", path, action, middlewares...)
 }
-func Head[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
-	return Method(bc, "HEAD", path, action)
+func Head[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	return Method(bc, "HEAD", path, action, middlewares...)
 }
-func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O]) *EndpointModifier {
-	return Method(bc, "OPTIONS", path, action)
+func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	return Method(bc, "OPTIONS", path, action, middlewares...)
 }
 
 func (m *EndpointModifier) After(f func(op *openapi3.Operation)) *EndpointModifier {
