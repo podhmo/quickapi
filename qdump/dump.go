@@ -17,16 +17,16 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 		default:
 		}
 
+		if t, ok := err.(Redirector); ok {
+			t.Redirect(w, req)
+			return
+		}
+
 		code := StatusCodeOf(err)
 		if code == 500 {
 			log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
 		}
 		DumpError(w, req, err, code)
-		return
-	}
-
-	if t, ok := any(output).(Redirector); ok {
-		t.Redirect(w, req)
 		return
 	}
 

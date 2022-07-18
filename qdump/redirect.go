@@ -1,6 +1,7 @@
 package qdump
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -18,6 +19,13 @@ func (r redirect) Redirect(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(r.Code)
 }
 
-func Redirect(code int, location string) Redirector {
+func (r redirect) Error() string {
+	return fmt.Sprintf("Redirect code=%d, location=%s", r.Code, r.Location)
+}
+
+func Redirect(code int, location string) interface {
+	error
+	Redirector
+} {
 	return redirect{Code: code, Location: location}
 }
