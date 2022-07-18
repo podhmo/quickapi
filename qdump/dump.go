@@ -18,7 +18,7 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 		default:
 		}
 
-		if t, ok := err.(Redirector); ok {
+		if t, ok := err.(shared.Redirector); ok {
 			t.Redirect(w, req)
 			return
 		}

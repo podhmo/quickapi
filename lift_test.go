@@ -11,7 +11,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/qdump"
 	"github.com/podhmo/quickapi/quickapitest"
 	"github.com/podhmo/quickapi/shared"
 )
@@ -83,7 +82,7 @@ func TestLift_UnprocessableEntity_withValidation(t *testing.T) {
 func TestLift_Found_Redirect(t *testing.T) {
 	code := 302
 	action := func(ctx context.Context, input quickapi.Empty) ([]int, error) {
-		return nil, qdump.Redirect(http.StatusFound, "http://example.net")
+		return nil, shared.Redirect(http.StatusFound, "http://example.net")
 	}
 
 	handler := quickapi.Lift(action)
