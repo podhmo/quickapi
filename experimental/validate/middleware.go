@@ -69,7 +69,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 type ErrorResponse struct {
 	Code   int      `json:"code"`
 	Error  string   `json:"error"`
-	Detail []string `json:"detail"`
+	Detail []string `json:"detail,omitempty"`
 }
 
 type Extractor struct {

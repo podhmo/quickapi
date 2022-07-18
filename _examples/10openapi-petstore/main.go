@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/experimental/define"
+	"github.com/podhmo/quickapi/experimental/validate"
 )
 
 var (
@@ -72,7 +73,7 @@ func build(port int) *define.BuildContext {
 	define.Get(bc, "/pets", FindPets).Description(longDescription)
 	define.Post(bc, "/pets", AddPet).Description(`Creates a new pet in the store. Duplicates are allowed`).
 		AnotherError(bc, 400, Error{}, "validation error").
-		Example(400, "validation error", define.APIError{Code: 400, Error: "validation error"})
+		Example(400, "validation error", validate.ErrorResponse{Code: 400, Error: "validation error"})
 	define.Get(bc, "/pets/{id}", FindPetByID).Description(`Returns a pet based on a single ID`)
 	define.Delete(bc, "/pets/{id}", DeletePet).Description(`delete a single pet based on the ID supplied`).
 		Status(204)
@@ -80,9 +81,9 @@ func build(port int) *define.BuildContext {
 }
 
 type Pet struct { // allOf is not supported
-	ID   string `json:"id"`            // unique id of the pet
-	Name string `json:"name" openapi-override:"{'minLength': 1}"`          // name of the pet
-	Tag  string `json:"tag,omitempty"` // id of the pet
+	ID   string `json:"id"`                                       // unique id of the pet
+	Name string `json:"name" openapi-override:"{'minLength': 1}"` // name of the pet
+	Tag  string `json:"tag,omitempty"`                            // id of the pet
 }
 
 type Error struct {
