@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/experimental/define"
+	rohandler "github.com/podhmo/reflect-openapi/handler"
 )
 
 var (
@@ -44,6 +44,9 @@ func run() error {
 	if err != nil {
 		return err
 	}
+
+	bc.Router().Mount("/openapi", rohandler.NewHandler(bc.Doc(), "/openapi"))
+
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), handler); err != nil {
 		log.Printf("[Error] !! %+v", err)
 	}
@@ -59,7 +62,7 @@ func build(port int) *define.BuildContext {
 		Server("http://petstore.swagger.io/api", "").
 		Server(fmt.Sprintf("http://localhost:%d", port), "local development")
 
-	router := chi.NewRouter()
+	router := quickapi.DefaultRouter()
 	bc := define.MustBuildContext(doc, router)
 
 	define.DefaultError(bc, Error{})
