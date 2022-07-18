@@ -24,12 +24,19 @@ func DefaultRouter() chi.Router {
 		r.Use(m)
 	}
 
-	errNotFound := fmt.Errorf(http.StatusText(404))
+	errNotFound := fmt.Errorf(http.StatusText(http.StatusNotFound))
 	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 
 		render.Status(req, 404)
 		v := qdump.NewAPIError(errNotFound, 404)
+		render.JSON(w, req, v)
+	})
+
+	errNotAllowed := fmt.Errorf(http.StatusText(http.StatusMethodNotAllowed))
+	r.MethodNotAllowed(func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(405)
+		v := qdump.NewAPIError(errNotAllowed, 405)
 		render.JSON(w, req, v)
 	})
 	return r
