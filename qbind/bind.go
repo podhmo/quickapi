@@ -5,26 +5,20 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 	"reflect"
-	"strconv"
 
 	"github.com/gorilla/schema"
+	"github.com/podhmo/quickapi/shared"
 )
 
 var (
 	queryDecoder  = schema.NewDecoder()
 	headerDecoder = schema.NewDecoder()
-	DEBUG         = false
 )
 
 func init() {
 	queryDecoder.SetAliasTag("query")
 	headerDecoder.SetAliasTag("header")
-	if ok, _ := strconv.ParseBool(os.Getenv("DEBUG")); ok {
-		DEBUG = ok
-	}
-
 }
 
 func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
@@ -45,8 +39,8 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 			m[k] = []string{v.Get(k)}
 		}
 		if err := queryDecoder.Decode(&input, m); err != nil {
-			if DEBUG {
-				log.Printf("[DEBUG] unexpected query string: %+v, on %T", err, input)
+			if shared.DEBUG {
+				log.Printf("[shared.DEBUG] unexpected query string: %+v, on %T", err, input)
 			}
 		}
 	}
@@ -57,8 +51,8 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 			m[k] = []string{req.Header.Get(k)}
 		}
 		if err := headerDecoder.Decode(&input, m); err != nil {
-			if DEBUG {
-				log.Printf("[DEBUG] unexpected header: %+v, on %T", err, input)
+			if shared.DEBUG {
+				log.Printf("[shared.DEBUG] unexpected header: %+v, on %T", err, input)
 			}
 		}
 
@@ -66,8 +60,8 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 
 	if t, ok := any(input).(Validator); ok {
 		if err := t.Validate(req.Context()); err != nil {
-			if DEBUG {
-				log.Printf("[DEBUG] validation is failed: %+v, on %T", err, input)
+			if shared.DEBUG {
+				log.Printf("[shared.DEBUG] validation is failed: %+v, on %T", err, input)
 			}
 			return input, err
 		}
@@ -124,8 +118,8 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 		Headers:    headers,
 		PathVars:   pathvars,
 	}
-	if DEBUG {
-		log.Printf("[DEBUG] on %T, metadata=%+v", iz, metadata)
+	if shared.DEBUG {
+		log.Printf("[shared.DEBUG] on %T, metadata=%+v", iz, metadata)
 	}
 	return metadata
 }

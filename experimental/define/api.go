@@ -14,7 +14,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi/experimental/validate"
-	"github.com/podhmo/quickapi/qbind"
+	"github.com/podhmo/quickapi/shared"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
@@ -57,7 +57,7 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 		r:          r,
 		c:          &c,
 		m:          m,
-		mb:         validate.NewBuilder(doc, qbind.DEBUG),
+		mb:         validate.NewBuilder(doc, shared.DEBUG),
 		commitFunc: commit,
 	}, nil
 }
