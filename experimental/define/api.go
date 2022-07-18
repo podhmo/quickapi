@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"reflect"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
+	"github.com/podhmo/quickapi/experimental/validate"
+	"github.com/podhmo/quickapi/qbind"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
-
-type APIError struct {
-	Code  int    `json:"code"`
-	Error string `json:"error"`
-}
 
 type BuildContext struct {
 	m *reflectopenapi.Manager
@@ -26,6 +24,7 @@ type BuildContext struct {
 
 	r chi.Router
 
+	mb         *validate.MiddlewareBuilder
 	commitFunc func(context.Context) error
 }
 
@@ -33,7 +32,7 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 	doc := docM()
 	c := reflectopenapi.Config{
 		Doc:          doc,
-		DefaultError: APIError{},
+		DefaultError: validate.ErrorResponse{},
 		StrictSchema: true,
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
 			required := true
@@ -54,7 +53,13 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &BuildContext{r: r, c: &c, m: m, commitFunc: commit}, nil
+	return &BuildContext{
+		r:          r,
+		c:          &c,
+		m:          m,
+		mb:         validate.NewBuilder(doc, qbind.DEBUG),
+		commitFunc: commit,
+	}, nil
 }
 
 func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
@@ -63,6 +68,13 @@ func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
 		panic(err)
 	}
 	return bc
+}
+
+func (bc *BuildContext) Router() chi.Router {
+	return bc.r
+}
+func (bc *BuildContext) Doc() *openapi3.T {
+	return bc.m.Doc
 }
 
 func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
@@ -78,7 +90,7 @@ func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
 	return nil
 }
 
-func (bc *BuildContext) BuildHandler(ctx context.Context) (chi.Router, error) {
+func (bc *BuildContext) BuildHandler(ctx context.Context) (http.Handler, error) {
 	if err := bc.commit(ctx); err != nil {
 		return nil, fmt.Errorf("BuildHandler (commit): %w", err)
 	}
