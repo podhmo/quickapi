@@ -45,7 +45,7 @@ func run() error {
 	}
 	bc.Router().Mount("/openapi", rohandler.NewHandler(bc.Doc(), "/openapi"))
 
-	if err := quickapi.ListenAndServeWithGracefulShutdown(ctx, fmt.Sprintf(":%d", port), handler, 5*time.Second); err != nil {
+	if err := quickapi.NewServer(fmt.Sprintf(":%d", port), handler, 5*time.Second).ListenAndServe(ctx); err != nil {
 		log.Printf("[Error] !! %+v", err)
 	}
 	return nil

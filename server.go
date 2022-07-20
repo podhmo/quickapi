@@ -15,15 +15,11 @@ type Server struct {
 	GracefulShutdownTimeout time.Duration
 }
 
-func ListenAndServeWithGracefulShutdown(
-	ctx context.Context,
+func NewServer(
 	addr string, handler http.Handler,
 	gracefulShutdownTimeout time.Duration,
-	options ...func(*Server),
-) error {
-	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
-	defer cancel()
-	server := &Server{
+) *Server {
+	return &Server{
 		Server: http.Server{
 			Addr:    addr,
 			Handler: handler,
@@ -34,9 +30,11 @@ func ListenAndServeWithGracefulShutdown(
 		},
 		GracefulShutdownTimeout: gracefulShutdownTimeout,
 	}
-	for _, opt := range options {
-		opt(server)
-	}
+}
+
+func (server *Server) ListenAndServe(ctx context.Context) error {
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	defer cancel()
 
 	go func() {
 		<-ctx.Done()
@@ -45,5 +43,5 @@ func ListenAndServeWithGracefulShutdown(
 		server.Shutdown(ctx)
 	}()
 	log.Printf("[INFO]  listening: %s", server.Addr)
-	return server.ListenAndServe()
+	return server.Server.ListenAndServe()
 }

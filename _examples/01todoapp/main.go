@@ -61,7 +61,7 @@ func main() {
 
 	port := 8080
 	addr := fmt.Sprintf(":%d", port)
-	if err := quickapi.ListenAndServeWithGracefulShutdown(ctx, addr, r, 5*time.Second); err != nil {
+	if err := quickapi.NewServer(addr, r, 5*time.Second).ListenAndServe(ctx); err != nil {
 		log.Printf("[Error] !! %+v", err)
 	}
 }
