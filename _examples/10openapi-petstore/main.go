@@ -5,8 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
+	"time"
 
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/experimental/define"
@@ -39,15 +39,13 @@ func run() error {
 		return nil
 	}
 
-	log.Printf("[INFO]  listening: :%d", port)
 	handler, err := bc.BuildHandler(ctx)
 	if err != nil {
 		return err
 	}
-
 	bc.Router().Mount("/openapi", rohandler.NewHandler(bc.Doc(), "/openapi"))
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), handler); err != nil {
+	if err := quickapi.NewServer(fmt.Sprintf(":%d", port), handler, 5*time.Second).ListenAndServe(ctx); err != nil {
 		log.Printf("[Error] !! %+v", err)
 	}
 	return nil
