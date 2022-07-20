@@ -79,6 +79,8 @@ type Metadata struct {
 	PathVars   []string // path variables
 }
 
+// TODO: cache
+
 func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 	var iz I
 	rt := reflect.TypeOf(iz)
@@ -119,7 +121,7 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 		PathVars:   pathvars,
 	}
 	if shared.DEBUG {
-		log.Printf("[ERROR] on %T, metadata=%+v", iz, metadata)
+		log.Printf("[DEBUG] Scan %T, metadata=%+v", iz, metadata)
 	}
 	return metadata
 }
