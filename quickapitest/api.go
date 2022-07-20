@@ -12,6 +12,7 @@ import (
 // DecodeResponse decodes json response
 func DecodeResponse[T any](
 	t *testing.T,
+	method string,
 	path string,
 	res *http.Response,
 	code int,
@@ -23,12 +24,16 @@ func DecodeResponse[T any](
 		buf := new(strings.Builder)
 		io.Copy(buf, res.Body)
 		defer t.Logf("\tresponse: %s", buf.String())
-		t.Fatalf("%q, status: want=%d != got=%d", path, wantCode, gotCode)
+		t.Fatalf("%s %s, status code: want=%d != got=%d", method, path, wantCode, gotCode)
 	}
 
 	var got T
+	if any(got) == nil {
+		t.Logf("%s %s, decode response is skipped (because nil is passed)", method, path)
+		return got
+	}
 	if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
-		t.Errorf("%q, unexpected error (decode %T): %+v", path, got, err)
+		t.Errorf("%s %s, unexpected error (decode %T): %+v", method, path, got, err)
 	}
 	return got
 }
@@ -39,7 +44,7 @@ func DoRequest[T any](
 	req *http.Request,
 	code int,
 	handler http.Handler,
-	options ...func(testing.TB, *http.Response),
+	options ...func(*testing.T, *http.Response),
 ) T {
 	t.Helper()
 
@@ -47,7 +52,7 @@ func DoRequest[T any](
 	handler.ServeHTTP(rec, req)
 	res := rec.Result()
 
-	got := DecodeResponse[T](t, req.URL.Path, res, code)
+	got := DecodeResponse[T](t, req.Method, req.URL.Path, res, code)
 	for _, opt := range options {
 		opt(t, res)
 	}
