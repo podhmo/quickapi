@@ -48,6 +48,10 @@ func DoRequest[T any](
 ) T {
 	t.Helper()
 
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
 	res := rec.Result()
