@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
@@ -55,12 +55,13 @@ func mount(r chi.Router) {
 }
 
 func main() {
+	ctx := context.Background()
 	r := quickapi.DefaultRouter()
 	mount(r)
 
 	port := 8080
-	log.Printf("[Info]  listening: :%d", port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), r); err != nil {
+	addr := fmt.Sprintf(":%d", port)
+	if err := quickapi.ListenAndServeWithGracefulShutdown(ctx, addr, r, 5*time.Second); err != nil {
 		log.Printf("[Error] !! %+v", err)
 	}
 }
