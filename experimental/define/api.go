@@ -70,11 +70,19 @@ func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
 	return bc
 }
 
+// Router returns internal github.com/go-chi/chi.Router
 func (bc *BuildContext) Router() chi.Router {
 	return bc.r
 }
+
+// Doc returns internal github.com/getkin/kin-openapi/openapi3.T
 func (bc *BuildContext) Doc() *openapi3.T {
 	return bc.m.Doc
+}
+
+// ReflectOpenAPIManager returns internal github.com/podhmo/reflect-openapi/Manager
+func (bc *BuildContext) ReflectOpenAPIManager() *reflectopenapi.Manager {
+	return bc.m
 }
 
 func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
