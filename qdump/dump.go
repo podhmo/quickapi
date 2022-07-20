@@ -31,6 +31,10 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 		return
 	}
 
+	if t, ok := any(output).(shared.StatusCoder); ok {
+		render.Status(req, t.StatusCode())
+	}
+
 	// Force to return empty JSON array [] instead of null in case of zero slice.
 	output = FillNil(output)
 
