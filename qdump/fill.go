@@ -1,27 +1,29 @@
 package qdump
 
 import (
-	"log"
+	"context"
 	"reflect"
+
+	"github.com/podhmo/quickapi/shared"
 )
 
 // TODO: performance up by qbind.Metadata
 
 // FillNil modifies the nil slice and maps it to an empty one, but this has side effects.
-func FillNil[O any](ob O) (output O) {
+func FillNil[O any](ctx context.Context, ob O) (output O) {
 	output = ob
 
 	rv := reflect.ValueOf(ob)
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("[PANIC] unsupported kind=%s, value=%v", rv.Kind(), rv)
+			shared.GetLogger(ctx).Printf("[PANIC] unsupported kind=%s, value=%v", rv.Kind(), rv)
 		}
 	}()
 
 	if rv.Kind() == reflect.Struct {
 		rv = reflect.ValueOf(&ob).Elem() // for CanSet()
 	}
-	rv, changed := fillToplevel(rv)
+	rv, changed := fillToplevel(ctx, rv)
 	if !changed {
 		return output
 	}
@@ -32,26 +34,26 @@ var (
 	MAX_RECURSION int = 100
 )
 
-func fillToplevel(rv reflect.Value) (ret reflect.Value, changed bool) {
+func fillToplevel(ctx context.Context, rv reflect.Value) (ret reflect.Value, changed bool) {
 	switch rv.Kind() {
 	case reflect.Slice, reflect.Map:
-		if sv, changed := fill(rv, 1); changed {
+		if sv, changed := fill(ctx, rv, 1); changed {
 			return sv, true
 		}
 		return rv, false
 	case reflect.Struct:
-		return fill(rv, 1)
+		return fill(ctx, rv, 1)
 	case reflect.Pointer:
-		_, changed := fillToplevel(rv.Elem())
+		_, changed := fillToplevel(ctx, rv.Elem())
 		return rv, changed
 	default:
-		return fill(rv, 1)
+		return fill(ctx, rv, 1)
 	}
 }
 
-func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
+func fill(ctx context.Context, rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 	if MAX_RECURSION <= lv {
-		log.Printf("[INFO] too deep lv=%d, kind=%s, value=%v", lv, rv.Kind(), rv)
+		shared.GetLogger(ctx).Printf("[INFO]  too deep lv=%d, kind=%s, value=%v", lv, rv.Kind(), rv)
 		return rv, false
 	}
 
@@ -66,7 +68,7 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 		case reflect.Slice, reflect.Map, reflect.Struct, reflect.Pointer: // unsafe, but for performance improvement
 			for i, n := 0, rv.Len(); i < n; i++ {
 				rf := rv.Index(i)
-				sv, subchanged := fill(rf, lv+1)
+				sv, subchanged := fill(ctx, rf, lv+1)
 				if subchanged {
 					changed = true
 					rf.Set(sv)
@@ -86,7 +88,7 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 			for iter.Next() {
 				// skip key (because: JSON's notation)
 				rf := iter.Value()
-				sv, subchanged := fill(rf, lv+1)
+				sv, subchanged := fill(ctx, rf, lv+1)
 				if subchanged {
 					changed = true
 					rv.SetMapIndex(iter.Key(), sv)
@@ -97,7 +99,7 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 	case reflect.Struct:
 		for i, n := 0, rv.NumField(); i < n; i++ {
 			rf := rv.Field(i)
-			sv, subchanged := fill(rf, lv+1)
+			sv, subchanged := fill(ctx, rf, lv+1)
 			if subchanged {
 				changed = true
 				rf.Set(sv)
@@ -117,10 +119,10 @@ func fill(rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 		return rv, false
 	case reflect.Pointer:
 		// side-effect! (not copied)
-		_, changed := fill(rv.Elem(), lv+1)
+		_, changed := fill(ctx, rv.Elem(), lv+1)
 		return rv, changed
 	default:
-		log.Printf("[ERROR] unsupported kind=%s, value=%v ...", rv.Kind(), rv)
+		shared.GetLogger(ctx).Printf("[ERROR] unsupported kind=%s, value=%v ...", rv.Kind(), rv)
 		return rv, false
 	}
 }

@@ -1,12 +1,15 @@
 package quickapitest
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/podhmo/quickapi/shared"
 )
 
 // DecodeResponse decodes json response
@@ -61,4 +64,17 @@ func DoRequest[T any](
 		opt(t, res)
 	}
 	return got
+}
+
+type TestLogger struct {
+	T *testing.T
+}
+
+func (l *TestLogger) Printf(format string, v ...any) {
+	l.T.Helper()
+	l.T.Logf(format, v...)
+}
+
+func NewContext(t *testing.T) context.Context {
+	return shared.SetLogger(context.Background(), &TestLogger{T: t})
 }

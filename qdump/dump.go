@@ -1,14 +1,14 @@
 package qdump
 
 import (
-	"log"
+	"context"
 	"net/http"
 
 	"github.com/go-chi/render"
 	"github.com/podhmo/quickapi/shared"
 )
 
-func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) {
+func Dump[O any](ctx context.Context, w http.ResponseWriter, req *http.Request, output O, err error) {
 	if err != nil {
 		select {
 		case <-req.Context().Done():
@@ -25,7 +25,7 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 
 		code := shared.StatusCodeOf(err)
 		if code == 500 {
-			log.Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
+			shared.GetLogger(ctx).Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
 		}
 		DumpError(w, req, err, code)
 		return
@@ -36,7 +36,7 @@ func Dump[O any](w http.ResponseWriter, req *http.Request, output O, err error) 
 	}
 
 	// Force to return empty JSON array [] instead of null in case of zero slice.
-	output = FillNil(output)
+	output = FillNil(ctx, output)
 
 	render.JSON(w, req, output)
 }

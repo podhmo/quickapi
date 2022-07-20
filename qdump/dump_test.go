@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/podhmo/quickapi/quickapitest"
 	"github.com/podhmo/quickapi/shared"
 )
 
@@ -35,7 +36,8 @@ func TestConnectionIsClosed(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			rec := httptest.NewRecorder()
-			Dump[T](rec, c.request, nil, context.Canceled)
+			ctx := quickapitest.NewContext(t)
+			Dump[T](ctx, rec, c.request, nil, context.Canceled)
 
 			if want, got := c.wantCode, rec.Result().StatusCode; want != got {
 				t.Errorf("status-code in Dump(), want=%d != got=%d", want, got)
@@ -47,8 +49,9 @@ func TestConnectionIsClosed(t *testing.T) {
 func TestRedirection(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
+	ctx := quickapitest.NewContext(t)
 
-	Dump[any](rec, req, nil, shared.Redirect(http.StatusFound, "http://example.net"))
+	Dump[any](ctx, rec, req, nil, shared.Redirect(http.StatusFound, "http://example.net"))
 	res := rec.Result()
 
 	if want, got := http.StatusFound, res.StatusCode; want != got {

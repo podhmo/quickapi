@@ -3,7 +3,6 @@ package validate
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -96,12 +95,12 @@ func (e *Extractor) ExtractRequestValidation(ctx context.Context, req *http.Requ
 	}
 	if err := openapi3filter.ValidateRequest(ctx, input); err != nil {
 		if e.Debug {
-			log.Printf("[DEBUG] request is NG (%T) method=%s, path=%s, operationId=%s\n%+v", err, route.Method, route.Path, route.Operation.OperationID, err)
+			shared.GetLogger(ctx).Printf("[DEBUG] request is NG (%T) method=%s, path=%s, operationId=%s\n%+v", err, route.Method, route.Path, route.Operation.OperationID, err)
 		}
 		return RequestValidation{Route: &route, Input: input, Error: err}
 	}
 	if e.Debug {
-		log.Printf("[DEBUG] request is OK method=%s, path=%s, operationId=%s", route.Method, route.Path, route.Operation.OperationID)
+		shared.GetLogger(ctx).Printf("[DEBUG] request is OK method=%s, path=%s, operationId=%s", route.Method, route.Path, route.Operation.OperationID)
 	}
 	return RequestValidation{Route: &route, Input: input}
 }
@@ -121,12 +120,12 @@ func (e *Extractor) ExtractResponseValidation(ctx context.Context, validation *R
 	}
 	if err := openapi3filter.ValidateResponse(ctx, input); err != nil {
 		if e.Debug {
-			log.Printf("[DEBUG] validate response is failed: %T\n%+v", err, err)
+			shared.GetLogger(ctx).Printf("[DEBUG] validate response is failed: %T\n%+v", err, err)
 		}
 		return ResponseValidation{Route: validation.Route, Input: input, Error: err}
 	}
 	if e.Debug {
-		log.Printf("[DEBUG] response is OK") // todo: path and parameters
+		shared.GetLogger(ctx).Printf("[DEBUG] response is OK") // todo: path and parameters
 	}
 	return ResponseValidation{Route: validation.Route, Input: input}
 }
