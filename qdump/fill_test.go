@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/podhmo/quickapi/quickapitest"
 )
 
 func TestFillNil_Slice(t *testing.T) {
@@ -21,7 +22,7 @@ func TestFillNil_Slice(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := FillNil(c.input)
+			got := FillNil(quickapitest.NewContext(t), c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
 				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
@@ -43,7 +44,7 @@ func TestFillNil_Slice2(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := FillNil(c.input)
+			got := FillNil(quickapitest.NewContext(t), c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
 				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
@@ -55,7 +56,7 @@ func TestFillNil_Slice3(t *testing.T) {
 
 	t.Run("nil", func(t *testing.T) {
 		want := T{}
-		got := FillNil[T](nil)
+		got := FillNil[T](quickapitest.NewContext(t), nil)
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -63,7 +64,7 @@ func TestFillNil_Slice3(t *testing.T) {
 
 	t.Run("values", func(t *testing.T) {
 		want := T{{{1}, {}, {2}}, {}, {{}}}
-		got := FillNil(T{{{1}, nil, {2}}, nil, {nil}})
+		got := FillNil(quickapitest.NewContext(t), T{{{1}, nil, {2}}, nil, {nil}})
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -85,7 +86,7 @@ func TestFillNil_Map(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := FillNil(c.input)
+			got := FillNil(quickapitest.NewContext(t), c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
 				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
@@ -110,7 +111,7 @@ func TestFillNil_Map2(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := FillNil(c.input)
+			got := FillNil(quickapitest.NewContext(t), c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
 				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
@@ -141,7 +142,7 @@ func TestFillNil_Map3(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.msg, func(t *testing.T) {
 			want := c.want
-			got := FillNil(c.input)
+			got := FillNil(quickapitest.NewContext(t), c.input)
 			if diff := cmp.Diff(want, got); diff != "" {
 				t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 			}
@@ -157,7 +158,7 @@ func TestFillNil_Struct(t *testing.T) {
 
 	t.Run("nil", func(t *testing.T) {
 		var want *S
-		got := FillNil[*S](nil)
+		got := FillNil[*S](quickapitest.NewContext(t), nil)
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -165,7 +166,7 @@ func TestFillNil_Struct(t *testing.T) {
 
 	t.Run("self-member-nil", func(t *testing.T) {
 		want := S{Name: "Foo", Friends: []string{}}
-		got := FillNil(S{Name: "Foo"})
+		got := FillNil(quickapitest.NewContext(t), S{Name: "Foo"})
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -173,7 +174,7 @@ func TestFillNil_Struct(t *testing.T) {
 
 	t.Run("p-self-member-nil", func(t *testing.T) {
 		want := &S{Name: "Foo", Friends: []string{}}
-		got := FillNil(&S{Name: "Foo"})
+		got := FillNil(quickapitest.NewContext(t), &S{Name: "Foo"})
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -192,7 +193,7 @@ func TestFillNil_Struct_Recursive(t *testing.T) {
 
 	t.Run("nil", func(t *testing.T) {
 		var want *S
-		got := FillNil[*S](nil)
+		got := FillNil[*S](quickapitest.NewContext(t), nil)
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -200,7 +201,7 @@ func TestFillNil_Struct_Recursive(t *testing.T) {
 
 	t.Run("self", func(t *testing.T) {
 		want := S{Name: "foo", Friends: []S{}}
-		got := FillNil(S{Name: "foo"})
+		got := FillNil(quickapitest.NewContext(t), S{Name: "foo"})
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -208,7 +209,7 @@ func TestFillNil_Struct_Recursive(t *testing.T) {
 
 	t.Run("pointer-slice", func(t *testing.T) {
 		want := S{Name: "foo", Friends: []S{}, Father: &S{Friends: []S{}, Name: "father"}}
-		got := FillNil(S{Name: "foo", Father: &S{Friends: nil, Name: "father"}})
+		got := FillNil(quickapitest.NewContext(t), S{Name: "foo", Father: &S{Friends: nil, Name: "father"}})
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
@@ -216,7 +217,7 @@ func TestFillNil_Struct_Recursive(t *testing.T) {
 
 	t.Run("pointer-slice-slice", func(t *testing.T) {
 		want := S{Name: "foo", Friends: []S{}, Father: &S{Friends: []S{{Name: "moo", Friends: []S{}}}, Name: "father"}}
-		got := FillNil(S{Name: "foo", Father: &S{Friends: []S{{Name: "moo"}}, Name: "father"}})
+		got := FillNil(quickapitest.NewContext(t), S{Name: "foo", Father: &S{Friends: []S{{Name: "moo"}}, Name: "father"}})
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("FillNil() mismatch (-want +got):\n%s", diff)
 		}
