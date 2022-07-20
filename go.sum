@@ -42,10 +42,10 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/podhmo/or v0.0.2 h1:l6sfHQGv3N1LRVYU87zj2+b4gc7rZ+RqRCZvND1tZR0=
 github.com/podhmo/or v0.0.2/go.mod h1:HTmgMYOL2Q4moOl8EbcTlpj41gKWgkKbROv6vUGepgs=
-github.com/podhmo/reflect-openapi v0.0.14 h1:MiJpit8RbQWIINshk+C4xOAm8KsdmbJZtIk23hI449M=
-github.com/podhmo/reflect-openapi v0.0.14/go.mod h1:js66QlLrgKeMO3uGdHNQ8lmYCy2XdTT8bUErro2IZEQ=
 github.com/podhmo/reflect-openapi v0.1.0 h1:4NlGhCve4U5Zy4A6l5ak2IPsXedT7gK4JwVrPWlDmJU=
 github.com/podhmo/reflect-openapi v0.1.0/go.mod h1:js66QlLrgKeMO3uGdHNQ8lmYCy2XdTT8bUErro2IZEQ=
+github.com/podhmo/reflect-openapi v0.1.1 h1:3yMAtDyGBruD/NPJiuGzrwvF8MNSlQ71h08j7d0Gxho=
+github.com/podhmo/reflect-openapi v0.1.1/go.mod h1:js66QlLrgKeMO3uGdHNQ8lmYCy2XdTT8bUErro2IZEQ=
 github.com/podhmo/reflect-shape v0.3.5 h1:ppM22IUANFAtb1x8BnDpunR7OzyiOJf3oCCnJgl84R4=
 github.com/podhmo/reflect-shape v0.3.5/go.mod h1:GCE0vFG0rWA4hAbaOwmZcpwKUEkDIzcm/2T0Y89N1PE=
 github.com/podhmo/tenuki v0.0.3/go.mod h1:gnvC6oMXHaf8sZO/nE6Eqa9sdNtHKTLu7UL6hDHD7WQ=
