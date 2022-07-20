@@ -9,3 +9,16 @@ type ErrorResponse struct {
 	Error  string   `json:"error"`
 	Detail []string `json:"detail,omitempty"`
 }
+
+// NoContent is similar to Empty but has status code is changed
+type noContent struct {
+	code int
+}
+
+func (ob noContent) StatusCode() int {
+	return ob.code
+}
+
+func NoContent(code int) StatusCoder {
+	return noContent{code: code}
+}
