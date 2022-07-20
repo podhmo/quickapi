@@ -1,13 +1,19 @@
 package definetest_test
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	_ "embed"
+
 	"github.com/google/go-cmp/cmp"
+	"github.com/podhmo/or"
+	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/experimental/define"
 	"github.com/podhmo/quickapi/experimental/define/definetest"
 	"github.com/podhmo/quickapi/quickapitest"
@@ -24,6 +30,9 @@ type Output struct {
 type ref struct {
 	V []Output
 }
+
+//go:embed testdata/post-400-response.json
+var ngresponseBody []byte
 
 func TestIt(t *testing.T) {
 	items := []Output{{Name: "foo"}, {Name: "bar"}}
@@ -52,6 +61,17 @@ func TestIt(t *testing.T) {
 	t.Run("POST", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", strings.NewReader(`{"name": "moo"}`))
 		quickapitest.DoRequest[any](t, req, 201, handler)
+	})
+
+	t.Run("POST-invalid", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "/", strings.NewReader(`{}`))
+		got := quickapitest.DoRequest[quickapi.ErrorResponse](t, req, 400, handler)
+
+		var want quickapi.ErrorResponse
+		or.Fatal(t, json.NewDecoder(bytes.NewBuffer(ngresponseBody)).Decode(&want))(t)
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("%s %s, response mismatch (-want +got):\n%s", req.Method, req.URL.Path, diff)
+		}
 	})
 
 	t.Run("POST-manually", func(t *testing.T) {

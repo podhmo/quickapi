@@ -1,0 +1,24 @@
+{
+  "code": 400,
+  "error": "request body has an error: doesn't match the schema: Error at \"/name\": property \"name\" is missing",
+  "detail": [
+    "request body has an error: doesn't match the schema: Error at \"/name\": property \"name\" is missing",
+    "Schema:",
+    "  {",
+    "    \"additionalProperties\": false,",
+    "    \"properties\": {",
+    "      \"name\": {",
+    "        \"type\": \"string\"",
+    "      }",
+    "    },",
+    "    \"required\": [",
+    "      \"name\"",
+    "    ],",
+    "    \"type\": \"object\"",
+    "  }",
+    "",
+    "Value:",
+    "  {}",
+    ""
+  ]
+}
