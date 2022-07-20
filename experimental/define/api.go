@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -114,7 +113,7 @@ func (bc *BuildContext) BuildOpenAPIDoc(ctx context.Context) (*openapi3.T, error
 
 func (bc *BuildContext) commit(ctx context.Context) error {
 	if bc.commitFunc == nil {
-		log.Printf("[WARN]  already committed")
+		shared.GetLogger(ctx).Printf("[WARN]  already committed")
 		return nil
 	}
 	defer func() { bc.commitFunc = nil }()

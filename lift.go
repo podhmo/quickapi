@@ -19,7 +19,7 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 		req = req.WithContext(ctx)
 
 		// binding request body and query-string and headers to input.
-		input, err := qbind.Bind[I](req, metadata)
+		input, err := qbind.Bind[I](ctx, req, metadata)
 		if err != nil {
 			code := shared.StatusCodeOfOrDefault(err, 400)
 			qdump.DumpError(w, req, err, code)
