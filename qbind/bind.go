@@ -21,13 +21,13 @@ func init() {
 	headerDecoder.SetAliasTag("header")
 }
 
-func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
+func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, error) {
 	var input I
 	if metadata.HasData {
 		if req.Body == nil {
-			log.Printf("[INFO] decode json is neaded, but request body is nil, metadata=%+v, on %T", metadata, input) // TODO: structured logging
+			shared.GetLogger(ctx).Printf("[INFO] decode json is neaded, but request body is nil, metadata=%+v, on %T", metadata, input) // TODO: structured logging
 		} else if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
-			log.Printf("[ERROR] unexpected error (json.Decode): %+v, on %T", err, input) // TODO: structured logging
+			shared.GetLogger(ctx).Printf("[ERROR] unexpected error (json.Decode): %+v, on %T", err, input) // TODO: structured logging
 			return input, err
 		}
 	}
@@ -40,7 +40,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 		}
 		if err := queryDecoder.Decode(&input, m); err != nil {
 			if shared.DEBUG {
-				log.Printf("[ERROR] unexpected query string: %+v, on %T", err, input)
+				shared.GetLogger(ctx).Printf("[ERROR] unexpected query string: %+v, on %T", err, input)
 			}
 		}
 	}
@@ -52,7 +52,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 		}
 		if err := headerDecoder.Decode(&input, m); err != nil {
 			if shared.DEBUG {
-				log.Printf("[ERROR] unexpected header: %+v, on %T", err, input)
+				shared.GetLogger(ctx).Printf("[ERROR] unexpected header: %+v, on %T", err, input)
 			}
 		}
 
@@ -61,7 +61,7 @@ func Bind[I any](req *http.Request, metadata Metadata) (I, error) {
 	if t, ok := any(input).(Validator); ok {
 		if err := t.Validate(req.Context()); err != nil {
 			if shared.DEBUG {
-				log.Printf("[ERROR] validation is failed: %+v, on %T", err, input)
+				shared.GetLogger(ctx).Printf("[ERROR] validation is failed: %+v, on %T", err, input)
 			}
 			return input, err
 		}
