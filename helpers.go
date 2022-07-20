@@ -3,6 +3,7 @@ package quickapi
 import "github.com/podhmo/quickapi/shared"
 
 var NewAPIError = shared.NewAPIError
+var NoContent = shared.NoContent
 var GetRequest = shared.GetRequest
 var Redirect = shared.Redirect
 

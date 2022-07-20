@@ -98,3 +98,21 @@ func TestLift_Found_Redirect(t *testing.T) {
 		t.Errorf("Lift() header location, want=%q != got=%q", want, got)
 	}
 }
+
+func TestLift_NoContent(t *testing.T) {
+	code := 204
+	action := func(ctx context.Context, input quickapi.Empty) (any, error) {
+		return quickapi.NoContent(204), nil
+	}
+
+	handler := quickapi.Lift(action)
+	req := httptest.NewRequest("GET", "/", nil)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+	res := rec.Result()
+
+	if want, got := code, res.StatusCode; want != got {
+		t.Errorf("Lift() status-code, want=%d != got=%d", want, got)
+	}
+}
