@@ -73,7 +73,7 @@ func build(port int) *define.BuildContext {
 	define.Get(bc, "/pets", FindPets).Description(longDescription)
 	define.Post(bc, "/pets", AddPet).Description(`Creates a new pet in the store. Duplicates are allowed`).
 		AnotherError(bc, 400, Error{}, "validation error").
-		Example(400, "validation error", quickapi.ErrorResponse{Code: 400, Error: "validation error"})
+		Example(400, "validation error", Error{Code: 400, Message: "validation error"})
 	define.Get(bc, "/pets/{id}", FindPetByID).Description(`Returns a pet based on a single ID`)
 	define.Delete(bc, "/pets/{id}", DeletePet).Description(`delete a single pet based on the ID supplied`).
 		Status(204)

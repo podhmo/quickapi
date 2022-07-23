@@ -154,7 +154,7 @@
               "application/json": {
                 "example": {
                   "code": 400,
-                  "error": "validation error"
+                  "message": "validation error"
                 },
                 "schema": {
                   "$ref": "#/components/schemas/Error"
