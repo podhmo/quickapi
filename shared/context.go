@@ -37,20 +37,3 @@ func GetLogger(ctx context.Context) logger {
 func SetLogger(ctx context.Context, l logger) context.Context {
 	return context.WithValue(ctx, loggerKey, l)
 }
-
-const (
-	dumpFuncKey contextKey = "dumpFunc"
-)
-
-type DumpFunc[O any] func(context.Context, http.ResponseWriter, *http.Request, O)
-
-func GetDumpFunc[O any](ctx context.Context, defaultFunc DumpFunc[O]) DumpFunc[O] {
-	fn := ctx.Value(dumpFuncKey)
-	if fn == nil {
-		return defaultFunc
-	}
-	return fn.(DumpFunc[O])
-}
-func SetDumpFunc[O any](ctx context.Context, dump DumpFunc[O]) context.Context {
-	return context.WithValue(ctx, dumpFuncKey, dump)
-}
