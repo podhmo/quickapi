@@ -34,11 +34,7 @@ func Dump[O any](ctx context.Context, w http.ResponseWriter, req *http.Request, 
 	if t, ok := any(output).(shared.StatusCoder); ok {
 		render.Status(req, t.StatusCode())
 	}
-
-	// Force to return empty JSON array [] instead of null in case of zero slice.
-	output = FillNil(ctx, output)
-
-	render.JSON(w, req, output)
+	dumpJSON(ctx, w, req, output)
 }
 
 func DumpError(w http.ResponseWriter, req *http.Request, err error, code int) {
@@ -49,4 +45,11 @@ func DumpError(w http.ResponseWriter, req *http.Request, err error, code int) {
 
 	render.Status(req, code)
 	render.JSON(w, req, v)
+}
+
+func dumpJSON[O any](ctx context.Context, w http.ResponseWriter, req *http.Request, output O) {
+	// Force to return empty JSON array [] instead of null in case of zero slice.
+	output = FillNil(ctx, output)
+
+	render.JSON(w, req, output)
 }
