@@ -37,7 +37,6 @@ func Dump[O any](ctx context.Context, w http.ResponseWriter, req *http.Request, 
 
 	// Force to return empty JSON array [] instead of null in case of zero slice.
 	output = FillNil(ctx, output)
-
 	render.JSON(w, req, output)
 }
 

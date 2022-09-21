@@ -7,6 +7,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
+	"github.com/podhmo/quickapi/qbind"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
@@ -79,4 +80,21 @@ func (m *EndpointModifier) AnotherError(bc *BuildContext, code int, typ interfac
 func (a *EndpointModifier) Example(code int, title string, value interface{}) *EndpointModifier {
 	fn := (*reflectopenapi.RegisterFuncAction)(a)
 	return (*EndpointModifier)(fn.Example(code, "application/json", title, value))
+}
+
+func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, string], dump quickapi.DumpFunc[string], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+	metadata := qbind.Scan(action)
+	h := &quickapi.LiftedHandler[I, string]{
+		Action:   action,
+		Metadata: metadata,
+		Dump:     dump,
+	}
+	m := bc.m
+	method := "GET"
+	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
+		m.Doc.AddOperation(path, method, op)
+		middleware := bc.mb.BuildMiddleware(path, op)
+		middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
+		bc.r.With(middlewares...).Method(method, path, h)
+	}))
 }
