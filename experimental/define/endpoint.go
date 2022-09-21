@@ -49,6 +49,12 @@ func (m *EndpointModifier) After(f func(op *openapi3.Operation)) *EndpointModifi
 	return (*EndpointModifier)((*reflectopenapi.RegisterFuncAction)(m).After(f))
 }
 
+func (m *EndpointModifier) OperationID(operationID string) *EndpointModifier {
+	return m.After(func(op *openapi3.Operation) {
+		op.OperationID = strings.TrimSpace(operationID)
+	})
+}
+
 func (m *EndpointModifier) Description(description string) *EndpointModifier {
 	return m.After(func(op *openapi3.Operation) {
 		op.Description = strings.TrimSpace(description)
