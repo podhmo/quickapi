@@ -34,7 +34,9 @@ func Dump[O any](ctx context.Context, w http.ResponseWriter, req *http.Request, 
 	if t, ok := any(output).(shared.StatusCoder); ok {
 		render.Status(req, t.StatusCode())
 	}
-	dumpJSON(ctx, w, req, output)
+
+	dumpFunc := shared.GetDumpFunc(ctx, dumpJSON[O])
+	dumpFunc(ctx, w, req, output)
 }
 
 func DumpError(w http.ResponseWriter, req *http.Request, err error, code int) {
