@@ -3,26 +3,46 @@ package qbind
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"reflect"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/schema"
 	"github.com/podhmo/quickapi/shared"
 )
 
 var (
+	pathDecoder   = schema.NewDecoder()
 	queryDecoder  = schema.NewDecoder()
 	headerDecoder = schema.NewDecoder()
 )
 
 func init() {
+	pathDecoder.SetAliasTag("path")
 	queryDecoder.SetAliasTag("query")
 	headerDecoder.SetAliasTag("header")
 }
 
 func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, error) {
 	var input I
+	if len(metadata.PathVars) > 0 {
+		pathparams := chi.RouteContext(req.Context()).URLParams
+		if len(metadata.PathVars) != len(pathparams.Keys) {
+			return input, shared.NewAPIError(fmt.Errorf("route is not found"), http.StatusNotFound)
+		}
+
+		m := make(map[string][]string, len(metadata.PathVars))
+		for i, k := range pathparams.Keys {
+			v := pathparams.Values[i]
+			m[k] = []string{v}
+		}
+		if err := pathDecoder.Decode(&input, m); err != nil {
+			return input, shared.NewAPIError(fmt.Errorf("route path is broken: %w", err), http.StatusNotFound)
+		}
+	}
+
 	if metadata.HasData {
 		if req.Body == nil {
 			shared.GetLogger(ctx).Printf("[INFO] decode json is neaded, but request body is nil, metadata=%+v, on %T", metadata, input) // TODO: structured logging
@@ -70,13 +90,21 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 	return input, nil
 }
 
+// // TODO: omit gorilla/schema
+// type Field struct {
+// 	TagName   string
+// 	FieldName string
+// 	Set       func(reflect.Value, Field) error
+// }
+
 type Metadata struct {
 	HasData bool // Action is empty
 
 	JSONFields []string
 	Queries    []string // query string keys (recursive structure is not supported, also embedded)
 	Headers    []string // header keys (recursive structure is not supported, also embedded)
-	PathVars   []string // path variables
+
+	PathVars []string // path variables
 }
 
 // TODO: cache
