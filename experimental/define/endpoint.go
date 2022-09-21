@@ -92,6 +92,10 @@ func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, str
 	m := bc.m
 	method := "GET"
 	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
+		// overwrite response/200/content/{application-json -> text/html}
+		res := op.Responses.Get(200).Value
+		res.Content = openapi3.NewContentWithSchemaRef(res.Content.Get("application/json").Schema, []string{"text/html"})
+
 		m.Doc.AddOperation(path, method, op)
 		middleware := bc.mb.BuildMiddleware(path, op)
 		middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
