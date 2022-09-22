@@ -139,8 +139,42 @@ func TestLift_BindPathVars(t *testing.T) {
 			t.Errorf("data, want=%#+v, but got=%#+v", want, got)
 		}
 	})
+
 	t.Run("404", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/foo", nil)
-		quickapitest.DoRequest[Output](t, req, 404, r)
+		quickapitest.DoRequest[quickapi.ErrorResponse](t, req, 404, r)
+	})
+}
+
+func TestLift_BindData(t *testing.T) {
+	type Input struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+	type Output struct {
+		Message string `json:"message"`
+	}
+	action := func(ctx context.Context, input Input) (Output, error) {
+		return Output{Message: fmt.Sprintf("%s(%d): hello", input.Name, input.Age)}, nil
+	}
+	h := quickapi.Lift(action)
+
+	t.Run("200", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "/", strings.NewReader(`{"name": "foo", "age": 20}`))
+		got := quickapitest.DoRequest[Output](t, req, 200, h)
+
+		want := Output{Message: "foo(20): hello"}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("data, want=%#+v, but got=%#+v", want, got)
+		}
+	})
+
+	t.Run("400-no-body", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "/", nil)
+		quickapitest.DoRequest[quickapi.ErrorResponse](t, req, 400, h)
+	})
+	t.Run("404-invalid-type", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/foo", strings.NewReader(`{"name": "foo", "age": "20"}`))
+		quickapitest.DoRequest[Output](t, req, 400, h)
 	})
 }
