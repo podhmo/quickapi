@@ -25,7 +25,10 @@ func init() {
 	headerDecoder.SetAliasTag("header")
 }
 
-var ErrNotFound = fmt.Errorf("not found")
+var (
+	ErrNotFound = fmt.Errorf("not found")
+	ErrNoBody   = fmt.Errorf("no body")
+)
 
 func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, error) {
 	var input I
@@ -49,8 +52,9 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 	}
 
 	if metadata.HasData {
-		if req.Body == nil {
+		if req.Body == http.NoBody {
 			shared.GetLogger(ctx).Printf("[INFO] decode json is neaded, but request body is nil, metadata=%+v, on %T", metadata, input) // TODO: structured logging
+			return input, shared.NewAPIError(ErrNoBody, http.StatusBadRequest)
 		} else if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
 			shared.GetLogger(ctx).Printf("[ERROR] unexpected error (json.Decode): %+v, on %T", err, input) // TODO: structured logging
 			return input, err
