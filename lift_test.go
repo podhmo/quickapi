@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/go-cmp/cmp"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/quickapitest"
@@ -114,5 +115,21 @@ func TestLift_NoContent(t *testing.T) {
 
 	if want, got := code, res.StatusCode; want != got {
 		t.Errorf("Lift() status-code, want=%d != got=%d", want, got)
+	}
+}
+
+func TestLift_BindPathVars(t *testing.T) {
+	type Input struct {
+		ID int `path:"id"`
+	}
+	action := func(ctx context.Context, input Input) ([]int, error) { return []int{input.ID}, nil }
+	r := chi.NewRouter() // need chi.RouteContext for pathvar binding
+	r.Get("/{id}", quickapi.Lift(action))
+	req := httptest.NewRequest("GET", "/10", nil)
+
+	got := quickapitest.DoRequest[[]int](t, req, 200, r)
+	want := []int{10}
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("data, want=%#+v, but got=%#+v", want, got)
 	}
 }
