@@ -50,8 +50,23 @@ func ListTodo(
 	return
 }
 
+func GetTodo(
+	ctx context.Context,
+	input struct {
+		ID int `path:"id"`
+	},
+) (output Todo, err error) {
+	for _, x := range todos {
+		if x.ID == input.ID {
+			return x, nil
+		}
+	}
+	return Todo{}, quickapi.NewAPIError(fmt.Errorf("not found"), 404)
+}
+
 func mount(r chi.Router) {
 	r.Get("/todos", quickapi.Lift(ListTodo))
+	r.Get("/todos/{id}", quickapi.Lift(GetTodo))
 }
 
 func main() {
