@@ -36,11 +36,13 @@ func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request
 }
 
 // Lift transforms Action to http.Handler
-func Lift[I any, O any](action Action[I, O]) *LiftedHandler[I, O] {
+func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 	metadata := qbind.Scan(action)
-	return &LiftedHandler[I, O]{
+	h := &LiftedHandler[I, O]{
 		Action:   action,
 		Metadata: metadata,
 		Dump:     qdump.Dump[O],
 	}
+	// for chi.Router.Get()
+	return http.HandlerFunc(h.ServeHTTP)
 }
