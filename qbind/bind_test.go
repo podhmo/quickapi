@@ -3,6 +3,7 @@ package qbind_test
 import (
 	"context"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -21,7 +22,7 @@ func TestBind(t *testing.T) {
 
 	metadata := qbind.Scan(func(context.Context, input) (interface{}, error) { return nil, nil })
 	ctx := quickapitest.NewContext(t)
-	req := or.Fatal(http.NewRequest("GET", "/?pretty=true&x=y&sort=-id", nil))(t)
+	req := or.Fatal(http.NewRequest("POST", "/?pretty=true&x=y&sort=-id", strings.NewReader(`{}`)))(t)
 
 	got := or.Fatal(qbind.Bind[input](ctx, req, metadata))(t)
 	want := input{Sort: "-id", Pretty: true}
