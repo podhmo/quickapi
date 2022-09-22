@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
+	"github.com/podhmo/quickapi/qbind"
+	"github.com/podhmo/quickapi/qdump"
 )
 
 type Todo struct {
@@ -67,12 +70,27 @@ func GetTodo(
 func mount(r chi.Router) {
 	r.Get("/todos", quickapi.Lift(ListTodo))
 	r.Get("/todos/{id}", quickapi.Lift(GetTodo))
+	r.Method("GET", "/todos/foo/{id}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
 }
 
 func main() {
 	ctx := context.Background()
 	r := quickapi.DefaultRouter()
 	mount(r)
+
+	// TODO: validation typo, something like  r.Get("/todos/{todo_id}", ...) // id != todo_id
+	if err := chi.Walk(r, func(method, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		switch h := handler.(type) {
+		case http.HandlerFunc:
+			fmt.Println("@@", method, route, quickapi.MetadataFromHandlerFunc(h).PathVars)
+		case interface{ Metadata() qbind.Metadata }:
+			fmt.Println("**", method, route, h.Metadata())
+		}
+		return nil
+	}); err != nil {
+		log.Printf("[Error] ! %+v", err)
+		return
+	}
 
 	port := 8080
 	addr := fmt.Sprintf(":%d", port)
