@@ -58,7 +58,7 @@ func DoRequest[T any](
 	if l := shared.GetLoggerOrNil(req.Context()); l == nil {
 		req = req.WithContext(shared.SetLogger(req.Context(), &TestLogger{T: t}))
 	}
-	t.Logf("request : %-7s %s -- with-body?=%4v", req.Method, req.URL, req.Body == nil || req.Body == http.NoBody)
+	t.Logf("request : %-7s %s -- with-body?=%4v", req.Method, req.URL, req.Body != nil && req.Body != http.NoBody)
 
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
