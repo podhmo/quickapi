@@ -3,6 +3,7 @@ package quickapi
 import (
 	"context"
 	"net/http"
+	"reflect"
 
 	"github.com/podhmo/quickapi/qbind"
 	"github.com/podhmo/quickapi/qdump"
@@ -13,8 +14,12 @@ type Action[I any, O any] func(ctx context.Context, input I) (output O, err erro
 type DumpFunc[O any] func(ctx context.Context, w http.ResponseWriter, req *http.Request, output O, err error)
 type LiftedHandler[I any, O any] struct {
 	Action   Action[I, O]
-	Metadata qbind.Metadata
+	metadata qbind.Metadata
 	Dump     DumpFunc[O]
+}
+
+func (h *LiftedHandler[I, O]) Metadata() qbind.Metadata {
+	return h.metadata
 }
 
 func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -22,7 +27,7 @@ func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request
 	req = req.WithContext(ctx)
 
 	// binding request body and query-string and headers to input.
-	input, err := qbind.Bind[I](ctx, req, h.Metadata)
+	input, err := qbind.Bind[I](ctx, req, h.metadata)
 	if err != nil {
 		code := shared.StatusCodeOfOrDefault(err, 400)
 		qdump.DumpError(w, req, err, code)
@@ -35,14 +40,29 @@ func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request
 	h.Dump(ctx, w, req, output, err)
 }
 
-// Lift transforms Action to http.Handler
-func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
+// NewHandler create new lifted handler
+func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O]) *LiftedHandler[I, O] {
 	metadata := qbind.Scan(action)
-	h := &LiftedHandler[I, O]{
+	return &LiftedHandler[I, O]{
 		Action:   action,
-		Metadata: metadata,
-		Dump:     qdump.Dump[O],
+		metadata: metadata,
+		Dump:     dump,
 	}
+}
+
+// Lift transforms Action to http.HandlerFunc
+func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
+	h := NewHandler(action, qdump.Dump[O])
+
 	// for chi.Router.Get()
-	return http.HandlerFunc(h.ServeHTTP)
+	fn := http.HandlerFunc(h.ServeHTTP)
+	funcToHandler[reflect.ValueOf(fn).Pointer()] = h.metadata
+	return fn
+}
+
+var funcToHandler = map[uintptr]qbind.Metadata{}
+
+// MetadataFromHandlerFunc return metadata from handler func, this is the adapter for chi.Router. chi.Router.Get() receives http.HandlerFunc instead of http.Handler.
+func MetadataFromHandlerFunc(fn http.HandlerFunc) qbind.Metadata {
+	return funcToHandler[reflect.ValueOf(fn).Pointer()]
 }
