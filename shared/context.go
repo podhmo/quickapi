@@ -34,6 +34,13 @@ func GetLogger(ctx context.Context) logger {
 	}
 	return l.(logger)
 }
+func GetLoggerOrNil(ctx context.Context) logger {
+	l := ctx.Value(loggerKey)
+	if l == nil {
+		return nil
+	}
+	return l.(logger)
+}
 func SetLogger(ctx context.Context, l logger) context.Context {
 	return context.WithValue(ctx, loggerKey, l)
 }

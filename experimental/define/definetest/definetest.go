@@ -8,7 +8,6 @@ import (
 	"github.com/podhmo/or"
 	"github.com/podhmo/quickapi/experimental/define"
 	"github.com/podhmo/quickapi/quickapitest"
-	"github.com/podhmo/quickapi/shared"
 )
 
 func NewHandler(t *testing.T, options ...func(*define.BuildContext)) http.Handler {
@@ -19,14 +18,6 @@ func NewHandler(t *testing.T, options ...func(*define.BuildContext)) http.Handle
 	// skip extract comments
 	m := bc.ReflectOpenAPIManager()
 	m.Visitor.CommentLookup = nil
-
-	// silent logger
-	bc.Router().Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			req = req.WithContext(shared.SetLogger(req.Context(), shared.GetLogger(ctx)))
-			next.ServeHTTP(w, req)
-		})
-	})
 
 	for _, opt := range options {
 		opt(bc)
