@@ -71,7 +71,7 @@ func TestLift_UnprocessableEntity_withValidation(t *testing.T) {
 	}
 
 	handler := quickapi.Lift(action)
-	req := httptest.NewRequest("GET", "/", strings.NewReader(`{"name": "foo"}`))
+	req := httptest.NewRequest("POST", "/", strings.NewReader(`{"name": "foo"}`))
 
 	got := quickapitest.DoRequest[quickapi.ErrorResponse](t, req, code, handler)
 	want := quickapi.ErrorResponse{Code: code, Error: "api-error: ill"}
@@ -173,8 +173,8 @@ func TestLift_BindData(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", nil)
 		quickapitest.DoRequest[quickapi.ErrorResponse](t, req, 400, h)
 	})
-	t.Run("404-invalid-type", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/foo", strings.NewReader(`{"name": "foo", "age": "20"}`))
+	t.Run("400-invalid-type", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "/foo", strings.NewReader(`{"name": "foo", "age": "20"}`))
 		quickapitest.DoRequest[Output](t, req, 400, h)
 	})
 }
