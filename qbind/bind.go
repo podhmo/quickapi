@@ -25,6 +25,8 @@ func init() {
 	headerDecoder.SetAliasTag("header")
 }
 
+var ErrNotFound = fmt.Errorf("not found")
+
 func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, error) {
 	var input I
 	if len(metadata.PathVars) > 0 {
@@ -39,7 +41,10 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 			m[k] = []string{v}
 		}
 		if err := pathDecoder.Decode(&input, m); err != nil {
-			return input, shared.NewAPIError(fmt.Errorf("route path is broken: %w", err), http.StatusNotFound)
+			if shared.DEBUG {
+				shared.GetLogger(ctx).Printf("[INFO] route path is broken: %v, params=%+v", err, m) // TODO: structured logging
+			}
+			return input, shared.NewAPIError(ErrNotFound, http.StatusNotFound)
 		}
 	}
 
