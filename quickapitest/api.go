@@ -26,8 +26,8 @@ func DecodeResponse[T any](
 	if wantCode, gotCode := code, res.StatusCode; wantCode != gotCode {
 		buf := new(strings.Builder)
 		io.Copy(buf, res.Body)
-		defer t.Logf("\tresponse: %s", buf.String())
-		t.Fatalf("%s %s, status code: want=%d != got=%d", method, path, wantCode, gotCode)
+		defer t.Logf("\tbody: %s", buf.String())
+		t.Fatalf("response: %-7s %s -- status code: want=%d != got=%d", method, path, wantCode, gotCode)
 	}
 
 	var got T
@@ -58,6 +58,7 @@ func DoRequest[T any](
 	if l := shared.GetLoggerOrNil(req.Context()); l == nil {
 		req = req.WithContext(shared.SetLogger(req.Context(), &TestLogger{T: t}))
 	}
+	t.Logf("request : %-7s %s -- with-body?=%4v", req.Method, req.URL, req.Body == nil || req.Body == http.NoBody)
 
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
