@@ -55,6 +55,10 @@ func DoRequest[T any](
 		req.Header.Set("Content-Type", "application/json")
 	}
 
+	if l := shared.GetLoggerOrNil(req.Context()); l == nil {
+		req = req.WithContext(shared.SetLogger(req.Context(), &TestLogger{T: t}))
+	}
+
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
 	res := rec.Result()
