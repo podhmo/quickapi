@@ -27,7 +27,9 @@ func init() {
 
 var (
 	ErrNotFound = fmt.Errorf("not found")
-	ErrNoBody   = fmt.Errorf("no body")
+
+	ErrNoBody            = fmt.Errorf("no body")
+	ErrCannotReceiveBody = fmt.Errorf("cannot receive body")
 )
 
 func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, error) {
