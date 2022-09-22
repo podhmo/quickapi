@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 
@@ -15,6 +14,8 @@ import (
 	"github.com/podhmo/quickapi/quickapitest"
 )
 
+type ints struct{ XS []int }
+
 func TestLift_OK(t *testing.T) {
 	action := func(context.Context, quickapi.Empty) ([]int, error) { return []int{1, 2, 3}, nil }
 	handler := quickapi.Lift(action)
@@ -22,8 +23,8 @@ func TestLift_OK(t *testing.T) {
 
 	got := quickapitest.DoRequest[[]int](t, req, 200, handler)
 	want := []int{1, 2, 3}
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("data, want=%#+v, but got=%#+v", want, got)
+	if diff := cmp.Diff(ints{want}, ints{got}); diff != "" {
+		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -34,8 +35,8 @@ func TestLift_OK_NilAsEmptySlice(t *testing.T) {
 
 	got := quickapitest.DoRequest[[]int](t, req, 200, handler)
 	want := []int{}
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("data, want=%#+v, but got=%#+v", want, got)
+	if diff := cmp.Diff(ints{want}, ints{got}); diff != "" {
+		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -122,14 +123,18 @@ func TestLift_BindPathVars(t *testing.T) {
 	type Input struct {
 		ID int `path:"id"`
 	}
-	action := func(ctx context.Context, input Input) ([]int, error) { return []int{input.ID}, nil }
+	type Output struct {
+		InputID int `json:"inputId"`
+	}
+	action := func(ctx context.Context, input Input) (Output, error) { return Output{InputID: input.ID}, nil }
 	r := chi.NewRouter() // need chi.RouteContext for pathvar binding
+
 	r.Get("/{id}", quickapi.Lift(action))
 	req := httptest.NewRequest("GET", "/10", nil)
 
-	got := quickapitest.DoRequest[[]int](t, req, 200, r)
-	want := []int{10}
-	if !reflect.DeepEqual(want, got) {
+	got := quickapitest.DoRequest[Output](t, req, 200, r)
+	want := Output{InputID: 10}
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("data, want=%#+v, but got=%#+v", want, got)
 	}
 }
