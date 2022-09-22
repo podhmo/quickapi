@@ -128,13 +128,19 @@ func TestLift_BindPathVars(t *testing.T) {
 	}
 	action := func(ctx context.Context, input Input) (Output, error) { return Output{InputID: input.ID}, nil }
 	r := chi.NewRouter() // need chi.RouteContext for pathvar binding
-
 	r.Get("/{id}", quickapi.Lift(action))
-	req := httptest.NewRequest("GET", "/10", nil)
 
-	got := quickapitest.DoRequest[Output](t, req, 200, r)
-	want := Output{InputID: 10}
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("data, want=%#+v, but got=%#+v", want, got)
-	}
+	t.Run("200", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/10", nil)
+		got := quickapitest.DoRequest[Output](t, req, 200, r)
+
+		want := Output{InputID: 10}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("data, want=%#+v, but got=%#+v", want, got)
+		}
+	})
+	t.Run("404", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/foo", nil)
+		quickapitest.DoRequest[Output](t, req, 404, r)
+	})
 }
