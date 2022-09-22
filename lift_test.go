@@ -178,3 +178,38 @@ func TestLift_BindData(t *testing.T) {
 		quickapitest.DoRequest[Output](t, req, 400, h)
 	})
 }
+
+func TestLift_BindQueryVars(t *testing.T) {
+	type Input struct {
+		ID   int    `path:"id"`
+		Sort string `query:"sort"`
+	}
+	type Output struct {
+		InputID   int    `json:"inputId"`
+		InputSort string `json:"inputSort"`
+	}
+	action := func(ctx context.Context, input Input) (Output, error) {
+		return Output{InputID: input.ID, InputSort: input.Sort}, nil
+	}
+	r := chi.NewRouter() // need chi.RouteContext for pathvar binding
+	r.Get("/{id}", quickapi.Lift(action))
+
+	t.Run("200", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/10", nil)
+		got := quickapitest.DoRequest[Output](t, req, 200, r)
+
+		want := Output{InputID: 10}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("data, want=%#+v, but got=%#+v", want, got)
+		}
+	})
+	t.Run("200-with-query", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/10?sort=-id", nil)
+		got := quickapitest.DoRequest[Output](t, req, 200, r)
+
+		want := Output{InputID: 10, InputSort: "-id"}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("data, want=%#+v, but got=%#+v", want, got)
+		}
+	})
+}
