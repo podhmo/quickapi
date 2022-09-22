@@ -9,7 +9,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/qbind"
+	"github.com/podhmo/quickapi/qdump"
 	"github.com/podhmo/quickapi/shared"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
@@ -17,7 +17,7 @@ import (
 type EndpointModifier reflectopenapi.RegisterFuncAction
 
 func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
-	h := quickapi.Lift(action)
+	h := quickapi.NewHandler(action, qdump.Dump[O])
 	m := bc.m
 
 	if bc.c.Loaded {
@@ -104,12 +104,7 @@ func (a *EndpointModifier) Example(code int, title string, value interface{}) *E
 }
 
 func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, string], dump quickapi.DumpFunc[string], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
-	metadata := qbind.Scan(action)
-	h := &quickapi.LiftedHandler[I, string]{
-		Action:   action,
-		Metadata: metadata,
-		Dump:     dump,
-	}
+	h := quickapi.NewHandler(action, dump)
 	m := bc.m
 	method := "GET"
 
