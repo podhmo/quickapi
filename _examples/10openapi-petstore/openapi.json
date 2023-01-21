@@ -105,7 +105,7 @@
                 }
               }
             },
-            "description": ""
+            "description": "list of pets"
           },
           "default": {
             "content": {

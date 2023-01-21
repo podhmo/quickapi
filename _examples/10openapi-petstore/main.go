@@ -95,7 +95,7 @@ func FindPets(context.Context, struct {
 	Tags  []string `query:"tags" in:"query"`  // tags to filter by. (style: form)
 	Limit int32    `query:"limit" in:"query"` // maximum number of results to return (format: int32)
 }) (
-	output struct {
+	output struct { // list of pets
 		Items []Pet `json:"items"`
 	},
 	err error,
