@@ -66,16 +66,20 @@ func build(port int) *define.BuildContext {
 	define.DefaultError(bc, Error{})
 	define.Type(bc, Pet{ID: "1", Name: "foo", Tag: "Cat"})
 
-	longDescription := `Returns all pets from the system that the user has access to
-	Nam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.
-	Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.
-	`
-	define.Get(bc, "/pets", FindPets).Description(longDescription)
-	define.Post(bc, "/pets", AddPet).
-		AnotherError(bc, 400, Error{}, "validation error").
-		Example(400, "validation error", Error{Code: 400, Message: "validation error"})
-	define.Get(bc, "/pets/{id}", FindPetByID)
-	define.Delete(bc, "/pets/{id}", DeletePet).Status(204)
+	{
+		api := &PetAPI{}
+		longDescription := `Returns all pets from the system that the user has access to
+		Nam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.
+		Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.
+		`
+
+		define.Get(bc, "/pets", api.FindPets).Description(longDescription)
+		define.Post(bc, "/pets", api.AddPet).
+			AnotherError(bc, 400, Error{}, "validation error").
+			Example(400, "validation error", Error{Code: 400, Message: "validation error"})
+		define.Get(bc, "/pets/{id}", api.FindPetByID)
+		define.Delete(bc, "/pets/{id}", api.DeletePet).Status(204)
+	}
 	return bc
 }
 
@@ -90,8 +94,11 @@ type Error struct {
 	Message string `json:"message,omitempty"` // message
 }
 
+type PetAPI struct {
+}
+
 // FindPets returns all pets
-func FindPets(context.Context, struct {
+func (api *PetAPI) FindPets(context.Context, struct {
 	Tags  []string `query:"tags" in:"query"`  // tags to filter by. (style: form)
 	Limit int32    `query:"limit" in:"query"` // maximum number of results to return (format: int32)
 }) (
@@ -104,7 +111,7 @@ func FindPets(context.Context, struct {
 }
 
 // AddPet creates a new pet in the store. Duplicates are allowed
-func AddPet(context.Context, struct {
+func (api *PetAPI) AddPet(context.Context, struct {
 	Name string `json:"name"`          // Name of the pet
 	Tag  string `json:"tag,omitempty"` // Type of the pet
 }) (
@@ -115,7 +122,7 @@ func AddPet(context.Context, struct {
 }
 
 // FindPetByID returns a pet based on a single ID
-func FindPetByID(context.Context, struct {
+func (api *PetAPI) FindPetByID(context.Context, struct {
 	ID int64 `path:"id" in:"path"` // ID of pet to fetch
 }) (
 	output Pet,
@@ -125,7 +132,7 @@ func FindPetByID(context.Context, struct {
 }
 
 // DeletePet deletes a pet by ID
-func DeletePet(context.Context, struct {
+func (api *PetAPI) DeletePet(context.Context, struct {
 	ID int64 `path:"id" in:"path"` // ID of pet to fetch
 }) (
 	output quickapi.Empty, // return 204
