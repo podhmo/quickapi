@@ -35,6 +35,7 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 			ParamTypeTag:   "in",
 			DescriptionTag: "description",
 			OverrideTag:    "openapi-override",
+			XNewTypeTag:    "x-go-type",
 		},
 		Doc:          doc,
 		DefaultError: shared.ErrorResponse{},
