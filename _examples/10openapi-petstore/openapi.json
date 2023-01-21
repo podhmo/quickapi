@@ -2,15 +2,18 @@
   "components": {
     "schemas": {
       "Empty": {
+        "description": "Empty is zero Input",
         "type": "object"
       },
       "Error": {
         "additionalProperties": false,
         "properties": {
           "code": {
+            "description": "Error code",
             "type": "integer"
           },
           "message": {
+            "description": "message",
             "type": "string"
           }
         },
@@ -29,13 +32,16 @@
         },
         "properties": {
           "id": {
+            "description": "unique id of the pet",
             "type": "string"
           },
           "name": {
+            "description": "name of the pet",
             "minLength": 1,
             "type": "string"
           },
           "tag": {
+            "description": "id of the pet",
             "type": "string"
           }
         },
@@ -112,10 +118,10 @@
             "description": "default error"
           }
         },
-        "summary": "returns all pets"
+        "summary": "FindPets returns all pets"
       },
       "post": {
-        "description": "Creates a new pet in the store. Duplicates are allowed",
+        "description": "AddPet creates a new pet in the store. Duplicates are allowed",
         "operationId": "main.AddPet",
         "requestBody": {
           "content": {
@@ -174,12 +180,12 @@
             "description": "default error"
           }
         },
-        "summary": "creates a new pet in the store. Duplicates are allowed"
+        "summary": "AddPet creates a new pet in the store. Duplicates are allowed"
       }
     },
     "/pets/{id}": {
       "delete": {
-        "description": "delete a single pet based on the ID supplied",
+        "description": "DeletePet deletes a pet by ID",
         "operationId": "main.DeletePet",
         "parameters": [
           {
@@ -200,7 +206,7 @@
                 }
               }
             },
-            "description": ""
+            "description": "return 204"
           },
           "default": {
             "content": {
@@ -213,10 +219,10 @@
             "description": "default error"
           }
         },
-        "summary": "deletes a pet by ID"
+        "summary": "DeletePet deletes a pet by ID"
       },
       "get": {
-        "description": "Returns a pet based on a single ID",
+        "description": "FindPetByID returns a pet based on a single ID",
         "operationId": "main.FindPetByID",
         "parameters": [
           {
@@ -250,7 +256,7 @@
             "description": "default error"
           }
         },
-        "summary": "returns a pet based on a single ID"
+        "summary": "FindPetByID returns a pet based on a single ID"
       }
     }
   },
