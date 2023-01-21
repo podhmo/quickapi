@@ -71,12 +71,11 @@ func build(port int) *define.BuildContext {
 	Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.
 	`
 	define.Get(bc, "/pets", FindPets).Description(longDescription)
-	define.Post(bc, "/pets", AddPet).Description(`Creates a new pet in the store. Duplicates are allowed`).
+	define.Post(bc, "/pets", AddPet).
 		AnotherError(bc, 400, Error{}, "validation error").
 		Example(400, "validation error", Error{Code: 400, Message: "validation error"})
-	define.Get(bc, "/pets/{id}", FindPetByID).Description(`Returns a pet based on a single ID`)
-	define.Delete(bc, "/pets/{id}", DeletePet).Description(`delete a single pet based on the ID supplied`).
-		Status(204)
+	define.Get(bc, "/pets/{id}", FindPetByID)
+	define.Delete(bc, "/pets/{id}", DeletePet).Status(204)
 	return bc
 }
 
