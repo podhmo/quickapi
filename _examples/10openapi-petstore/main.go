@@ -93,8 +93,8 @@ type Error struct {
 
 // FindPets returns all pets
 func FindPets(context.Context, struct {
-	Tags  []string `query:"tags" openapi:"query"`  // tags to filter by. (style: form)
-	Limit int32    `query:"limit" openapi:"query"` // maximum number of results to return (format: int32)
+	Tags  []string `query:"tags" in:"query"`  // tags to filter by. (style: form)
+	Limit int32    `query:"limit" in:"query"` // maximum number of results to return (format: int32)
 }) (
 	output struct {
 		Items []Pet `json:"items"`
@@ -117,7 +117,7 @@ func AddPet(context.Context, struct {
 
 // FindPetByID returns a pet based on a single ID
 func FindPetByID(context.Context, struct {
-	ID int64 `path:"id" openapi:"path"` // ID of pet to fetch
+	ID int64 `path:"id" in:"path"` // ID of pet to fetch
 }) (
 	output Pet,
 	err error,
@@ -127,7 +127,7 @@ func FindPetByID(context.Context, struct {
 
 // DeletePet deletes a pet by ID
 func DeletePet(context.Context, struct {
-	ID int64 `path:"id" openapi:"path"` // ID of pet to fetch
+	ID int64 `path:"id" in:"path"` // ID of pet to fetch
 }) (
 	output quickapi.Empty, // return 204
 	err error,

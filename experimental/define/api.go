@@ -27,9 +27,9 @@ type BuildContext struct {
 	commitFunc func(context.Context) error
 }
 
-func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
+func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflectopenapi.Config)) (*BuildContext, error) {
 	doc := docM()
-	c := reflectopenapi.Config{
+	c := &reflectopenapi.Config{
 		Doc:          doc,
 		DefaultError: shared.ErrorResponse{},
 		StrictSchema: true,
@@ -47,6 +47,9 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 			return required
 		},
 	}
+	for _, opt := range options {
+		opt(c)
+	}
 
 	m, commit, err := c.NewManager()
 	if err != nil {
@@ -54,7 +57,7 @@ func NewBuildContext(docM DocModifier, r chi.Router) (*BuildContext, error) {
 	}
 	return &BuildContext{
 		r:          r,
-		c:          &c,
+		c:          c,
 		m:          m,
 		mb:         validate.NewBuilder(doc, shared.DEBUG),
 		commitFunc: commit,

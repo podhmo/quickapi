@@ -17,7 +17,7 @@ type Todo struct {
 }
 
 func GetTodo(ctx context.Context, input struct {
-	ID string `path:"id" openapi:"path"`
+	ID string `path:"id" in:"path"`
 }) (output Todo, err error) {
 	output.ID = input.ID
 	return
