@@ -30,12 +30,19 @@ type BuildContext struct {
 func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflectopenapi.Config)) (*BuildContext, error) {
 	doc := docM()
 	c := &reflectopenapi.Config{
+		TagNameOption: &reflectopenapi.TagNameOption{
+			NameTag:        "json",
+			ParamTypeTag:   "in",
+			DescriptionTag: "description",
+			OverrideTag:    "openapi-override",
+			XNewTypeTag:    "x-go-type",
+		},
 		Doc:          doc,
 		DefaultError: shared.ErrorResponse{},
 		StrictSchema: true,
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
 			required := true
-			if val, ok := tag.Lookup("openapi"); ok && val != "body" {
+			if val, ok := tag.Lookup("in"); ok && val != "body" {
 				required = false
 			}
 			if _, isOptional := tag.Lookup("optional"); isOptional {

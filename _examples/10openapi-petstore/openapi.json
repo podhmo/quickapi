@@ -2,15 +2,18 @@
   "components": {
     "schemas": {
       "Empty": {
+        "description": "Empty is zero Input",
         "type": "object"
       },
       "Error": {
         "additionalProperties": false,
         "properties": {
           "code": {
+            "description": "Error code",
             "type": "integer"
           },
           "message": {
+            "description": "message",
             "type": "string"
           }
         },
@@ -29,13 +32,16 @@
         },
         "properties": {
           "id": {
+            "description": "unique id of the pet",
             "type": "string"
           },
           "name": {
+            "description": "name of the pet",
             "minLength": 1,
             "type": "string"
           },
           "tag": {
+            "description": "id of the pet",
             "type": "string"
           }
         },
@@ -57,8 +63,8 @@
   "paths": {
     "/pets": {
       "get": {
-        "description": "Returns all pets from the system that the user has access to\n\tNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.\n\tSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.",
-        "operationId": "main.FindPets",
+        "description": "Returns all pets from the system that the user has access to\n\t\tNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.\n\t\tSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.",
+        "operationId": "main.PetAPI.FindPets",
         "parameters": [
           {
             "in": "query",
@@ -99,7 +105,7 @@
                 }
               }
             },
-            "description": ""
+            "description": "list of pets"
           },
           "default": {
             "content": {
@@ -112,11 +118,11 @@
             "description": "default error"
           }
         },
-        "summary": "returns all pets"
+        "summary": "FindPets returns all pets"
       },
       "post": {
-        "description": "Creates a new pet in the store. Duplicates are allowed",
-        "operationId": "main.AddPet",
+        "description": "AddPet creates a new pet in the store. Duplicates are allowed",
+        "operationId": "main.PetAPI.AddPet",
         "requestBody": {
           "content": {
             "application/json": {
@@ -174,13 +180,13 @@
             "description": "default error"
           }
         },
-        "summary": "creates a new pet in the store. Duplicates are allowed"
+        "summary": "AddPet creates a new pet in the store. Duplicates are allowed"
       }
     },
     "/pets/{id}": {
       "delete": {
-        "description": "delete a single pet based on the ID supplied",
-        "operationId": "main.DeletePet",
+        "description": "DeletePet deletes a pet by ID",
+        "operationId": "main.PetAPI.DeletePet",
         "parameters": [
           {
             "in": "path",
@@ -200,7 +206,7 @@
                 }
               }
             },
-            "description": ""
+            "description": "return 204"
           },
           "default": {
             "content": {
@@ -213,11 +219,11 @@
             "description": "default error"
           }
         },
-        "summary": "deletes a pet by ID"
+        "summary": "DeletePet deletes a pet by ID"
       },
       "get": {
-        "description": "Returns a pet based on a single ID",
-        "operationId": "main.FindPetByID",
+        "description": "FindPetByID returns a pet based on a single ID",
+        "operationId": "main.PetAPI.FindPetByID",
         "parameters": [
           {
             "in": "path",
@@ -250,7 +256,7 @@
             "description": "default error"
           }
         },
-        "summary": "returns a pet based on a single ID"
+        "summary": "FindPetByID returns a pet based on a single ID"
       }
     }
   },
