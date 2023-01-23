@@ -1,3 +1,3 @@
 default:
-	go run ./ -gendoc > openapi.json
+	go generate
 .PHONY: default

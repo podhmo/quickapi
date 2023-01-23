@@ -1,9 +1,11 @@
+//go:generate go run ./ -gendoc -docfile openapi.json
 package main
 
 import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"time"
@@ -13,14 +15,16 @@ import (
 	rohandler "github.com/podhmo/reflect-openapi/handler"
 )
 
-var (
-	gendoc bool
-	port   int
-)
+var options struct {
+	gendoc  bool
+	docfile string
+	port    int
+}
 
 func main() {
-	flag.BoolVar(&gendoc, "gendoc", false, "generate openapi doc")
-	flag.IntVar(&port, "port", 8080, "port")
+	flag.BoolVar(&options.gendoc, "gendoc", false, "generate openapi doc")
+	flag.IntVar(&options.port, "port", 8080, "port")
+	flag.StringVar(&options.docfile, "docfile", "", "file name of openapi doc. if this value is empty output to stdout.")
 	flag.Parse()
 	if err := run(); err != nil {
 		log.Fatalf("!! %+v", err)
@@ -30,10 +34,30 @@ func main() {
 
 func run() error {
 	ctx := context.Background()
-	bc := build(port)
 
-	if gendoc {
-		if err := bc.EmitDoc(ctx, os.Stdout); err != nil {
+	doc := define.Doc().
+		Title("Swagger Petstore").
+		Version("1.0.0").
+		Server("http://petstore.swagger.io/api", "").
+		Server(fmt.Sprintf("http://localhost:%d", options.port), "local development")
+
+	router := quickapi.DefaultRouter()
+	bc := define.MustBuildContext(doc, router)
+	define.DefaultError(bc, Error{})
+
+	mount(bc)
+
+	if options.gendoc {
+		var w io.Writer = os.Stdout
+		if options.docfile != "" {
+			f, err := os.Create(options.docfile)
+			if err != nil {
+				return fmt.Errorf("write file: %w", err)
+			}
+			defer f.Close()
+			w = f
+		}
+		if err := bc.EmitDoc(ctx, w); err != nil {
 			return err
 		}
 		return nil
@@ -45,7 +69,7 @@ func run() error {
 	}
 	bc.Router().Mount("/openapi", rohandler.NewHandler(bc.Doc(), "/openapi"))
 
-	if err := quickapi.NewServer(fmt.Sprintf(":%d", port), handler, 5*time.Second).ListenAndServe(ctx); err != nil {
+	if err := quickapi.NewServer(fmt.Sprintf(":%d", options.port), handler, 5*time.Second).ListenAndServe(ctx); err != nil {
 		log.Printf("[Error] !! %+v", err)
 	}
 	return nil
@@ -53,17 +77,7 @@ func run() error {
 
 // see: https://github.com/deepmap/oapi-codegen/blob/master/examples/petstore-expanded/petstore-expanded.yaml
 
-func build(port int) *define.BuildContext {
-	doc := define.Doc().
-		Title("Swagger Petstore").
-		Version("1.0.0").
-		Server("http://petstore.swagger.io/api", "").
-		Server(fmt.Sprintf("http://localhost:%d", port), "local development")
-
-	router := quickapi.DefaultRouter()
-	bc := define.MustBuildContext(doc, router)
-
-	define.DefaultError(bc, Error{})
+func mount(bc *define.BuildContext) {
 	define.Type(bc, Pet{ID: "1", Name: "foo", Tag: "Cat"})
 
 	{
@@ -80,7 +94,6 @@ func build(port int) *define.BuildContext {
 		define.Get(bc, "/pets/{id}", api.FindPetByID)
 		define.Delete(bc, "/pets/{id}", api.DeletePet).Status(204)
 	}
-	return bc
 }
 
 type Pet struct { // allOf is not supported
