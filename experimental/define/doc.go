@@ -1,6 +1,7 @@
 package define
 
 import (
+	"log"
 	"strings"
 
 	_ "embed"
@@ -12,21 +13,34 @@ import (
 //go:embed skeleton.json
 var docSkeleton []byte
 
-type DocModifier func() *openapi3.T
+type DocModifier func() (doc *openapi3.T, loaded bool, error error)
 
-func Doc() DocModifier {
-	doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
-	if err != nil {
-		panic(err) // skeleton template is always corect
+func Doc(data []byte) DocModifier {
+	if data != nil {
+		return func() (*openapi3.T, bool, error) {
+			log.Println("load openapi.json from file")
+			doc, err := openapi3.NewLoader().LoadFromData(data)
+			return doc, true, err
+		}
 	}
-	return func() *openapi3.T { return doc }
+	return func() (*openapi3.T, bool, error) {
+		log.Println("build openapi.json from scratch")
+		doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
+		return doc, false, err
+	}
 }
 
 func (m DocModifier) After(f func(doc *openapi3.T)) DocModifier {
-	return func() *openapi3.T {
-		doc := m()
+	return func() (*openapi3.T, bool, error) {
+		doc, loaded, err := m()
+		if loaded {
+			return doc, loaded, err
+		}
+		if err != nil {
+			return doc, loaded, err
+		}
 		f(doc)
-		return doc
+		return doc, loaded, nil
 	}
 }
 

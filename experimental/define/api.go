@@ -18,6 +18,8 @@ import (
 )
 
 type BuildContext struct {
+	loaded bool // if true, skipping reflectopenapi's actions (because *openapi3.T is already generated completely)
+
 	m *reflectopenapi.Manager
 	c *reflectopenapi.Config
 
@@ -28,7 +30,10 @@ type BuildContext struct {
 }
 
 func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflectopenapi.Config)) (*BuildContext, error) {
-	doc := docM()
+	doc, loaded, err := docM()
+	if err != nil {
+		return nil, err
+	}
 	c := &reflectopenapi.Config{
 		TagNameOption: &reflectopenapi.TagNameOption{
 			NameTag:        "json",
@@ -63,6 +68,7 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 		return nil, err
 	}
 	return &BuildContext{
+		loaded:     loaded,
 		r:          r,
 		c:          c,
 		m:          m,
