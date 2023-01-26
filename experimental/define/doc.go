@@ -14,16 +14,17 @@ var docSkeleton []byte
 
 type DocModifier func() (doc *openapi3.T, loaded bool, error error)
 
-func Doc(data []byte) DocModifier {
-	if data != nil {
-		return func() (*openapi3.T, bool, error) {
-			doc, err := openapi3.NewLoader().LoadFromData(data)
-			return doc, true, err
-		}
-	}
+func Doc() DocModifier {
 	return func() (*openapi3.T, bool, error) {
 		doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
 		return doc, false, err
+	}
+}
+
+func (m DocModifier) LoadFromData(data []byte) DocModifier {
+	return func() (*openapi3.T, bool, error) {
+		doc, err := openapi3.NewLoader().LoadFromData(data)
+		return doc, true, err
 	}
 }
 
@@ -40,7 +41,6 @@ func (m DocModifier) After(f func(doc *openapi3.T)) DocModifier {
 		return doc, loaded, nil
 	}
 }
-
 func (m DocModifier) Title(title string) DocModifier {
 	return m.After(func(doc *openapi3.T) {
 		doc.Info.Title = strings.TrimSpace(title)

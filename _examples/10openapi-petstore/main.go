@@ -39,15 +39,16 @@ func main() {
 func run() error {
 	ctx := context.Background()
 
-	if options.gendoc {
-		openapiDocData = nil
-	}
-	doc := define.Doc(openapiDocData).
+	doc := define.Doc().
 		Title("Swagger Petstore").
 		Description("This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.").
 		Version("1.0.0").
 		Server("http://petstore.swagger.io/api", "").
 		Server(fmt.Sprintf("http://localhost:%d", options.port), "local development")
+
+	if !options.gendoc {
+		doc = doc.LoadFromData(openapiDocData)
+	}
 
 	router := quickapi.DefaultRouter()
 	bc := define.MustBuildContext(doc, router)

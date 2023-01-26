@@ -14,7 +14,7 @@ import (
 func NewHandler(t *testing.T, options ...func(*define.BuildContext)) http.Handler {
 	t.Helper()
 	ctx := quickapitest.NewContext(t)
-	bc := or.Fatal(define.NewBuildContext(define.Doc(nil), chi.NewRouter(), func(c *reflectopenapi.Config) {
+	bc := or.Fatal(define.NewBuildContext(define.Doc(), chi.NewRouter(), func(c *reflectopenapi.Config) {
 		c.SkipExtractComments = true
 	}))(t)
 
