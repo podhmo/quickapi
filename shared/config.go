@@ -8,6 +8,8 @@ import (
 var (
 	DEBUG = false
 	INFO  = false
+
+	FORCE = false
 )
 
 func init() {
@@ -17,5 +19,9 @@ func init() {
 	}
 	if ok, _ := strconv.ParseBool(os.Getenv("INFO")); ok {
 		INFO = ok
+	}
+
+	if ok, _ := strconv.ParseBool(os.Getenv("FORCE")); ok {
+		FORCE = ok
 	}
 }

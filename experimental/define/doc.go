@@ -12,27 +12,46 @@ import (
 //go:embed skeleton.json
 var docSkeleton []byte
 
-type DocModifier func() *openapi3.T
+type DocModifier func() (doc *openapi3.T, loaded bool, error error)
 
 func Doc() DocModifier {
-	doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
-	if err != nil {
-		panic(err) // skeleton template is always corect
+	return func() (*openapi3.T, bool, error) {
+		doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
+		return doc, false, err
 	}
-	return func() *openapi3.T { return doc }
+}
+
+func (m DocModifier) LoadFromData(data []byte) DocModifier {
+	return func() (*openapi3.T, bool, error) {
+		doc, err := openapi3.NewLoader().LoadFromData(data)
+		return doc, true, err
+	}
 }
 
 func (m DocModifier) After(f func(doc *openapi3.T)) DocModifier {
-	return func() *openapi3.T {
-		doc := m()
+	return func() (*openapi3.T, bool, error) {
+		doc, loaded, err := m()
+		if loaded {
+			return doc, loaded, err
+		}
+		if err != nil {
+			return doc, loaded, err
+		}
 		f(doc)
-		return doc
+		return doc, loaded, nil
 	}
 }
-
 func (m DocModifier) Title(title string) DocModifier {
 	return m.After(func(doc *openapi3.T) {
 		doc.Info.Title = strings.TrimSpace(title)
+		if doc.Info.Description == "" {
+			doc.Info.Description = doc.Info.Title // default value
+		}
+	})
+}
+func (m DocModifier) Description(description string) DocModifier {
+	return m.After(func(doc *openapi3.T) {
+		doc.Info.Description = strings.TrimSpace(description)
 	})
 }
 func (m DocModifier) Version(version string) DocModifier {

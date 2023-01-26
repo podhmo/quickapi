@@ -28,7 +28,10 @@ type BuildContext struct {
 }
 
 func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflectopenapi.Config)) (*BuildContext, error) {
-	doc := docM()
+	doc, loaded, err := docM()
+	if err != nil {
+		return nil, err
+	}
 	c := &reflectopenapi.Config{
 		TagNameOption: &reflectopenapi.TagNameOption{
 			NameTag:        "json",
@@ -38,6 +41,7 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 			XNewTypeTag:    "x-go-type",
 		},
 		Doc:          doc,
+		Loaded:       loaded,
 		DefaultError: shared.ErrorResponse{},
 		StrictSchema: true,
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
