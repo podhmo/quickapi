@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"flag"
 	"fmt"
 	"io"
@@ -14,6 +15,9 @@ import (
 	"github.com/podhmo/quickapi/experimental/define"
 	rohandler "github.com/podhmo/reflect-openapi/handler"
 )
+
+//go:embed openapi.json
+var openapiDocData []byte
 
 var options struct {
 	gendoc  bool
@@ -35,8 +39,12 @@ func main() {
 func run() error {
 	ctx := context.Background()
 
-	doc := define.Doc().
+	if options.gendoc {
+		openapiDocData = nil
+	}
+	doc := define.Doc(openapiDocData).
 		Title("Swagger Petstore").
+		Description("This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.").
 		Version("1.0.0").
 		Server("http://petstore.swagger.io/api", "").
 		Server(fmt.Sprintf("http://localhost:%d", options.port), "local development")
