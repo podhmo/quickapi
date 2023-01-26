@@ -44,6 +44,14 @@ func (m DocModifier) After(f func(doc *openapi3.T)) DocModifier {
 func (m DocModifier) Title(title string) DocModifier {
 	return m.After(func(doc *openapi3.T) {
 		doc.Info.Title = strings.TrimSpace(title)
+		if doc.Info.Description == "" {
+			doc.Info.Description = doc.Info.Title // default value
+		}
+	})
+}
+func (m DocModifier) Description(description string) DocModifier {
+	return m.After(func(doc *openapi3.T) {
+		doc.Info.Description = strings.TrimSpace(description)
 	})
 }
 func (m DocModifier) Version(version string) DocModifier {
