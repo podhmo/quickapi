@@ -8,6 +8,7 @@ import (
 type TypeModifier reflectopenapi.RegisterTypeAction
 
 func Type(bc *BuildContext, typ interface{}) *TypeModifier {
+	// if c.Loaded is true, this thunk is ignored.
 	return (*TypeModifier)(bc.m.RegisterType(typ))
 }
 
@@ -18,6 +19,8 @@ func Enum[T any](bc *BuildContext, defaultValue T, values ...T) *TypeModifier {
 	for i, v := range values {
 		dst[i+1] = T(v)
 	}
+
+	// if c.Loaded is true, this thunk is ignored.
 	return (*TypeModifier)(bc.m.RegisterType(typedValue, func(ref *openapi3.Schema) {
 		ref.Default = dst[0]
 		ref.Enum = dst

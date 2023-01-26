@@ -1,7 +1,6 @@
 package define
 
 import (
-	"log"
 	"strings"
 
 	_ "embed"
@@ -18,13 +17,11 @@ type DocModifier func() (doc *openapi3.T, loaded bool, error error)
 func Doc(data []byte) DocModifier {
 	if data != nil {
 		return func() (*openapi3.T, bool, error) {
-			log.Println("load openapi.json from file")
 			doc, err := openapi3.NewLoader().LoadFromData(data)
 			return doc, true, err
 		}
 	}
 	return func() (*openapi3.T, bool, error) {
-		log.Println("build openapi.json from scratch")
 		doc, err := reflectopenapi.NewDocFromSkeleton(docSkeleton)
 		return doc, false, err
 	}
