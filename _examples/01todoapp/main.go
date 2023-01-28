@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/qbind"
 	"github.com/podhmo/quickapi/qdump"
 )
 
@@ -70,7 +68,7 @@ func GetTodo(
 func mount(r chi.Router) {
 	r.Get("/todos", quickapi.Lift(ListTodo))
 	r.Get("/todos/{id}", quickapi.Lift(GetTodo))
-	r.Method("GET", "/todos/foo/{Id}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
+	r.Method("GET", "/todos/foo/{id}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
 	r.Method("GET", "/todos/foo/{id}/{x}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
 }
 
@@ -79,27 +77,8 @@ func main() {
 	r := quickapi.DefaultRouter()
 	mount(r)
 
-	// TODO: validation typo, something like  r.Get("/todos/{todo_id}", ...) // id != todo_id
-	if err := quickapi.WalkRoute(r, func(item quickapi.RouteItem) error {
-		for _, taggedName := range item.Metadata.PathVars {
-			if _, ok := item.PathVars[taggedName]; !ok {
-				return fmt.Errorf("tagged name %q is not found (input is %v)", taggedName, item.Metadata.Input)
-			}
-		}
-		for pathVar := range item.PathVars {
-			found := false
-			for _, taggedName := range item.Metadata.PathVars {
-				if pathVar == taggedName {
-					found = true
-					break
-				}
-			}
-			if !found {
-				return fmt.Errorf("pathvar %q is not found (input is %v)", pathVar, item.Metadata.Input)
-			}
-		}
-		return nil
-	}); err != nil {
+	// validation typo, something like  r.Get("/todos/{todo_id}", ...) // id != todo_id
+	if err := quickapi.WalkRoute(r, func(item quickapi.RouteItem) error { return item.ValidatePathVars() }); err != nil {
 		log.Printf("[Error] ! %+v", err)
 		return
 	}
