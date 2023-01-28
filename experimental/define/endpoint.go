@@ -42,7 +42,7 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
 		m.Doc.AddOperation(normalizedPath, method, op)
 
-		// TODO: validation
+		// add pattern if type==string and regex is existed
 		for _, p := range op.Parameters {
 			if p.Value == nil {
 				continue
