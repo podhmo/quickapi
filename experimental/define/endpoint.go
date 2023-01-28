@@ -2,6 +2,7 @@ package define
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -22,8 +23,11 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 	if bc.c.Loaded {
 		op := findOpenapi3Operation(m.Doc, method, path)
 		if op == nil {
+			msg := fmt.Sprintf("path not found: %s %s", method, path)
 			if !shared.FORCE {
-				panic(fmt.Sprintf("path not found: %s %s", method, path))
+				panic(msg)
+			} else {
+				log.Printf("[INFO]  %s", msg)
 			}
 		} else {
 			middleware := bc.mb.BuildMiddleware(path, op)
@@ -112,8 +116,11 @@ func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, str
 	if bc.c.Loaded {
 		op := findOpenapi3Operation(m.Doc, method, path)
 		if op == nil {
+			msg := fmt.Sprintf("path not found: %s %s", method, path)
 			if !shared.FORCE {
-				panic(fmt.Sprintf("path not found: %s %s", method, path))
+				panic(msg)
+			} else {
+				log.Printf("[INFO]  %s", msg)
 			}
 		} else {
 			middleware := bc.mb.BuildMiddleware(path, op)
