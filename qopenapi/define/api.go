@@ -14,7 +14,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/experimental/validate"
+	"github.com/podhmo/quickapi/qopenapi/validate"
 	"github.com/podhmo/quickapi/shared"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )

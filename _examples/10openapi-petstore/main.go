@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/experimental/define"
+	"github.com/podhmo/quickapi/qopenapi/define"
 	rohandler "github.com/podhmo/reflect-openapi/handler"
 )
 
