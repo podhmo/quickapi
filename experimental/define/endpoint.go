@@ -9,6 +9,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
+	"github.com/podhmo/quickapi/pathutil"
 	"github.com/podhmo/quickapi/qdump"
 	"github.com/podhmo/quickapi/shared"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
@@ -20,8 +21,9 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 	h := quickapi.NewHandler(action, qdump.Dump[O])
 	m := bc.m
 
+	normalizedPath, _, pathvars := pathutil.NormalizeTemplatedPath(path)
 	if bc.c.Loaded {
-		op := findOpenapi3Operation(m.Doc, method, path)
+		op := findOpenapi3Operation(m.Doc, method, normalizedPath)
 		if op == nil {
 			msg := fmt.Sprintf("path not found: %s %s", method, path)
 			if !shared.FORCE {
@@ -38,7 +40,29 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 
 	// if c.Loaded is true, this thunk is ignored.
 	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
-		m.Doc.AddOperation(path, method, op)
+		m.Doc.AddOperation(normalizedPath, method, op)
+
+		// add pattern if type==string and regex is existed
+		for _, p := range op.Parameters {
+			if p.Value == nil {
+				continue
+			}
+			if p.Value.In != "path" {
+				continue
+			}
+			if regex, ok := pathvars[p.Value.Name]; ok && regex != "" {
+				if value := p.Value.Schema.Value; value != nil && value.Type == "string" {
+					if !strings.HasSuffix(regex, "$") {
+						regex = regex + "$"
+					}
+					if !strings.HasPrefix(regex, "^") {
+						regex = "^" + regex
+					}
+					value.Pattern = regex
+				}
+			}
+		}
+
 		middleware := bc.mb.BuildMiddleware(path, op)
 		middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
 		bc.r.With(middlewares...).Method(method, path, h)

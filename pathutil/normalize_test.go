@@ -1,4 +1,4 @@
-package quickapi
+package pathutil
 
 import (
 	"testing"
@@ -35,7 +35,7 @@ func TestNormalizeTemplatedPath(t *testing.T) {
 	for _, c := range cases {
 		c := c
 		t.Run(c.path, func(t *testing.T) {
-			normalized, _, vars := normalizeTemplatedPath(c.path)
+			normalized, _, vars := NormalizeTemplatedPath(c.path)
 			{
 				type ref struct{ Vars map[string]string }
 				want := c.vars
