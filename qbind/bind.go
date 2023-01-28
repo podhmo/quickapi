@@ -123,6 +123,8 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 type Metadata struct {
 	HasData bool // Action is empty
 
+	Input reflect.Type
+
 	JSONFields []string
 	Queries    []string // query string keys (recursive structure is not supported, also embedded)
 	Headers    []string // header keys (recursive structure is not supported, also embedded)
@@ -166,6 +168,7 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 
 	metadata := Metadata{
 		HasData:    len(jsonfields) > 0,
+		Input:      rt,
 		JSONFields: jsonfields,
 		Queries:    queries,
 		Headers:    headers,
