@@ -10,7 +10,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/qdump"
 )
 
 type Todo struct {
@@ -68,8 +67,6 @@ func GetTodo(
 func mount(r chi.Router) {
 	r.Get("/todos", quickapi.Lift(ListTodo))
 	r.Get("/todos/{id}", quickapi.Lift(GetTodo))
-	r.Method("GET", "/todos/foo/{id}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
-	r.Method("GET", "/todos/foo/{id}/{x}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
 }
 
 func main() {
