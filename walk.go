@@ -59,6 +59,11 @@ func WalkRoute(r chi.Router, fn func(RouteItem) error) error {
 // arranged version of getkin/kin-openapi/openapi3/paths.go
 func normalizeTemplatedPath(path string) (string, uint, map[string]string) {
 	if strings.IndexByte(path, '{') < 0 {
+
+		// add hoc support of 'foo/*'
+		if strings.HasSuffix(path, "*") {
+			return path[:len(path)-1] + "{STAR*}", 1, map[string]string{"STAR*": ""}
+		}
 		return path, 0, nil
 	}
 
@@ -75,8 +80,8 @@ func normalizeTemplatedPath(path string) (string, uint, map[string]string) {
 		lv         int
 	)
 
-	for _, c := range path {
-		//log.Printf("c:%v\tisVariable:%v\tisPattern:%v\tlv:%d", string(c), isVariable, isPattern, lv)
+	for i, c := range path {
+		// log.Printf("c:%v\tisVariable:%v\tisPattern:%v\tlv:%d", string(c), isVariable, isPattern, lv)
 		if isVariable {
 			if c == '}' {
 				lv--
@@ -123,6 +128,11 @@ func normalizeTemplatedPath(path string) (string, uint, map[string]string) {
 			} else {
 				buffVar.WriteRune(c)
 			}
+		} else if c == '*' && i == len(path)-1 {
+			buffTpl.WriteString("{STAR*}")
+			vars["STAR*"] = ""
+			count++
+			continue
 		}
 
 		// Append the character
