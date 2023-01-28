@@ -68,8 +68,8 @@ var (
 	mu            sync.RWMutex
 )
 
-// MetadataFromHandlerFunc return metadata from handler func, this is the adapter for chi.Router. chi.Router.Get() receives http.HandlerFunc instead of http.Handler.
-func MetadataFromHandlerFunc(fn http.HandlerFunc) qbind.Metadata {
+// metadataFromHandlerFunc return metadata from handler func, this is the adapter for chi.Router. chi.Router.Get() receives http.HandlerFunc instead of http.Handler.
+func metadataFromHandlerFunc(fn http.HandlerFunc) qbind.Metadata {
 	mu.RLock()
 	defer mu.RUnlock()
 	return funcToHandler[reflect.ValueOf(fn).Pointer()]

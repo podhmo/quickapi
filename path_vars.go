@@ -24,7 +24,7 @@ func WalkRoute(r chi.Router, fn func(RouteItem) error) error {
 		item := RouteItem{Method: method, Route: route, Handler: handler, Middlewares: middlewares, PathVars: vars}
 		switch h := handler.(type) {
 		case http.HandlerFunc:
-			item.Metadata = MetadataFromHandlerFunc(h)
+			item.Metadata = metadataFromHandlerFunc(h)
 		case interface{ Metadata() qbind.Metadata }:
 			item.Metadata = h.Metadata()
 		}
