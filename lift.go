@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"reflect"
+	"sync"
 
 	"github.com/podhmo/quickapi/qbind"
 	"github.com/podhmo/quickapi/qdump"
@@ -56,13 +57,20 @@ func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
 
 	// for chi.Router.Get()
 	fn := http.HandlerFunc(h.ServeHTTP)
+	mu.Lock()
+	defer mu.Unlock()
 	funcToHandler[reflect.ValueOf(fn).Pointer()] = h.metadata
 	return fn
 }
 
-var funcToHandler = map[uintptr]qbind.Metadata{}
+var (
+	funcToHandler = map[uintptr]qbind.Metadata{}
+	mu            sync.RWMutex
+)
 
 // MetadataFromHandlerFunc return metadata from handler func, this is the adapter for chi.Router. chi.Router.Get() receives http.HandlerFunc instead of http.Handler.
 func MetadataFromHandlerFunc(fn http.HandlerFunc) qbind.Metadata {
+	mu.RLock()
+	defer mu.RUnlock()
 	return funcToHandler[reflect.ValueOf(fn).Pointer()]
 }
