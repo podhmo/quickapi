@@ -70,7 +70,8 @@ func GetTodo(
 func mount(r chi.Router) {
 	r.Get("/todos", quickapi.Lift(ListTodo))
 	r.Get("/todos/{id}", quickapi.Lift(GetTodo))
-	r.Method("GET", "/todos/foo/{id}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
+	r.Method("GET", "/todos/foo/{Id}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
+	r.Method("GET", "/todos/foo/{id}/{x}", quickapi.NewHandler(GetTodo, qdump.Dump[Todo]))
 }
 
 func main() {
@@ -79,12 +80,23 @@ func main() {
 	mount(r)
 
 	// TODO: validation typo, something like  r.Get("/todos/{todo_id}", ...) // id != todo_id
-	if err := chi.Walk(r, func(method, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
-		switch h := handler.(type) {
-		case http.HandlerFunc:
-			fmt.Println("@@", method, route, quickapi.MetadataFromHandlerFunc(h).PathVars)
-		case interface{ Metadata() qbind.Metadata }:
-			fmt.Println("**", method, route, h.Metadata())
+	if err := quickapi.WalkRoute(r, func(item quickapi.RouteItem) error {
+		for _, taggedName := range item.Metadata.PathVars {
+			if _, ok := item.PathVars[taggedName]; !ok {
+				return fmt.Errorf("tagged name %q is not found (input is %v)", taggedName, item.Metadata.Input)
+			}
+		}
+		for pathVar := range item.PathVars {
+			found := false
+			for _, taggedName := range item.Metadata.PathVars {
+				if pathVar == taggedName {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return fmt.Errorf("pathvar %q is not found (input is %v)", pathVar, item.Metadata.Input)
+			}
 		}
 		return nil
 	}); err != nil {
