@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/podhmo/quickapi/pathutil"
+	"github.com/podhmo/quickapi/internal/pathutil"
 	"github.com/podhmo/quickapi/qbind"
 )
 

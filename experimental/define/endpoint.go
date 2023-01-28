@@ -9,7 +9,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/pathutil"
+	"github.com/podhmo/quickapi/internal/pathutil"
 	"github.com/podhmo/quickapi/qdump"
 	"github.com/podhmo/quickapi/shared"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
