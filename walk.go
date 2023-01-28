@@ -62,7 +62,7 @@ func normalizeTemplatedPath(path string) (string, uint, map[string]string) {
 
 		// add hoc support of 'foo/*'
 		if strings.HasSuffix(path, "*") {
-			return path[:len(path)-1] + "{/STAR*}", 1, map[string]string{"/STAR*": ""}
+			return path[:len(path)-1] + "{STAR*}", 1, map[string]string{"STAR*": ""}
 		}
 		return path, 0, nil
 	}
@@ -129,8 +129,8 @@ func normalizeTemplatedPath(path string) (string, uint, map[string]string) {
 				buffVar.WriteRune(c)
 			}
 		} else if c == '*' && i == len(path)-1 {
-			buffTpl.WriteString("{/STAR*}")
-			vars["/STAR*"] = ""
+			buffTpl.WriteString("{STAR*}")
+			vars["STAR*"] = ""
 			count++
 			continue
 		}

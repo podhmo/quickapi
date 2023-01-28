@@ -61,5 +61,4 @@ func TestMethodNotAllowed(t *testing.T) {
 
 	req := httptest.NewRequest("PUT", "/todos", nil)
 	quickapitest.DoRequest[any](t, req, http.StatusMethodNotAllowed, router)
-
 }

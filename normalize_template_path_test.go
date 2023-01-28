@@ -23,8 +23,14 @@ func TestNormalizeTemplatedPath(t *testing.T) {
 		// RFC6570 foo*
 		// - https://github.com/OAI/OpenAPI-Specification/issues/291
 		// - https://github.com/OAI/OpenAPI-Specification/issues/892
-		{path: "/api/metadata/*", normalized: "/api/metadata/{/STAR*}", vars: map[string]string{"/STAR*": ""}},
-		{path: "/version/{id}/api/metadata/*", normalized: "/version/{id}/api/metadata/{/STAR*}", vars: map[string]string{"id": "", "/STAR*": ""}},
+
+		// https://www.rfc-editor.org/rfc/rfc6570#section-3.2.1 	with count := ("one", "two", "three")
+		// - {count}            one,two,three
+		// - {count*}           one,two,three
+		// - {/count}           /one,two,three
+		// - {/count*}          /one/two/three
+		{path: "/api/metadata/*", normalized: "/api/metadata/{STAR*}", vars: map[string]string{"STAR*": ""}},
+		{path: "/version/{id}/api/metadata/*", normalized: "/version/{id}/api/metadata/{STAR*}", vars: map[string]string{"id": "", "STAR*": ""}},
 	}
 	for _, c := range cases {
 		c := c
