@@ -13,7 +13,7 @@ import (
 
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
-	rohandler "github.com/podhmo/reflect-openapi/handler"
+	"github.com/podhmo/reflect-openapi/dochandler"
 )
 
 //go:embed openapi.json
@@ -76,7 +76,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	bc.Router().Mount("/openapi", rohandler.NewHandler(bc.Doc(), "/openapi"))
+	bc.Router().Mount("/openapi", dochandler.New(bc.Doc(), "/openapi"))
 
 	if err := quickapi.NewServer(fmt.Sprintf(":%d", options.port), handler, 5*time.Second).ListenAndServe(ctx); err != nil {
 		log.Printf("[Error] !! %+v", err)
