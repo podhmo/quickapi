@@ -47,15 +47,26 @@ func WalkRoute(r chi.Router, fn func(RouteItem) error) error {
 	return chi.Walk(r, func(method, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
 		_, _, vars := pathutil.NormalizeTemplatedPath(route)
 		item := RouteItem{Method: method, Route: route, Handler: handler, Middlewares: middlewares, PathVars: vars}
+
 		switch h := handler.(type) {
 		case http.HandlerFunc:
-			item.Metadata = metadataFromHandlerFunc(h)
+			if metadata, tracked := metadataFromHandlerFunc(h); tracked {
+				item.Metadata = metadata
+				if err := fn(item); err != nil {
+					return fmt.Errorf("route %s %s: %w", method, route, err)
+				}
+				return nil
+			}
 		case interface{ Metadata() qbind.Metadata }:
 			item.Metadata = h.Metadata()
+			if err := fn(item); err != nil {
+				return fmt.Errorf("route %s %s: %w", method, route, err)
+			}
+			return nil
 		}
-		if err := fn(item); err != nil {
-			return fmt.Errorf("route %s %s: %w", method, route, err)
-		}
+
+		// outside of quickapi
+		// log.Printf("ignored: %s %s", method, route)
 		return nil
 	})
 }
