@@ -19,10 +19,6 @@ type RouteItem struct {
 }
 
 func (item *RouteItem) ValidatePathVars() error {
-	if len(item.Metadata.PathVars) == 0 {
-		return nil
-	}
-
 	for _, taggedName := range item.Metadata.PathVars {
 		if _, ok := item.PathVars[taggedName]; !ok {
 			return fmt.Errorf("tagged name %q is not found (input is %v)", taggedName, item.Metadata.Input)
