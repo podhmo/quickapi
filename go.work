@@ -1,0 +1,11 @@
+go 1.18
+
+use (
+	.
+	./_examples
+)
+
+// replace (
+// 	github.com/podhmo/reflect-openapi => ../reflect-openapi
+// 	github.com/podhmo/reflect-shape => ../reflect-shape
+// )
