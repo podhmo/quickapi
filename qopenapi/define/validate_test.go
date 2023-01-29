@@ -14,8 +14,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/podhmo/or"
 	"github.com/podhmo/quickapi"
-	"github.com/podhmo/quickapi/experimental/define"
-	"github.com/podhmo/quickapi/experimental/define/definetest"
+	"github.com/podhmo/quickapi/qopenapi/define"
+	"github.com/podhmo/quickapi/qopenapi/define/definetest"
 	"github.com/podhmo/quickapi/quickapitest"
 	"github.com/podhmo/quickapi/shared"
 )

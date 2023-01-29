@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/or"
-	"github.com/podhmo/quickapi/experimental/define"
+	"github.com/podhmo/quickapi/qopenapi/define"
 	"github.com/podhmo/quickapi/quickapitest"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
