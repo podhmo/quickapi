@@ -99,7 +99,8 @@ func mount(bc *define.BuildContext) {
 		define.Get(bc, "/pets", api.FindPets).Description(longDescription)
 		define.Post(bc, "/pets", api.AddPet).
 			AnotherError(bc, 400, Error{}, "validation error").
-			Example(400, "validation error", Error{Code: 400, Message: "validation error"})
+			Example(400, "validation error", Error{Code: 400, Message: "validation error"}).
+			Default(func() AddPetInput { return AddPetInput{Name: "foo"} })
 		define.Get(bc, "/pets/{id}", api.FindPetByID)
 		define.Delete(bc, "/pets/{id}", api.DeletePet).Status(204)
 	}
@@ -132,11 +133,13 @@ func (api *PetAPI) FindPets(context.Context, struct {
 	return
 }
 
-// AddPet creates a new pet in the store. Duplicates are allowed
-func (api *PetAPI) AddPet(context.Context, struct {
+type AddPetInput struct {
 	Name string `json:"name"`          // Name of the pet
 	Tag  string `json:"tag,omitempty"` // Type of the pet
-}) (
+}
+
+// AddPet creates a new pet in the store. Duplicates are allowed
+func (api *PetAPI) AddPet(ctx context.Context, input AddPetInput) (
 	output Pet,
 	err error,
 ) {

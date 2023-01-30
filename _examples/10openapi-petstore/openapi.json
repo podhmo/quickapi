@@ -1,6 +1,26 @@
 {
   "components": {
     "schemas": {
+      "AddPetInput": {
+        "additionalProperties": false,
+        "default": {
+          "name": "foo"
+        },
+        "properties": {
+          "name": {
+            "description": "Name of the pet",
+            "type": "string"
+          },
+          "tag": {
+            "description": "Type of the pet",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
       "Empty": {
         "description": "Empty is zero Input",
         "type": "object"
@@ -127,19 +147,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "tag": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "name"
-                ],
-                "type": "object"
+                "$ref": "#/components/schemas/AddPetInput"
               }
             }
           }
