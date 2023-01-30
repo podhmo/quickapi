@@ -138,6 +138,19 @@ func (m *EndpointModifier[I, O]) Example(code int, title string, value interface
 		register: m.register.Example(code, "application/json", title, value),
 	}
 }
+func (m *EndpointModifier[I, O]) Default(fn func() I) *EndpointModifier[I, O] {
+	// side effect!
+	m.Handler.Default = fn
+	m.register = m.register.After(func(op *openapi3.Operation) {
+		// hmm this is bug. (when RegisterFunc() is called, input type is decomposed into parameters and requestBody )
+		if v := op.RequestBody.Value; v != nil {
+			if s := v.Content["application/json"].Schema.Value; s != nil {
+				s.Default = fn()
+			}
+		}
+	})
+	return m
+}
 
 func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, string], dump quickapi.DumpFunc[string], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, string] {
 	h := quickapi.NewHandler(action, dump)
