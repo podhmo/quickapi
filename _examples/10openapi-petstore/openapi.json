@@ -19,7 +19,9 @@
         "required": [
           "name"
         ],
-        "type": "object"
+        "title": "AddPetInput",
+        "type": "object",
+        "x-go-type": "main.AddPetInput"
       },
       "Empty": {
         "description": "Empty is zero Input",

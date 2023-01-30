@@ -141,14 +141,9 @@ func (m *EndpointModifier[I, O]) Example(code int, title string, value interface
 func (m *EndpointModifier[I, O]) Default(fn func() I) *EndpointModifier[I, O] {
 	// side effect!
 	m.Handler.Default = fn
-	m.register = m.register.After(func(op *openapi3.Operation) {
-		// hmm this is bug. (when RegisterFunc() is called, input type is decomposed into parameters and requestBody )
-		if v := op.RequestBody.Value; v != nil {
-			if s := v.Content["application/json"].Schema.Value; s != nil {
-				s.Default = fn()
-			}
-		}
-	})
+	// hmm this is bug. (when RegisterFunc() is called, input type is decomposed into parameters and requestBody )
+	input := fn()
+	m.register.Manager.RegisterType(input).Default(input)
 	return m
 }
 
