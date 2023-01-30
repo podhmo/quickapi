@@ -13,10 +13,13 @@ import (
 
 type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
 type DumpFunc[O any] func(ctx context.Context, w http.ResponseWriter, req *http.Request, output O, err error)
+
+type LiftOption[I any, O any] func(*LiftedHandler[I, O])
 type LiftedHandler[I any, O any] struct {
 	Action   Action[I, O]
 	metadata qbind.Metadata
 	Dump     DumpFunc[O]
+	Default  func() I
 }
 
 func (h *LiftedHandler[I, O]) Metadata() qbind.Metadata {
@@ -28,8 +31,11 @@ func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request
 	req = req.WithContext(ctx)
 
 	// binding request body and query-string and headers to input.
-	input, err := qbind.Bind[I](ctx, req, h.metadata)
-	if err != nil {
+	var input I
+	if h.Default != nil {
+		input = h.Default()
+	}
+	if err := qbind.Bind(ctx, req, h.metadata, &input); err != nil {
 		code := shared.StatusCodeOfOrDefault(err, 400)
 		qdump.DumpError(w, req, err, code)
 		return
@@ -42,18 +48,22 @@ func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request
 }
 
 // NewHandler create new lifted handler
-func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O]) *LiftedHandler[I, O] {
+func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O], options ...LiftOption[I, O]) *LiftedHandler[I, O] {
 	metadata := qbind.Scan(action)
-	return &LiftedHandler[I, O]{
+	h := &LiftedHandler[I, O]{
 		Action:   action,
 		metadata: metadata,
 		Dump:     dump,
 	}
+	for _, opt := range options {
+		opt(h)
+	}
+	return h
 }
 
 // Lift transforms Action to http.HandlerFunc
-func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
-	h := NewHandler(action, qdump.Dump[O])
+func Lift[I any, O any](action Action[I, O], options ...LiftOption[I, O]) http.HandlerFunc {
+	h := NewHandler(action, qdump.Dump[O], options...)
 
 	// for chi.Router.Get()
 	fn := http.HandlerFunc(h.ServeHTTP)
