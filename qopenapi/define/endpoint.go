@@ -141,9 +141,8 @@ func (m *EndpointModifier[I, O]) Example(code int, title string, value interface
 func (m *EndpointModifier[I, O]) Default(fn func() I) *EndpointModifier[I, O] {
 	// side effect!
 	m.Handler.Default = fn
-	// hmm this is bug. (when RegisterFunc() is called, input type is decomposed into parameters and requestBody )
-	input := fn()
-	m.register.Manager.RegisterType(input).Default(input)
+
+	// TODO: set default in openapi doc ( https://github.com/podhmo/reflect-openapi/issues/120 )
 	return m
 }
 
