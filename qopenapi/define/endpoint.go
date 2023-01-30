@@ -15,9 +15,12 @@ import (
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
-type EndpointModifier reflectopenapi.RegisterFuncAction
+type EndpointModifier[I any, O any] struct {
+	Handler  *quickapi.LiftedHandler[I, O]
+	register *reflectopenapi.RegisterFuncAction
+}
 
-func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	h := quickapi.NewHandler(action, qdump.Dump[O])
 	m := bc.m
 
@@ -39,7 +42,7 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 	}
 
 	// if c.Loaded is true, this thunk is ignored.
-	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
+	register := m.RegisterFunc(action).After(func(op *openapi3.Operation) {
 		m.Doc.AddOperation(normalizedPath, method, op)
 
 		// add pattern if type==string and regex is existed
@@ -66,47 +69,54 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 		middleware := bc.mb.BuildMiddleware(path, op)
 		middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
 		bc.r.With(middlewares...).Method(method, path, h)
-	}))
+	})
+	return &EndpointModifier[I, O]{
+		Handler:  h,
+		register: register,
+	}
 }
 
-func Get[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Get[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	return Method(bc, "GET", path, action, middlewares...)
 }
-func Post[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Post[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	return Method(bc, "POST", path, action, middlewares...)
 }
-func Put[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Put[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	return Method(bc, "PUT", path, action, middlewares...)
 }
-func Patch[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Patch[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	return Method(bc, "PATCH", path, action, middlewares...)
 }
-func Delete[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Delete[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	return Method(bc, "DELETE", path, action, middlewares...)
 }
-func Head[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Head[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	return Method(bc, "HEAD", path, action, middlewares...)
 }
-func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func Options[I any, O any](bc *BuildContext, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
 	return Method(bc, "OPTIONS", path, action, middlewares...)
 }
 
-func (m *EndpointModifier) After(f func(op *openapi3.Operation)) *EndpointModifier {
-	return (*EndpointModifier)((*reflectopenapi.RegisterFuncAction)(m).After(f))
+func (m *EndpointModifier[I, O]) After(f func(op *openapi3.Operation)) *EndpointModifier[I, O] {
+	return &EndpointModifier[I, O]{
+		Handler:  m.Handler,
+		register: m.register.After(f),
+	}
 }
 
-func (m *EndpointModifier) OperationID(operationID string) *EndpointModifier {
+func (m *EndpointModifier[I, O]) OperationID(operationID string) *EndpointModifier[I, O] {
 	return m.After(func(op *openapi3.Operation) {
 		op.OperationID = strings.TrimSpace(operationID)
 	})
 }
 
-func (m *EndpointModifier) Description(description string) *EndpointModifier {
+func (m *EndpointModifier[I, O]) Description(description string) *EndpointModifier[I, O] {
 	return m.After(func(op *openapi3.Operation) {
 		op.Description = strings.TrimSpace(description)
 	})
 }
-func (m *EndpointModifier) Status(code int) *EndpointModifier {
+func (m *EndpointModifier[I, O]) Status(code int) *EndpointModifier[I, O] {
 	return m.After(func(op *openapi3.Operation) {
 		def, ok := op.Responses["200"]
 		if ok {
@@ -115,19 +125,21 @@ func (m *EndpointModifier) Status(code int) *EndpointModifier {
 		}
 	})
 }
-func (m *EndpointModifier) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier {
+func (m *EndpointModifier[I, O]) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier[I, O] {
 	return m.After(func(op *openapi3.Operation) {
 		ref := bc.m.Visitor.VisitType(typ)
 		val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
 		op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
 	})
 }
-func (a *EndpointModifier) Example(code int, title string, value interface{}) *EndpointModifier {
-	fn := (*reflectopenapi.RegisterFuncAction)(a)
-	return (*EndpointModifier)(fn.Example(code, "application/json", title, value))
+func (m *EndpointModifier[I, O]) Example(code int, title string, value interface{}) *EndpointModifier[I, O] {
+	return &EndpointModifier[I, O]{
+		Handler:  m.Handler,
+		register: m.register.Example(code, "application/json", title, value),
+	}
 }
 
-func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, string], dump quickapi.DumpFunc[string], middlewares ...func(http.Handler) http.Handler) *EndpointModifier {
+func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, string], dump quickapi.DumpFunc[string], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, string] {
 	h := quickapi.NewHandler(action, dump)
 	m := bc.m
 	method := "GET"
@@ -149,16 +161,19 @@ func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, str
 	}
 
 	// if c.Loaded is true, this thunk is ignored.
-	return (*EndpointModifier)(m.RegisterFunc(action).After(func(op *openapi3.Operation) {
-		// overwrite response/200/content/{application-json -> text/html}
-		res := op.Responses.Get(200).Value
-		res.Content = openapi3.NewContentWithSchemaRef(res.Content.Get("application/json").Schema, []string{"text/html"})
+	return &EndpointModifier[I, string]{
+		Handler: h,
+		register: m.RegisterFunc(action).After(func(op *openapi3.Operation) {
+			// overwrite response/200/content/{application-json -> text/html}
+			res := op.Responses.Get(200).Value
+			res.Content = openapi3.NewContentWithSchemaRef(res.Content.Get("application/json").Schema, []string{"text/html"})
 
-		m.Doc.AddOperation(path, method, op)
-		middleware := bc.mb.BuildMiddleware(path, op)
-		middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
-		bc.r.With(middlewares...).Method(method, path, h)
-	}))
+			m.Doc.AddOperation(path, method, op)
+			middleware := bc.mb.BuildMiddleware(path, op)
+			middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
+			bc.r.With(middlewares...).Method(method, path, h)
+		}),
+	}
 }
 
 func findOpenapi3Operation(doc *openapi3.T, method, path string) *openapi3.Operation {
