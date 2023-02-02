@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/google/go-cmp v0.5.9
 	github.com/podhmo/quickapi v0.0.0-00010101000000-000000000000
-	github.com/podhmo/reflect-openapi v0.2.0
+	github.com/podhmo/reflect-openapi v0.2.1
 )
 
 require (
