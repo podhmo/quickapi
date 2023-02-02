@@ -47,10 +47,9 @@ func TestLift_OK_WithDefault(t *testing.T) {
 	}
 
 	action := func(ctx context.Context, i person) (person, error) { return i, nil }
-	defaultOption := func(h *quickapi.LiftedHandler[person, person]) {
-		h.Default = func() person { return person{Name: "foo"} }
-	}
-	handler := quickapi.Lift(action, defaultOption)
+	handler := quickapi.LiftHandler(action)
+	handler.Default = func() person { return person{Name: "foo"} }
+
 	req := httptest.NewRequest("POST", "/", strings.NewReader(`{"age": 20}`))
 
 	got := quickapitest.DoRequest[person](t, req, 200, handler)
