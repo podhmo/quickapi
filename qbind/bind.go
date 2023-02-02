@@ -144,27 +144,39 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 	var headers []string
 	var jsonfields []string
 	var pathvars []string
-	for i, n := 0, rt.NumField(); i < n; i++ {
-		field := rt.Field(i)
-		if v, ok := field.Tag.Lookup("query"); ok {
-			queries = append(queries, v)
-			continue
+	var walk func(rt reflect.Type)
+	walk = func(rt reflect.Type) {
+		for i, n := 0, rt.NumField(); i < n; i++ {
+			field := rt.Field(i)
+			if field.Anonymous { // embedded support by recursive call
+				embedded := field.Type
+				for embedded.Kind() == reflect.Ptr {
+					embedded = embedded.Elem()
+				}
+				walk(embedded)
+				continue
+			}
+			if v, ok := field.Tag.Lookup("query"); ok {
+				queries = append(queries, v)
+				continue
+			}
+			if v, ok := field.Tag.Lookup("header"); ok {
+				headers = append(headers, v)
+				continue
+			}
+			if v, ok := field.Tag.Lookup("path"); ok {
+				pathvars = append(pathvars, v)
+				continue
+			}
+			name := field.Name
+			if v, ok := field.Tag.Lookup("json"); ok {
+				name = v
+			}
+			jsonfields = append(jsonfields, name)
 		}
-		if v, ok := field.Tag.Lookup("header"); ok {
-			headers = append(headers, v)
-			continue
-		}
-		if v, ok := field.Tag.Lookup("path"); ok {
-			pathvars = append(pathvars, v)
-			continue
-		}
-		name := field.Name
-		if v, ok := field.Tag.Lookup("json"); ok {
-			name = v
-		}
-		jsonfields = append(jsonfields, name)
 	}
 
+	walk(rt)
 	metadata := Metadata{
 		HasData:    len(jsonfields) > 0,
 		Input:      rt,
