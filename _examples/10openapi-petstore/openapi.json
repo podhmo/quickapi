@@ -3,11 +3,9 @@
     "schemas": {
       "AddPetInput": {
         "additionalProperties": false,
-        "default": {
-          "name": "foo"
-        },
         "properties": {
           "name": {
+            "default": "foo",
             "description": "Name of the pet",
             "type": "string"
           },
@@ -19,9 +17,7 @@
         "required": [
           "name"
         ],
-        "title": "AddPetInput",
-        "type": "object",
-        "x-go-type": "main.AddPetInput"
+        "type": "object"
       },
       "Empty": {
         "description": "Empty is zero Input",
@@ -29,12 +25,18 @@
       },
       "Error": {
         "additionalProperties": false,
+        "default": {
+          "code": 400,
+          "message": "validation error"
+        },
         "properties": {
           "code": {
+            "default": 400,
             "description": "Error code",
             "type": "integer"
           },
           "message": {
+            "default": "validation error",
             "description": "message",
             "type": "string"
           }
@@ -47,7 +49,7 @@
       },
       "Pet": {
         "additionalProperties": false,
-        "default": {
+        "example": {
           "id": "1",
           "name": "foo",
           "tag": "Cat"
@@ -72,7 +74,8 @@
           "name"
         ],
         "title": "Pet",
-        "type": "object"
+        "type": "object",
+        "x-go-type": "main.Pet"
       }
     }
   },
@@ -90,7 +93,7 @@
         "parameters": [
           {
             "in": "query",
-            "name": "Tags",
+            "name": "tags",
             "schema": {
               "items": {
                 "type": "string"
@@ -100,7 +103,7 @@
           },
           {
             "in": "query",
-            "name": "Limit",
+            "name": "limit",
             "schema": {
               "type": "integer"
             }
@@ -145,6 +148,17 @@
       "post": {
         "description": "AddPet creates a new pet in the store. Duplicates are allowed",
         "operationId": "main.PetAPI.AddPet",
+        "parameters": [
+          {
+            "description": "pretty output (hmm)",
+            "in": "query",
+            "name": "pretty",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -168,16 +182,21 @@
           "400": {
             "content": {
               "application/json": {
-                "example": {
-                  "code": 400,
-                  "message": "validation error"
+                "examples": {
+                  "default": {
+                    "description": "bad request",
+                    "value": {
+                      "code": 400,
+                      "message": "validation error"
+                    }
+                  }
                 },
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
               }
             },
-            "description": "validation error"
+            "description": "-"
           },
           "default": {
             "content": {
