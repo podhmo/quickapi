@@ -40,6 +40,25 @@ func TestLift_OK_NilAsEmptySlice(t *testing.T) {
 	}
 }
 
+func TestLift_OK_WithDefault(t *testing.T) {
+	type person struct {
+		Name string
+		Age  int
+	}
+
+	action := func(ctx context.Context, i person) (person, error) { return i, nil }
+	handler := quickapi.NewHandler(action)
+	handler.Default = func() person { return person{Name: "foo"} }
+
+	req := httptest.NewRequest("POST", "/", strings.NewReader(`{"age": 20}`))
+
+	got := quickapitest.DoRequest[person](t, req, 200, handler)
+	want := person{Name: "foo", Age: 20}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
+	}
+}
+
 func TestLift_NotFound(t *testing.T) {
 	code := 404
 	action := func(context.Context, quickapi.Empty) ([]int, error) {

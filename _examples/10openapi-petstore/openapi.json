@@ -1,18 +1,42 @@
 {
   "components": {
     "schemas": {
+      "AddPetInput": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "default": "foo",
+            "description": "Name of the pet",
+            "type": "string"
+          },
+          "tag": {
+            "description": "Type of the pet",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
       "Empty": {
         "description": "Empty is zero Input",
         "type": "object"
       },
       "Error": {
         "additionalProperties": false,
+        "default": {
+          "code": 400,
+          "message": "validation error"
+        },
         "properties": {
           "code": {
+            "default": 400,
             "description": "Error code",
             "type": "integer"
           },
           "message": {
+            "default": "validation error",
             "description": "message",
             "type": "string"
           }
@@ -25,7 +49,7 @@
       },
       "Pet": {
         "additionalProperties": false,
-        "default": {
+        "example": {
           "id": "1",
           "name": "foo",
           "tag": "Cat"
@@ -50,7 +74,8 @@
           "name"
         ],
         "title": "Pet",
-        "type": "object"
+        "type": "object",
+        "x-go-type": "main.Pet"
       }
     }
   },
@@ -68,7 +93,7 @@
         "parameters": [
           {
             "in": "query",
-            "name": "Tags",
+            "name": "tags",
             "schema": {
               "items": {
                 "type": "string"
@@ -78,7 +103,7 @@
           },
           {
             "in": "query",
-            "name": "Limit",
+            "name": "limit",
             "schema": {
               "type": "integer"
             }
@@ -123,23 +148,22 @@
       "post": {
         "description": "AddPet creates a new pet in the store. Duplicates are allowed",
         "operationId": "main.PetAPI.AddPet",
+        "parameters": [
+          {
+            "description": "pretty output (hmm)",
+            "in": "query",
+            "name": "pretty",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "tag": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "name"
-                ],
-                "type": "object"
+                "$ref": "#/components/schemas/AddPetInput"
               }
             }
           }
@@ -158,16 +182,21 @@
           "400": {
             "content": {
               "application/json": {
-                "example": {
-                  "code": 400,
-                  "message": "validation error"
+                "examples": {
+                  "default": {
+                    "description": "bad request",
+                    "value": {
+                      "code": 400,
+                      "message": "validation error"
+                    }
+                  }
                 },
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
               }
             },
-            "description": "validation error"
+            "description": "-"
           },
           "default": {
             "content": {

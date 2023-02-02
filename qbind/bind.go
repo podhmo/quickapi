@@ -32,12 +32,11 @@ var (
 	ErrCannotReceiveBody = fmt.Errorf("cannot receive body")
 )
 
-func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, error) {
-	var input I
+func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata, input *I) error {
 	if len(metadata.PathVars) > 0 {
 		pathparams := chi.RouteContext(req.Context()).URLParams
 		if len(metadata.PathVars) != len(pathparams.Keys) {
-			return input, shared.NewAPIError(fmt.Errorf("route is not found"), http.StatusNotFound)
+			return shared.NewAPIError(fmt.Errorf("route is not found"), http.StatusNotFound)
 		}
 
 		m := make(map[string][]string, len(metadata.PathVars))
@@ -45,11 +44,11 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 			v := pathparams.Values[i]
 			m[k] = []string{v}
 		}
-		if err := pathDecoder.Decode(&input, m); err != nil {
+		if err := pathDecoder.Decode(input, m); err != nil {
 			if shared.INFO {
 				shared.GetLogger(ctx).Printf("[DEBUG] route path is broken: %v, params=%+v", err, m) // TODO: structured logging
 			}
-			return input, shared.NewAPIError(ErrNotFound, http.StatusNotFound)
+			return shared.NewAPIError(ErrNotFound, http.StatusNotFound)
 		}
 	}
 
@@ -59,18 +58,18 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 			if shared.INFO {
 				shared.GetLogger(ctx).Printf("[INFO ] request method %q cannot receive request body, metadata=%+v, on %T", req.Method, metadata, input) // TODO: structured logging
 			}
-			return input, shared.NewAPIError(ErrCannotReceiveBody, http.StatusBadRequest)
+			return shared.NewAPIError(ErrCannotReceiveBody, http.StatusBadRequest)
 		default:
 			if req.Body == nil || req.Body == http.NoBody {
 				if shared.INFO {
 					shared.GetLogger(ctx).Printf("[INFO ] decode json is neaded, but request body is nil, metadata=%+v, on %T", metadata, input) // TODO: structured logging
 				}
-				return input, shared.NewAPIError(ErrNoBody, http.StatusBadRequest)
-			} else if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
+				return shared.NewAPIError(ErrNoBody, http.StatusBadRequest)
+			} else if err := json.NewDecoder(req.Body).Decode(input); err != nil {
 				if shared.INFO {
 					shared.GetLogger(ctx).Printf("[ERROR] unexpected error (json.Decode): %+v, on %T", err, input) // TODO: structured logging
 				}
-				return input, err
+				return err
 			}
 		}
 	}
@@ -81,7 +80,7 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 		for _, k := range metadata.Queries {
 			m[k] = []string{v.Get(k)}
 		}
-		if err := queryDecoder.Decode(&input, m); err != nil {
+		if err := queryDecoder.Decode(input, m); err != nil {
 			if shared.INFO {
 				shared.GetLogger(ctx).Printf("[ERROR] unexpected query string: %+v, on %T", err, input)
 			}
@@ -93,7 +92,7 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 		for _, k := range metadata.Headers {
 			m[k] = []string{req.Header.Get(k)}
 		}
-		if err := headerDecoder.Decode(&input, m); err != nil {
+		if err := headerDecoder.Decode(input, m); err != nil {
 			if shared.INFO {
 				shared.GetLogger(ctx).Printf("[ERROR] unexpected header: %+v, on %T", err, input)
 			}
@@ -106,11 +105,11 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata) (I, 
 			if shared.INFO {
 				shared.GetLogger(ctx).Printf("[ERROR] validation is failed: %+v, on %T", err, input)
 			}
-			return input, err
+			return err
 		}
 	}
 
-	return input, nil
+	return nil
 }
 
 // // TODO: omit gorilla/schema

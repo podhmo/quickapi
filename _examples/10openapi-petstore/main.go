@@ -87,7 +87,9 @@ func run() error {
 // see: https://github.com/deepmap/oapi-codegen/blob/master/examples/petstore-expanded/petstore-expanded.yaml
 
 func mount(bc *define.BuildContext) {
-	define.Type(bc, Pet{ID: "1", Name: "foo", Tag: "Cat"})
+	cat := Pet{ID: "1", Name: "foo", Tag: "Cat"}
+	// define.Type(bc, cat) // as default
+	define.Type(bc, Pet{}).Example(cat)
 
 	{
 		api := &PetAPI{}
@@ -99,7 +101,8 @@ func mount(bc *define.BuildContext) {
 		define.Get(bc, "/pets", api.FindPets).Description(longDescription)
 		define.Post(bc, "/pets", api.AddPet).
 			AnotherError(bc, 400, Error{}, "validation error").
-			Example(400, "validation error", Error{Code: 400, Message: "validation error"})
+			Example(400, "bad request", Error{Code: 400, Message: "validation error"}).
+			DefaultInput(func() AddPetInput { return AddPetInput{Name: "foo"} })
 		define.Get(bc, "/pets/{id}", api.FindPetByID)
 		define.Delete(bc, "/pets/{id}", api.DeletePet).Status(204)
 	}
@@ -132,15 +135,19 @@ func (api *PetAPI) FindPets(context.Context, struct {
 	return
 }
 
-// AddPet creates a new pet in the store. Duplicates are allowed
-func (api *PetAPI) AddPet(context.Context, struct {
+type AddPetInput struct {
 	Name string `json:"name"`          // Name of the pet
 	Tag  string `json:"tag,omitempty"` // Type of the pet
-}) (
+
+	Pretty bool `json:"pretty" in:"query" query:"pretty"` // pretty output (hmm)
+}
+
+// AddPet creates a new pet in the store. Duplicates are allowed
+func (api *PetAPI) AddPet(ctx context.Context, input AddPetInput) (
 	output Pet,
 	err error,
 ) {
-	return
+	return Pet{Name: input.Name, Tag: input.Tag}, nil
 }
 
 // FindPetByID returns a pet based on a single ID
