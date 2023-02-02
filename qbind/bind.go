@@ -32,6 +32,10 @@ var (
 	ErrCannotReceiveBody = fmt.Errorf("cannot receive body")
 )
 
+type Validator interface {
+	Validate(context.Context) error
+}
+
 func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata, input *I) error {
 	if len(metadata.PathVars) > 0 {
 		pathparams := chi.RouteContext(req.Context()).URLParams
@@ -140,50 +144,16 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 		rt = rt.Elem()
 	}
 
-	var queries []string
-	var headers []string
-	var jsonfields []string
-	var pathvars []string
-	var walk func(rt reflect.Type)
-	walk = func(rt reflect.Type) {
-		for i, n := 0, rt.NumField(); i < n; i++ {
-			field := rt.Field(i)
-			if field.Anonymous { // embedded support by recursive call
-				embedded := field.Type
-				for embedded.Kind() == reflect.Ptr {
-					embedded = embedded.Elem()
-				}
-				walk(embedded)
-				continue
-			}
-			if v, ok := field.Tag.Lookup("query"); ok {
-				queries = append(queries, v)
-				continue
-			}
-			if v, ok := field.Tag.Lookup("header"); ok {
-				headers = append(headers, v)
-				continue
-			}
-			if v, ok := field.Tag.Lookup("path"); ok {
-				pathvars = append(pathvars, v)
-				continue
-			}
-			name := field.Name
-			if v, ok := field.Tag.Lookup("json"); ok {
-				name = v
-			}
-			jsonfields = append(jsonfields, name)
-		}
-	}
+	var r result
+	scan(&r, rt)
 
-	walk(rt)
 	metadata := Metadata{
-		HasData:    len(jsonfields) > 0,
+		HasData:    len(r.jsonfields) > 0,
 		Input:      rt,
-		JSONFields: jsonfields,
-		Queries:    queries,
-		Headers:    headers,
-		PathVars:   pathvars,
+		JSONFields: r.jsonfields,
+		Queries:    r.queries,
+		Headers:    r.headers,
+		PathVars:   r.pathvars,
 	}
 	if shared.DEBUG {
 		log.Printf("[DEBUG] Scan %T, metadata=%+v", iz, metadata)
@@ -191,6 +161,40 @@ func Scan[I any, O any](action func(context.Context, I) (O, error)) Metadata {
 	return metadata
 }
 
-type Validator interface {
-	Validate(context.Context) error
+type result struct {
+	queries    []string
+	headers    []string
+	jsonfields []string
+	pathvars   []string
+}
+
+func scan(r *result, rt reflect.Type) {
+	for i, n := 0, rt.NumField(); i < n; i++ {
+		field := rt.Field(i)
+		if field.Anonymous { // embedded support by recursive call
+			embedded := field.Type
+			for embedded.Kind() == reflect.Ptr {
+				embedded = embedded.Elem()
+			}
+			scan(r, embedded)
+			continue
+		}
+		if v, ok := field.Tag.Lookup("query"); ok {
+			r.queries = append(r.queries, v)
+			continue
+		}
+		if v, ok := field.Tag.Lookup("header"); ok {
+			r.headers = append(r.headers, v)
+			continue
+		}
+		if v, ok := field.Tag.Lookup("path"); ok {
+			r.pathvars = append(r.pathvars, v)
+			continue
+		}
+		name := field.Name
+		if v, ok := field.Tag.Lookup("json"); ok {
+			name = v
+		}
+		r.jsonfields = append(r.jsonfields, name)
+	}
 }
