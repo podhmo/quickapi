@@ -9,12 +9,16 @@ import (
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
 	"github.com/podhmo/quickapi/qopenapi/definerpc"
+	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
 func main() {
 	doc := define.Doc().Title("tinyrpc")
 	r := quickapi.DefaultRouter()
-	bc := define.MustBuildContext(doc, r)
+	bc := define.MustBuildContext(doc, r, func(c *reflectopenapi.Config) {
+		c.DisableInputRef = true
+		c.DisableOutputRef = true
+	})
 
 	definerpc.Action(bc, Hello)
 
