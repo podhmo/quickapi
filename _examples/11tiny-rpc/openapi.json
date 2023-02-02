@@ -24,30 +24,6 @@
         ],
         "title": "ErrorResponse",
         "type": "object"
-      },
-      "HelloInput": {
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "type": "object"
-      },
-      "HelloOutput": {
-        "additionalProperties": false,
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "message"
-        ],
-        "type": "object"
       }
     }
   },
@@ -66,7 +42,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/HelloInput"
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "type": "object",
+                "x-go-id": "main.HelloInput"
               }
             }
           }
@@ -76,7 +62,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HelloOutput"
+                  "additionalProperties": false,
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object",
+                  "x-go-id": "main.HelloOutput"
                 }
               }
             },
