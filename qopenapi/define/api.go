@@ -72,8 +72,8 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 	}, nil
 }
 
-func MustBuildContext(docM DocModifier, r chi.Router) *BuildContext {
-	bc, err := NewBuildContext(docM, r)
+func MustBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflectopenapi.Config)) *BuildContext {
+	bc, err := NewBuildContext(docM, r, options...)
 	if err != nil {
 		panic(err)
 	}
