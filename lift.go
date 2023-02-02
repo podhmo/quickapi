@@ -14,7 +14,6 @@ import (
 type Action[I any, O any] func(ctx context.Context, input I) (output O, err error)
 type DumpFunc[O any] func(ctx context.Context, w http.ResponseWriter, req *http.Request, output O, err error)
 
-type LiftOption[I any, O any] func(*LiftedHandler[I, O])
 type LiftedHandler[I any, O any] struct {
 	Action   Action[I, O]
 	metadata qbind.Metadata
@@ -57,15 +56,12 @@ func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request
 }
 
 // NewHandler create new lifted handler
-func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O], options ...LiftOption[I, O]) *LiftedHandler[I, O] {
+func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O]) *LiftedHandler[I, O] {
 	metadata := qbind.Scan(action)
 	h := &LiftedHandler[I, O]{
 		Action:   action,
 		metadata: metadata,
 		Dump:     dump,
-	}
-	for _, opt := range options {
-		opt(h)
 	}
 	return h
 }
@@ -73,13 +69,13 @@ func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O], options ...
 var _ http.Handler = (*LiftedHandler[any, any])(nil)
 
 // LiftHandler transforms Action to http.Handler
-func LiftHandler[I any, O any](action Action[I, O], options ...LiftOption[I, O]) *LiftedHandler[I, O] {
-	return NewHandler(action, qdump.Dump[O], options...)
+func LiftHandler[I any, O any](action Action[I, O]) *LiftedHandler[I, O] {
+	return NewHandler(action, qdump.Dump[O])
 }
 
 // Lift transforms Action to http.HandlerFunc (for go.chi's router methods)
-func Lift[I any, O any](action Action[I, O], options ...LiftOption[I, O]) http.HandlerFunc {
-	h := LiftHandler(action, options...)
+func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
+	h := LiftHandler(action)
 	return h.ToFunc()
 }
 
