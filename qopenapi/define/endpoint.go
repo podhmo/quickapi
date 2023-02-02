@@ -133,10 +133,10 @@ func (m *EndpointModifier[I, O]) AnotherError(bc *BuildContext, code int, typ in
 		})
 	})
 }
-func (m *EndpointModifier[I, O]) Example(code int, title string, value interface{}) *EndpointModifier[I, O] {
+func (m *EndpointModifier[I, O]) Example(code int, description string, value interface{}) *EndpointModifier[I, O] {
 	return &EndpointModifier[I, O]{
 		Handler:  m.Handler,
-		register: m.register.Example(code, "application/json", title, value),
+		register: m.register.Example(code, "application/json", "", description, value),
 	}
 }
 func (m *EndpointModifier[I, O]) DefaultInput(fn func() I) *EndpointModifier[I, O] {
