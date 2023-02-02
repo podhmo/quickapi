@@ -55,8 +55,8 @@ func (h *LiftedHandler[I, O]) ServeHTTP(w http.ResponseWriter, req *http.Request
 	h.Dump(ctx, w, req, output, err)
 }
 
-// NewHandler create new lifted handler
-func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O]) *LiftedHandler[I, O] {
+// NewHandlerWithCustomDump create new lifted handler
+func NewHandlerWithCustomDump[I any, O any](action Action[I, O], dump DumpFunc[O]) *LiftedHandler[I, O] {
 	metadata := qbind.Scan(action)
 	h := &LiftedHandler[I, O]{
 		Action:   action,
@@ -68,15 +68,14 @@ func NewHandler[I any, O any](action Action[I, O], dump DumpFunc[O]) *LiftedHand
 
 var _ http.Handler = (*LiftedHandler[any, any])(nil)
 
-// LiftHandler transforms Action to http.Handler
-func LiftHandler[I any, O any](action Action[I, O]) *LiftedHandler[I, O] {
-	return NewHandler(action, qdump.Dump[O])
+// NewHandler create new lifted handler
+func NewHandler[I any, O any](action Action[I, O]) *LiftedHandler[I, O] {
+	return NewHandlerWithCustomDump(action, qdump.Dump[O])
 }
 
 // Lift transforms Action to http.HandlerFunc (for go.chi's router methods)
 func Lift[I any, O any](action Action[I, O]) http.HandlerFunc {
-	h := LiftHandler(action)
-	return h.ToFunc()
+	return NewHandler(action).ToFunc()
 }
 
 var (

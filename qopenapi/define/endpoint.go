@@ -10,7 +10,6 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/internal/pathutil"
-	"github.com/podhmo/quickapi/qdump"
 	"github.com/podhmo/quickapi/shared"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
@@ -21,7 +20,7 @@ type EndpointModifier[I any, O any] struct {
 }
 
 func Method[I any, O any](bc *BuildContext, method, path string, action quickapi.Action[I, O], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, O] {
-	h := quickapi.NewHandler(action, qdump.Dump[O])
+	h := quickapi.NewHandler(action)
 	m := bc.m
 
 	normalizedPath, _, pathvars := pathutil.NormalizeTemplatedPath(path)
@@ -147,7 +146,7 @@ func (m *EndpointModifier[I, O]) DefaultInput(fn func() I) *EndpointModifier[I, 
 }
 
 func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, string], dump quickapi.DumpFunc[string], middlewares ...func(http.Handler) http.Handler) *EndpointModifier[I, string] {
-	h := quickapi.NewHandler(action, dump)
+	h := quickapi.NewHandlerWithCustomDump(action, dump)
 	m := bc.m
 	method := "GET"
 

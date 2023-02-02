@@ -47,7 +47,7 @@ func TestLift_OK_WithDefault(t *testing.T) {
 	}
 
 	action := func(ctx context.Context, i person) (person, error) { return i, nil }
-	handler := quickapi.LiftHandler(action)
+	handler := quickapi.NewHandler(action)
 	handler.Default = func() person { return person{Name: "foo"} }
 
 	req := httptest.NewRequest("POST", "/", strings.NewReader(`{"age": 20}`))
