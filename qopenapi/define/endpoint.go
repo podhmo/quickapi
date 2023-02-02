@@ -127,9 +127,10 @@ func (m *EndpointModifier[I, O]) Status(code int) *EndpointModifier[I, O] {
 }
 func (m *EndpointModifier[I, O]) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier[I, O] {
 	return m.After(func(op *openapi3.Operation) {
-		ref := bc.m.Visitor.VisitType(typ)
-		val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
-		op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
+		bc.m.RegisterType(typ, func(ref *openapi3.SchemaRef) {
+			val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
+			op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
+		})
 	})
 }
 func (m *EndpointModifier[I, O]) Example(code int, title string, value interface{}) *EndpointModifier[I, O] {
@@ -138,11 +139,10 @@ func (m *EndpointModifier[I, O]) Example(code int, title string, value interface
 		register: m.register.Example(code, "application/json", title, value),
 	}
 }
-func (m *EndpointModifier[I, O]) Default(fn func() I) *EndpointModifier[I, O] {
+func (m *EndpointModifier[I, O]) DefaultInput(fn func() I) *EndpointModifier[I, O] {
 	// side effect!
 	m.Handler.Default = fn
-
-	// TODO: set default in openapi doc ( https://github.com/podhmo/reflect-openapi/issues/120 )
+	m.register = m.register.DefaultInput(fn())
 	return m
 }
 

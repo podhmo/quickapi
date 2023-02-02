@@ -3,6 +3,7 @@ package define
 import (
 	"github.com/getkin/kin-openapi/openapi3"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
+	reflectshape "github.com/podhmo/reflect-shape"
 )
 
 type TypeModifier reflectopenapi.RegisterTypeAction
@@ -21,7 +22,7 @@ func Enum[T any](bc *BuildContext, defaultValue T, values ...T) *TypeModifier {
 	}
 
 	// if c.Loaded is true, this thunk is ignored.
-	return (*TypeModifier)(bc.m.RegisterType(typedValue, func(ref *openapi3.Schema) {
+	return (*TypeModifier)(bc.m.RegisterType(typedValue).After(func(ref *openapi3.Schema) {
 		ref.Default = dst[0]
 		ref.Enum = dst
 	}))
@@ -33,14 +34,14 @@ func IntEnum[T ~int](bc *BuildContext, defaultValue T, values ...T) *TypeModifie
 	return Enum(bc, defaultValue, values...)
 }
 
-func (m *TypeModifier) After(f func(ref *openapi3.SchemaRef)) *TypeModifier {
+func (m *TypeModifier) After(f func(ref *openapi3.Schema)) *TypeModifier {
 	return (*TypeModifier)((*reflectopenapi.RegisterTypeAction)(m).After(f))
 }
-func (m *TypeModifier) Before(f func(s *openapi3.Schema)) *TypeModifier {
+func (m *TypeModifier) Before(f func(s *reflectshape.Shape)) *TypeModifier {
 	return (*TypeModifier)((*reflectopenapi.RegisterTypeAction)(m).Before(f))
 }
 func (a *TypeModifier) Example(value interface{}) *TypeModifier {
-	return a.Before(func(s *openapi3.Schema) {
+	return a.After(func(s *openapi3.Schema) {
 		s.Example = value
 	})
 }
