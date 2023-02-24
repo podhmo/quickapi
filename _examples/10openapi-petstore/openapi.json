@@ -149,7 +149,10 @@
             "description": "default error"
           }
         },
-        "summary": "FindPets returns all pets"
+        "summary": "FindPets returns all pets",
+        "tags": [
+          "main"
+        ]
       },
       "post": {
         "description": "AddPet creates a new pet in the store. Duplicates are allowed",
@@ -216,7 +219,10 @@
             "description": "default error"
           }
         },
-        "summary": "AddPet creates a new pet in the store. Duplicates are allowed"
+        "summary": "AddPet creates a new pet in the store. Duplicates are allowed",
+        "tags": [
+          "main"
+        ]
       }
     },
     "/pets/{id}": {
@@ -256,7 +262,10 @@
             "description": "default error"
           }
         },
-        "summary": "DeletePet deletes a pet by ID"
+        "summary": "DeletePet deletes a pet by ID",
+        "tags": [
+          "main"
+        ]
       },
       "get": {
         "description": "FindPetByID returns a pet based on a single ID",
@@ -294,7 +303,10 @@
             "description": "default error"
           }
         },
-        "summary": "FindPetByID returns a pet based on a single ID"
+        "summary": "FindPetByID returns a pet based on a single ID",
+        "tags": [
+          "main"
+        ]
       }
     }
   },

@@ -14,10 +14,10 @@ This is a sample server Petstore server.  You can find out more about Swagger at
 
 | endpoint | operationId | tags | summary |
 | --- | --- | --- | --- |
-| `GET /pets` | [main.PetAPI.FindPets](#mainpetapifindpets-get-pets)  |  | FindPets returns all pets |
-| `POST /pets` | [main.PetAPI.AddPet](#mainpetapiaddpet-post-pets)  |  | AddPet creates a new pet in the store. Duplicates are allowed |
-| `DELETE /pets/{id}` | [main.PetAPI.DeletePet](#mainpetapideletepet-delete-petsid)  |  | DeletePet deletes a pet by ID |
-| `GET /pets/{id}` | [main.PetAPI.FindPetByID](#mainpetapifindpetbyid-get-petsid)  |  | FindPetByID returns a pet based on a single ID |
+| `GET /pets` | [main.PetAPI.FindPets](#mainpetapifindpets-get-pets)  | `main` | FindPets returns all pets |
+| `POST /pets` | [main.PetAPI.AddPet](#mainpetapiaddpet-post-pets)  | `main` | AddPet creates a new pet in the store. Duplicates are allowed |
+| `DELETE /pets/{id}` | [main.PetAPI.DeletePet](#mainpetapideletepet-delete-petsid)  | `main` | DeletePet deletes a pet by ID |
+| `GET /pets/{id}` | [main.PetAPI.FindPetByID](#mainpetapifindpetbyid-get-petsid)  | `main` | FindPetByID returns a pet based on a single ID |
 
 
 ### main.PetAPI.FindPets `GET /pets`
@@ -28,7 +28,7 @@ FindPets returns all pets
 | --- | --- |
 | operationId | main.PetAPI.FindPets |
 | endpoint | `GET /pets` |
-| tags |  |
+| tags | `main` |
 
 
 #### input (application/json)
@@ -84,7 +84,7 @@ AddPet creates a new pet in the store. Duplicates are allowed
 | --- | --- |
 | operationId | main.PetAPI.AddPet |
 | endpoint | `POST /pets` |
-| tags |  |
+| tags | `main` |
 
 
 #### input (application/json)
@@ -165,7 +165,7 @@ DeletePet deletes a pet by ID
 | --- | --- |
 | operationId | main.PetAPI.DeletePet |
 | endpoint | `DELETE /pets/{id}` |
-| tags |  |
+| tags | `main` |
 
 
 #### input (application/json)
@@ -208,7 +208,7 @@ FindPetByID returns a pet based on a single ID
 | --- | --- |
 | operationId | main.PetAPI.FindPetByID |
 | endpoint | `GET /pets/{id}` |
-| tags |  |
+| tags | `main` |
 
 
 #### input (application/json)
