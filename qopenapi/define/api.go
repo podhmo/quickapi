@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
@@ -97,7 +98,7 @@ func (bc *BuildContext) ReflectOpenAPIManager() *reflectopenapi.Manager {
 	return bc.m
 }
 
-func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
+func (bc *BuildContext) EmitDoc(ctx context.Context, filename string) error {
 	if err := bc.commit(ctx); err != nil {
 		return fmt.Errorf("EmitDoc (commit): %w", err)
 	}
@@ -107,24 +108,28 @@ func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
 		log.Printf("[WARN]  pathvars validation: %+v", err)
 	}
 
-	enc := json.NewEncoder(w)
-	enc.SetIndent("", "  ")
-	if err := enc.Encode(bc.m.Doc); err != nil {
-		return fmt.Errorf("emitDoc (json encode): %w", err)
-	}
-	return nil
+	return writeFileOrStdout(ctx, filename, func(ctx context.Context, w io.Writer) error {
+		enc := json.NewEncoder(w)
+		enc.SetIndent("", "  ")
+		if err := enc.Encode(bc.m.Doc); err != nil {
+			return fmt.Errorf("emitDoc (json encode): %w", err)
+		}
+		return nil
+	})
 }
 
-func (bc *BuildContext) EmitMDDoc(ctx context.Context, w io.Writer) error {
+func (bc *BuildContext) EmitMDDoc(ctx context.Context, filename string) error {
 	if err := bc.commit(ctx); err != nil {
 		return fmt.Errorf("EmitMDDoc (commit): %w", err)
 	}
 
-	doc := docgen.Generate(bc.Doc(), bc.c.Info)
-	if err := docgen.WriteDoc(w, doc); err != nil {
-		return fmt.Errorf("emitMDDoc (json encode): %w", err)
-	}
-	return nil
+	return writeFileOrStdout(ctx, filename, func(ctx context.Context, w io.Writer) error {
+		doc := docgen.Generate(bc.Doc(), bc.c.Info)
+		if err := docgen.WriteDoc(w, doc); err != nil {
+			return fmt.Errorf("emitMDDoc (writeDoc): %w", err)
+		}
+		return nil
+	})
 }
 
 func (bc *BuildContext) BuildHandler(ctx context.Context) (http.Handler, error) {
@@ -162,6 +167,22 @@ func (bc *BuildContext) commit(ctx context.Context) error {
 	commit := bc.commitFunc
 	if err := commit(ctx); err != nil {
 		return err
+	}
+	return nil
+}
+
+func writeFileOrStdout(ctx context.Context, filename string, writeFunc func(context.Context, io.Writer) error) error {
+	var w io.Writer = os.Stdout
+	if filename != "" {
+		f, err := os.Create(filename)
+		if err != nil {
+			return fmt.Errorf("create file %q: %w", filename, err)
+		}
+		defer f.Close()
+		w = f
+	}
+	if err := writeFunc(ctx, w); err != nil {
+		return fmt.Errorf("write file %q: %w", filename, err)
 	}
 	return nil
 }
