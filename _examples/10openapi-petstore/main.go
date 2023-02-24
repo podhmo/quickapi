@@ -1,4 +1,4 @@
-//go:generate go run ./ -gendoc -docfile openapi.json -mdfile README.md
+//go:generate go run ./ -gendoc -docfile openapi.json -mdfile apidoc.md
 package main
 
 import (
