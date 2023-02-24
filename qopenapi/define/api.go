@@ -44,12 +44,14 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 			OverrideTag:    "openapi-override",
 			XNewTypeTag:    "x-go-type",
 		},
-		Doc:           doc,
-		Loaded:        loaded,
-		DefaultError:  shared.ErrorResponse{},
-		StrictSchema:  true,
-		EnableAutoTag: true,
-		Info:          info.New(),
+		Doc:              doc,
+		Loaded:           loaded,
+		DefaultError:     shared.ErrorResponse{},
+		StrictSchema:     true,
+		EnableAutoTag:    true,
+		Info:             info.New(),
+		DisableInputRef:  true,
+		DisableOutputRef: true,
 	}
 
 	if shared.FORCE {
