@@ -17,6 +17,9 @@ import (
 	"github.com/podhmo/quickapi/qopenapi/validate"
 	"github.com/podhmo/quickapi/shared"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
+	"github.com/podhmo/reflect-openapi/docgen"
+	"github.com/podhmo/reflect-openapi/dochandler"
+	"github.com/podhmo/reflect-openapi/info"
 )
 
 type BuildContext struct {
@@ -37,15 +40,18 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 	c := &reflectopenapi.Config{
 		TagNameOption: &reflectopenapi.TagNameOption{
 			NameTag:        "json",
+			RequiredTag:    "required",
 			ParamTypeTag:   "in",
 			DescriptionTag: "description",
 			OverrideTag:    "openapi-override",
 			XNewTypeTag:    "x-go-type",
 		},
-		Doc:          doc,
-		Loaded:       loaded,
-		DefaultError: shared.ErrorResponse{},
-		StrictSchema: true,
+		Doc:           doc,
+		Loaded:        loaded,
+		DefaultError:  shared.ErrorResponse{},
+		StrictSchema:  true,
+		EnableAutoTag: true,
+		Info:          info.New(),
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
 			required := true
 			if val, ok := tag.Lookup("in"); ok && val != "body" {
@@ -122,6 +128,18 @@ func (bc *BuildContext) EmitDoc(ctx context.Context, w io.Writer) error {
 	return nil
 }
 
+func (bc *BuildContext) EmitMDDoc(ctx context.Context, w io.Writer) error {
+	if err := bc.commit(ctx); err != nil {
+		return fmt.Errorf("EmitMDDoc (commit): %w", err)
+	}
+
+	doc := docgen.Generate(bc.Doc(), bc.c.Info)
+	if err := docgen.WriteDoc(w, doc); err != nil {
+		return fmt.Errorf("emitMDDoc (json encode): %w", err)
+	}
+	return nil
+}
+
 func (bc *BuildContext) BuildHandler(ctx context.Context) (http.Handler, error) {
 	if err := bc.commit(ctx); err != nil {
 		return nil, fmt.Errorf("BuildHandler (commit): %w", err)
@@ -139,6 +157,13 @@ func (bc *BuildContext) BuildOpenAPIDoc(ctx context.Context) (*openapi3.T, error
 		return nil, fmt.Errorf("BuildOpenAPIDoc (commit): %w", err)
 	}
 	return bc.m.Doc, nil
+}
+
+func (bc *BuildContext) BuildDocHandler(ctx context.Context, path string) (http.Handler, error) {
+	if err := bc.commit(ctx); err != nil {
+		return nil, fmt.Errorf("BuildDocHandler (commit): %w", err)
+	}
+	return dochandler.New(bc.Doc(), path, bc.c.Info), nil
 }
 
 func (bc *BuildContext) commit(ctx context.Context) error {

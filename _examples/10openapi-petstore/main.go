@@ -1,4 +1,4 @@
-//go:generate go run ./ -gendoc -docfile openapi.json
+//go:generate go run ./ -gendoc -docfile openapi.json -mdfile apidoc.md
 package main
 
 import (
@@ -13,7 +13,6 @@ import (
 
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
-	"github.com/podhmo/reflect-openapi/dochandler"
 )
 
 //go:embed openapi.json
@@ -22,6 +21,7 @@ var openapiDocData []byte
 var options struct {
 	gendoc  bool
 	docfile string
+	mdfile  string
 	port    int
 }
 
@@ -29,6 +29,7 @@ func main() {
 	flag.BoolVar(&options.gendoc, "gendoc", false, "generate openapi doc")
 	flag.IntVar(&options.port, "port", 8080, "port")
 	flag.StringVar(&options.docfile, "docfile", "", "file name of openapi doc. if this value is empty output to stdout.")
+	flag.StringVar(&options.mdfile, "mdfile", "", "")
 	flag.Parse()
 	if err := run(); err != nil {
 		log.Fatalf("!! %+v", err)
@@ -69,6 +70,17 @@ func run() error {
 		if err := bc.EmitDoc(ctx, w); err != nil {
 			return err
 		}
+
+		if options.mdfile != "" {
+			f, err := os.Create(options.mdfile)
+			if err != nil {
+				return fmt.Errorf("write file: %w", err)
+			}
+			defer f.Close()
+			if err := bc.EmitMDDoc(ctx, f); err != nil {
+				return err
+			}
+		}
 		return nil
 	}
 
@@ -76,7 +88,11 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	bc.Router().Mount("/openapi", dochandler.New(bc.Doc(), "/openapi"))
+	dochandler, err := bc.BuildDocHandler(ctx, "/_doc")
+	if err != nil {
+		return err
+	}
+	bc.Router().Mount("/_doc", dochandler)
 
 	if err := quickapi.NewServer(fmt.Sprintf(":%d", options.port), handler, 5*time.Second).ListenAndServe(ctx); err != nil {
 		log.Printf("[Error] !! %+v", err)

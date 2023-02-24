@@ -1,5 +1,9 @@
 # openapi-petstore
 
+- [apidoc.md](apidoc.md)
+- [openapi.json](openapi.json)
+
+
 ```console
 $ http :8080/pets
 HTTP/1.1 200 OK
