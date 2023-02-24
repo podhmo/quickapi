@@ -46,11 +46,12 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 			OverrideTag:    "openapi-override",
 			XNewTypeTag:    "x-go-type",
 		},
-		Doc:          doc,
-		Loaded:       loaded,
-		DefaultError: shared.ErrorResponse{},
-		StrictSchema: true,
-		Info:         info.New(),
+		Doc:           doc,
+		Loaded:        loaded,
+		DefaultError:  shared.ErrorResponse{},
+		StrictSchema:  true,
+		EnableAutoTag: true,
+		Info:          info.New(),
 		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
 			required := true
 			if val, ok := tag.Lookup("in"); ok && val != "body" {
