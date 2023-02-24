@@ -1,30 +1,6 @@
 {
   "components": {
     "schemas": {
-      "AddPetInput": {
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "default": "foo",
-            "description": "Name of the pet",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Type of the pet",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "AddPetInput",
-        "type": "object"
-      },
-      "Empty": {
-        "description": "Empty is zero Input",
-        "title": "Empty",
-        "type": "object"
-      },
       "Error": {
         "additionalProperties": false,
         "default": {
@@ -78,6 +54,7 @@
         ],
         "title": "Pet",
         "type": "object",
+        "x-go-id": "main.Pet",
         "x-go-type": "main.Pet"
       }
     }
@@ -172,7 +149,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddPetInput"
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "default": "foo",
+                    "description": "Name of the pet",
+                    "type": "string"
+                  },
+                  "tag": {
+                    "description": "Type of the pet",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "title": "AddPetInput",
+                "type": "object",
+                "x-go-id": "main.AddPetInput"
               }
             }
           }
@@ -182,7 +176,35 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet"
+                  "additionalProperties": false,
+                  "example": {
+                    "id": "1",
+                    "name": "foo",
+                    "tag": "Cat"
+                  },
+                  "properties": {
+                    "id": {
+                      "description": "unique id of the pet",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "name of the pet",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "tag": {
+                      "description": "id of the pet",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "title": "Pet",
+                  "type": "object",
+                  "x-go-id": "main.Pet",
+                  "x-go-type": "main.Pet"
                 }
               }
             },
@@ -245,7 +267,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "description": "Empty is zero Input",
+                  "title": "Empty",
+                  "type": "object",
+                  "x-go-id": "github.com/podhmo/quickapi/shared.Empty"
                 }
               }
             },
@@ -286,7 +311,35 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet"
+                  "additionalProperties": false,
+                  "example": {
+                    "id": "1",
+                    "name": "foo",
+                    "tag": "Cat"
+                  },
+                  "properties": {
+                    "id": {
+                      "description": "unique id of the pet",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "name of the pet",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "tag": {
+                      "description": "id of the pet",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "title": "Pet",
+                  "type": "object",
+                  "x-go-id": "main.Pet",
+                  "x-go-type": "main.Pet"
                 }
               }
             },

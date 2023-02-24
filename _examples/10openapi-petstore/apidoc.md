@@ -259,36 +259,10 @@ FindPetByID returns a pet based on a single ID
 
 | name | summary |
 | --- | --- |
-| [AddPetInput](#addpetinput) |  |
-| [Empty](#empty) | is zero Input |
 | [Error](#error) |  |
 | [Pet](#pet) |  |
 
 
-
-### AddPetInput
-
-```go
-type AddPetInput struct {
-	// Name of the pet
-	name string
-
-	// Type of the pet
-	tag? string
-}
-```
-
-- [input of main.PetAPI.AddPet](#mainpetapiaddpet-post-pets)
-
-### Empty
-
-```go
-// Empty is zero Input
-type Empty struct {
-}
-```
-
-- [output of main.PetAPI.DeletePet (204)](#mainpetapideletepet-delete-petsid)
 
 ### Error
 
