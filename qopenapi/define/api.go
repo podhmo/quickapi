@@ -151,11 +151,11 @@ func (bc *BuildContext) BuildOpenAPIDoc(ctx context.Context) (*openapi3.T, error
 	return bc.m.Doc, nil
 }
 
-func (bc *BuildContext) BuildDocHandler(ctx context.Context, path string) (http.Handler, error) {
+func (bc *BuildContext) BuildDocHandler(ctx context.Context, path string, mdtext []byte) (http.Handler, error) {
 	if err := bc.commit(ctx); err != nil {
 		return nil, fmt.Errorf("BuildDocHandler (commit): %w", err)
 	}
-	return dochandler.New(bc.Doc(), path, bc.c.Info), nil
+	return dochandler.New(bc.Doc(), path, bc.c.Info, string(mdtext)), nil
 }
 
 func (bc *BuildContext) commit(ctx context.Context) error {
