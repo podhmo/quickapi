@@ -1,8 +1,8 @@
-{
+  {
   "code": 400,
-  "error": "request body has an error: doesn't match schema #/components/schemas/Input: Error at \"/name\": property \"name\" is missing",
+  "error": "request body has an error: doesn't match schema Input: Error at \"/name\": property \"name\" is missing",
   "detail": [
-    "request body has an error: doesn't match schema #/components/schemas/Input: Error at \"/name\": property \"name\" is missing",
+    "request body has an error: doesn't match schema Input: Error at \"/name\": property \"name\" is missing",
     "Schema:",
     "  {",
     "    \"additionalProperties\": false,",
@@ -14,7 +14,9 @@
     "    \"required\": [",
     "      \"name\"",
     "    ],",
-    "    \"type\": \"object\"",
+    "    \"title\": \"Input\",",
+    "    \"type\": \"object\",",
+    "    \"x-go-id\": \"github.com/podhmo/quickapi/qopenapi/define_test.Input\"",
     "  }",
     "",
     "Value:",
