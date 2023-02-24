@@ -16,6 +16,9 @@ import (
 //go:embed openapi.json
 var openapiDocData []byte
 
+//go:embed apidoc.md
+var mdDocData []byte
+
 var options struct {
 	gendoc  bool
 	docfile string
@@ -72,7 +75,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	dochandler, err := bc.BuildDocHandler(ctx, "/_doc")
+	dochandler, err := bc.BuildDocHandler(ctx, "/_doc", mdDocData)
 	if err != nil {
 		return err
 	}
