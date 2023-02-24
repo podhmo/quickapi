@@ -8,8 +8,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"reflect"
-	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
@@ -52,19 +50,6 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 		StrictSchema:  true,
 		EnableAutoTag: true,
 		Info:          info.New(),
-		IsRequiredCheckFunction: func(tag reflect.StructTag) bool {
-			required := true
-			if val, ok := tag.Lookup("in"); ok && val != "body" {
-				required = false
-			}
-			if _, isOptional := tag.Lookup("optional"); isOptional {
-				required = false
-			}
-			if val, ok := tag.Lookup("json"); ok && strings.Contains(val, "omitempty") {
-				required = false
-			}
-			return required
-		},
 	}
 
 	if shared.FORCE {
