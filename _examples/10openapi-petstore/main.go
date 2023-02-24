@@ -6,9 +6,7 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
-	"io"
 	"log"
-	"os"
 	"time"
 
 	"github.com/podhmo/quickapi"
@@ -58,26 +56,12 @@ func run() error {
 	mount(bc)
 
 	if options.gendoc {
-		var w io.Writer = os.Stdout
-		if options.docfile != "" {
-			f, err := os.Create(options.docfile)
-			if err != nil {
-				return fmt.Errorf("write file: %w", err)
-			}
-			defer f.Close()
-			w = f
-		}
-		if err := bc.EmitDoc(ctx, w); err != nil {
+		if err := bc.EmitDoc(ctx, options.docfile); err != nil {
 			return err
 		}
 
 		if options.mdfile != "" {
-			f, err := os.Create(options.mdfile)
-			if err != nil {
-				return fmt.Errorf("write file: %w", err)
-			}
-			defer f.Close()
-			if err := bc.EmitMDDoc(ctx, f); err != nil {
+			if err := bc.EmitMDDoc(ctx, options.mdfile); err != nil {
 				return err
 			}
 		}
