@@ -17,10 +17,12 @@
         "required": [
           "name"
         ],
+        "title": "AddPetInput",
         "type": "object"
       },
       "Empty": {
         "description": "Empty is zero Input",
+        "title": "Empty",
         "type": "object"
       },
       "Error": {
@@ -33,6 +35,7 @@
           "code": {
             "default": 400,
             "description": "Error code",
+            "format": "int32",
             "type": "integer"
           },
           "message": {
@@ -105,6 +108,9 @@
             "in": "query",
             "name": "limit",
             "schema": {
+              "default": 400,
+              "description": "Error code",
+              "format": "int32",
               "type": "integer"
             }
           }
@@ -185,6 +191,7 @@
                 "examples": {
                   "default": {
                     "description": "bad request",
+                    "summary": "bad request",
                     "value": {
                       "code": 400,
                       "message": "validation error"
@@ -222,6 +229,7 @@
             "name": "id",
             "required": true,
             "schema": {
+              "format": "int64",
               "type": "integer"
             }
           }
@@ -259,6 +267,7 @@
             "name": "id",
             "required": true,
             "schema": {
+              "format": "int64",
               "type": "integer"
             }
           }
