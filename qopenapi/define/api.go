@@ -55,9 +55,6 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 		DisableOutputRef: true,
 	}
 
-	if shared.FORCE {
-		c.SkipValidation = true
-	}
 	for _, opt := range options {
 		opt(c)
 	}
