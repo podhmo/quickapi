@@ -109,6 +109,8 @@ func mount(bc *define.BuildContext) {
 		define.Get(bc, "/pets/{id}", api.FindPetByID)
 		define.Delete(bc, "/pets/{id}", api.DeletePet).Status(204)
 	}
+
+	define.GetHTML(bc, "/hello/{name}", Hello, nil)
 }
 
 type Pet struct { // allOf is not supported
@@ -139,8 +141,8 @@ func (api *PetAPI) FindPets(context.Context, struct {
 }
 
 type AddPetInput struct {
-	Name string `json:"name"`          // Name of the pet
-	Tag  string `json:"tag,omitempty"` // Type of the pet
+	Name string `json:"name" openapi-override:"{'minLength': 1}"` // Name of the pet
+	Tag  string `json:"tag,omitempty"`                            // Type of the pet
 
 	Pretty bool `json:"pretty" in:"query" query:"pretty"` // pretty output (hmm)
 }
@@ -171,4 +173,10 @@ func (api *PetAPI) DeletePet(context.Context, struct {
 	err error,
 ) {
 	return
+}
+
+func Hello(ctx context.Context, input struct {
+	Name string `in:"path" path:"name"`
+}) (string /* return greeting text */, error) {
+	return fmt.Sprintf("hello %s", input.Name), nil
 }

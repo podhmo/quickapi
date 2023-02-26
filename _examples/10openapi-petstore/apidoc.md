@@ -18,13 +18,14 @@ This is a sample server Petstore server.  You can find out more about Swagger at
 | `POST /pets` | [main.PetAPI.AddPet](#mainpetapiaddpet-post-pets)  | `main` | AddPet creates a new pet in the store. Duplicates are allowed |
 | `DELETE /pets/{id}` | [main.PetAPI.DeletePet](#mainpetapideletepet-delete-petsid)  | `main` | DeletePet deletes a pet by ID |
 | `GET /pets/{id}` | [main.PetAPI.FindPetByID](#mainpetapifindpetbyid-get-petsid)  | `main` | FindPetByID returns a pet based on a single ID |
+| `GET /hello/{name}` | [main.Hello](#mainhello-get-helloname)  | `main text/html` |  |
 
 
 ### main.PetAPI.FindPets `GET /pets`
 
 FindPets returns all pets
 
-| name | value | 
+| name | value |
 | --- | --- |
 | operationId | main.PetAPI.FindPets |
 | endpoint | `GET /pets` |
@@ -44,7 +45,6 @@ type Input struct {
 #### output (application/json)
 
 ```go
-
 // GET /pets (200)
 // list of pets
 type Output200 struct {	// 
@@ -64,10 +64,10 @@ type Output200 struct {	//
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`
+	code integer `format:"int32"`	// default: 400
 
 	// message
-	message? string
+	message? string	// default: validation error
 }
 ```
 
@@ -80,7 +80,7 @@ Returns all pets from the system that the user has access to
 
 AddPet creates a new pet in the store. Duplicates are allowed
 
-| name | value | 
+| name | value |
 | --- | --- |
 | operationId | main.PetAPI.AddPet |
 | endpoint | `POST /pets` |
@@ -97,7 +97,7 @@ type Input struct {
 
 	JSONBody struct {	// AddPetInput
 		// Name of the pet
-		name string
+		name string `minLength:"1"`	// default: foo
 
 		// Type of the pet
 		tag? string
@@ -108,7 +108,6 @@ type Input struct {
 #### output (application/json)
 
 ```go
-
 // POST /pets (200)
 type Output200 struct {	// Pet
 	// unique id of the pet
@@ -125,20 +124,20 @@ type Output200 struct {	// Pet
 // -
 type Output400 struct {	// Error
 	// Error code
-	code integer `format:"int32"`
+	code integer `format:"int32"`	// default: 400
 
 	// message
-	message? string
+	message? string	// default: validation error
 }
 
 // POST /pets (default)
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`
+	code integer `format:"int32"`	// default: 400
 
 	// message
-	message? string
+	message? string	// default: validation error
 }
 ```
 
@@ -161,7 +160,7 @@ AddPet creates a new pet in the store. Duplicates are allowed
 
 DeletePet deletes a pet by ID
 
-| name | value | 
+| name | value |
 | --- | --- |
 | operationId | main.PetAPI.DeletePet |
 | endpoint | `DELETE /pets/{id}` |
@@ -180,7 +179,6 @@ type Input struct {
 #### output (application/json)
 
 ```go
-
 // DELETE /pets/{id} (204)
 // return 204
 type Output204 struct {	// Empty
@@ -190,10 +188,10 @@ type Output204 struct {	// Empty
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`
+	code integer `format:"int32"`	// default: 400
 
 	// message
-	message? string
+	message? string	// default: validation error
 }
 ```
 
@@ -204,7 +202,7 @@ DeletePet deletes a pet by ID
 
 FindPetByID returns a pet based on a single ID
 
-| name | value | 
+| name | value |
 | --- | --- |
 | operationId | main.PetAPI.FindPetByID |
 | endpoint | `GET /pets/{id}` |
@@ -223,7 +221,6 @@ type Input struct {
 #### output (application/json)
 
 ```go
-
 // GET /pets/{id} (200)
 type Output200 struct {	// Pet
 	// unique id of the pet
@@ -240,16 +237,41 @@ type Output200 struct {	// Pet
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`
+	code integer `format:"int32"`	// default: 400
 
 	// message
-	message? string
+	message? string	// default: validation error
 }
 ```
 
 #### description
 
 FindPetByID returns a pet based on a single ID
+
+
+### main.Hello `GET /hello/{name}`
+
+
+
+| name | value |
+| --- | --- |
+| operationId | main.Hello |
+| endpoint | `GET /hello/{name}` |
+| tags | `main` |
+
+
+#### input
+
+```go
+// GET /hello/{name}
+type Input struct {
+	name string `in:"path"`
+}
+```
+
+#### output (text/html)
+
+return greeting text
 
 
 
@@ -269,18 +291,19 @@ FindPetByID returns a pet based on a single ID
 ```go
 type Error struct {
 	// Error code
-	code integer `format:"int32"`
+	code integer `format:"int32"`	// default: 400
 
 	// message
-	message? string
+	message? string	// default: validation error
 }
 ```
 
-- [output of main.PetAPI.FindPets (default)](#mainpetapifindpets-get-pets)
-- [output of main.PetAPI.AddPet (400)](#mainpetapiaddpet-post-pets)
-- [output of main.PetAPI.AddPet (default)](#mainpetapiaddpet-post-pets)
-- [output of main.PetAPI.DeletePet (default)](#mainpetapideletepet-delete-petsid)
-- [output of main.PetAPI.FindPetByID (default)](#mainpetapifindpetbyid-get-petsid)
+- [output of main.Hello (default) as `Error`](#mainhello-get-helloname)
+- [output of main.PetAPI.FindPets (default) as `Error`](#mainpetapifindpets-get-pets)
+- [output of main.PetAPI.AddPet (400) as `Error`](#mainpetapiaddpet-post-pets)
+- [output of main.PetAPI.AddPet (default) as `Error`](#mainpetapiaddpet-post-pets)
+- [output of main.PetAPI.DeletePet (default) as `Error`](#mainpetapideletepet-delete-petsid)
+- [output of main.PetAPI.FindPetByID (default) as `Error`](#mainpetapifindpetbyid-get-petsid)
 
 ### Pet
 
@@ -308,5 +331,5 @@ exmaples
 }
 ```
 
-- [output of main.PetAPI.AddPet (200)](#mainpetapiaddpet-post-pets)
-- [output of main.PetAPI.FindPetByID (200)](#mainpetapifindpetbyid-get-petsid)
+- [output of main.PetAPI.AddPet (200) as `Pet`](#mainpetapiaddpet-post-pets)
+- [output of main.PetAPI.FindPetByID (200) as `Pet`](#mainpetapifindpetbyid-get-petsid)
