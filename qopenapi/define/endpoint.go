@@ -169,11 +169,7 @@ func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, str
 	// if c.Loaded is true, this thunk is ignored.
 	return &EndpointModifier[I, string]{
 		Handler: h,
-		register: m.RegisterFunc(action).After(func(op *openapi3.Operation) {
-			// overwrite response/200/content/{application-json -> text/html}
-			res := op.Responses.Get(200).Value
-			res.Content = openapi3.NewContentWithSchemaRef(res.Content.Get("application/json").Schema, []string{"text/html"})
-
+		register: m.RegisterFuncText(action, "text/html").After(func(op *openapi3.Operation) {
 			m.Doc.AddOperation(path, method, op)
 			middleware := bc.mb.BuildMiddleware(path, op)
 			middlewares := append([]func(http.Handler) http.Handler{middleware}, middlewares...)
