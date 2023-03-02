@@ -89,31 +89,87 @@ func run() error {
 }
 
 func mount(bc *define.BuildContext) {
-	define.Post(bc, "/users/login", Handler)
-	define.Post(bc, "/users/", Handler)
-	define.Get(bc, "/user", Handler)
-	define.Put(bc, "/user", Handler)
-	
-	define.Get(bc, "/profiles/{username}", Handler)
-	define.Post(bc, "/profiles/{username}/follow", Handler)
-	define.Delete(bc, "/profiles/{username}/follow", Handler)
-	
-	define.Get(bc, "/articles/feed", Handler)
-	define.Get(bc, "/articles", Handler)
-	define.Post(bc, "/articles", Handler)
-	define.Get(bc, "/articles/{slug}", Handler)
-	define.Put(bc, "/articles/{slug}", Handler)
-	define.Delete(bc, "/articles/{slug}", Handler)
-	define.Get(bc, "/articles/{slug}/comments", Handler)
-	define.Post(bc, "/articles/{slug}/comments", Handler)
-	define.Delete(bc, "/articles/{slug}/comments/{id}", Handler)
-	define.Post(bc, "/articles/{slug}/favorite", Handler)
-	define.Delete(bc, "/articles/{slug}/favorite", Handler)
-	
-	define.Get(bc, "/tags", Handler)
+	define.Post(bc, "/users/login", Login)
+	define.Post(bc, "/users/", CreateUser)
+	define.Get(bc, "/user", GetCurrentUser)
+	define.Put(bc, "/user", UpdateCurrentUser)
+
+	define.Get(bc, "/profiles/{username}", GetProfileByUsername)
+	define.Post(bc, "/profiles/{username}/follow", FollowUserByUsername)
+	define.Delete(bc, "/profiles/{username}/follow", UnfollowUserByUsername)
+
+	define.Get(bc, "/articles/feed", GetArticlesFeed)
+	define.Get(bc, "/articles", GetArticles)
+	define.Post(bc, "/articles", CreateArticle)
+	define.Get(bc, "/articles/{slug}", GetArticle)
+	define.Put(bc, "/articles/{slug}", UpdateArticle)
+	define.Delete(bc, "/articles/{slug}", DeleteArticle)
+	define.Get(bc, "/articles/{slug}/comments", GetArticleComments)
+	define.Post(bc, "/articles/{slug}/comments", CreateArticleComment)
+	define.Delete(bc, "/articles/{slug}/comments/{id}", DeleteArticleComment)
+	define.Post(bc, "/articles/{slug}/favorite", CreateArticleFavorite)
+	define.Delete(bc, "/articles/{slug}/favorite", DeleteArticleFavorite)
+
+	define.Get(bc, "/tags", GetTags)
 }
 
+// handlers
+func Login(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func CreateUser(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func GetCurrentUser(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func UpdateCurrentUser(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
 
-func Handler(ctx context.Context, input struct {}) (output struct {}, error) {
-	return nil
+func GetProfileByUsername(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func FollowUserByUsername(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func UnfollowUserByUsername(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+
+func GetArticlesFeed(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func GetArticles(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func CreateArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func GetArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func UpdateArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func DeleteArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func GetArticleComments(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func CreateArticleComment(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func DeleteArticleComment(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func CreateArticleFavorite(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func DeleteArticleFavorite(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
+}
+func GetTags(ctx context.Context, input struct{}) (output struct{}, err error) {
+	return struct{}{}, nil
 }
