@@ -36,6 +36,7 @@
   "paths": {
     "/articles": {
       "get": {
+        "description": "Get recent articles globally\n\nGet most recent articles globally. Use query parameters to filter results. Auth is optional",
         "operationId": "main.GetArticles",
         "responses": {
           "200": {
@@ -59,11 +60,13 @@
             "description": "default error"
           }
         },
+        "summary": "Get recent articles globally",
         "tags": [
           "main"
         ]
       },
       "post": {
+        "description": "Create an article\n\nCreate an article. Auth is required",
         "operationId": "main.CreateArticle",
         "responses": {
           "200": {
@@ -87,6 +90,7 @@
             "description": "default error"
           }
         },
+        "summary": "Create an article",
         "tags": [
           "main"
         ]
@@ -94,6 +98,7 @@
     },
     "/articles/feed": {
       "get": {
+        "description": "Get recent articles from users you follow\n\nGet most recent articles from users you follow. Use query parameters to limit. Auth is required",
         "operationId": "main.GetArticlesFeed",
         "responses": {
           "200": {
@@ -117,6 +122,7 @@
             "description": "default error"
           }
         },
+        "summary": "Get recent articles from users you follow",
         "tags": [
           "main"
         ]
@@ -124,6 +130,7 @@
     },
     "/articles/{slug}": {
       "delete": {
+        "description": "Delete an article\n\nDelete an article. Auth is required",
         "operationId": "main.DeleteArticle",
         "parameters": [
           {
@@ -158,11 +165,13 @@
             "description": "default error"
           }
         },
+        "summary": "Delete an article",
         "tags": [
           "main"
         ]
       },
       "get": {
+        "description": "Get an article\n\nGet an article. Auth not required",
         "operationId": "main.GetArticle",
         "parameters": [
           {
@@ -197,11 +206,13 @@
             "description": "default error"
           }
         },
+        "summary": "Get an article",
         "tags": [
           "main"
         ]
       },
       "put": {
+        "description": "Update an article\n\nUpdate an article. Auth is required",
         "operationId": "main.UpdateArticle",
         "parameters": [
           {
@@ -236,6 +247,7 @@
             "description": "default error"
           }
         },
+        "summary": "Update an article",
         "tags": [
           "main"
         ]
@@ -243,6 +255,7 @@
     },
     "/articles/{slug}/comments": {
       "get": {
+        "description": "Get comments for an article\n\nGet the comments for an article. Auth is optional",
         "operationId": "main.GetArticleComments",
         "parameters": [
           {
@@ -277,11 +290,13 @@
             "description": "default error"
           }
         },
+        "summary": "Get comments for an article",
         "tags": [
           "main"
         ]
       },
       "post": {
+        "description": "Create a comment for an article\n\nCreate a comment for an article. Auth is required",
         "operationId": "main.CreateArticleComment",
         "parameters": [
           {
@@ -316,6 +331,7 @@
             "description": "default error"
           }
         },
+        "summary": "Create a comment for an article",
         "tags": [
           "main"
         ]
@@ -323,6 +339,7 @@
     },
     "/articles/{slug}/comments/{id}": {
       "delete": {
+        "description": "Delete a comment for an article\n\nDelete a comment for an article. Auth is required.",
         "operationId": "main.DeleteArticleComment",
         "parameters": [
           {
@@ -366,6 +383,7 @@
             "description": "default error"
           }
         },
+        "summary": "Delete a comment for an article",
         "tags": [
           "main"
         ]
@@ -373,6 +391,7 @@
     },
     "/articles/{slug}/favorite": {
       "delete": {
+        "description": "Unfavorite an article\n\nUnfavorite an article. Auth is required",
         "operationId": "main.DeleteArticleFavorite",
         "parameters": [
           {
@@ -407,11 +426,13 @@
             "description": "default error"
           }
         },
+        "summary": "Unfavorite an article",
         "tags": [
           "main"
         ]
       },
       "post": {
+        "description": "Favorite an article\n\nFavorite an article. Auth is required",
         "operationId": "main.CreateArticleFavorite",
         "parameters": [
           {
@@ -446,6 +467,7 @@
             "description": "default error"
           }
         },
+        "summary": "Favorite an article",
         "tags": [
           "main"
         ]
@@ -453,6 +475,7 @@
     },
     "/profiles/{username}": {
       "get": {
+        "description": "Get a profile\n\nGet a profile of a user of the system. Auth is optional",
         "operationId": "main.GetProfileByUsername",
         "parameters": [
           {
@@ -487,6 +510,7 @@
             "description": "default error"
           }
         },
+        "summary": "Get a profile",
         "tags": [
           "main"
         ]
@@ -494,6 +518,7 @@
     },
     "/profiles/{username}/follow": {
       "delete": {
+        "description": "Unfollow a user\n\nUnfollow a user by username",
         "operationId": "main.UnfollowUserByUsername",
         "parameters": [
           {
@@ -528,11 +553,13 @@
             "description": "default error"
           }
         },
+        "summary": "Unfollow a user",
         "tags": [
           "main"
         ]
       },
       "post": {
+        "description": "Follow a user\n\nFollow a user by username",
         "operationId": "main.FollowUserByUsername",
         "parameters": [
           {
@@ -567,6 +594,7 @@
             "description": "default error"
           }
         },
+        "summary": "Follow a user",
         "tags": [
           "main"
         ]
@@ -574,6 +602,7 @@
     },
     "/tags": {
       "get": {
+        "description": "Get tags\n\nGet tags. Auth not required",
         "operationId": "main.GetTags",
         "responses": {
           "200": {
@@ -597,6 +626,7 @@
             "description": "default error"
           }
         },
+        "summary": "Get tags",
         "tags": [
           "main"
         ]
@@ -604,6 +634,7 @@
     },
     "/user": {
       "get": {
+        "description": "Get current user\n\nGets the currently logged-in user",
         "operationId": "main.GetCurrentUser",
         "responses": {
           "200": {
@@ -627,11 +658,13 @@
             "description": "default error"
           }
         },
+        "summary": "Get current user",
         "tags": [
           "main"
         ]
       },
       "put": {
+        "description": "Update current user\n\nUpdate user information for current user",
         "operationId": "main.UpdateCurrentUser",
         "responses": {
           "200": {
@@ -655,6 +688,7 @@
             "description": "default error"
           }
         },
+        "summary": "Update current user",
         "tags": [
           "main"
         ]
@@ -692,7 +726,7 @@
     },
     "/users/login": {
       "post": {
-        "description": "handlers",
+        "description": "Existing user login\n\nLogin for existing user",
         "operationId": "main.Login",
         "responses": {
           "200": {
@@ -716,7 +750,7 @@
             "description": "default error"
           }
         },
-        "summary": "handlers",
+        "summary": "Existing user login",
         "tags": [
           "main"
         ]

@@ -114,15 +114,27 @@ func mount(bc *define.BuildContext) {
 }
 
 // handlers
+
+// Existing user login
+//
+// Login for existing user
 func Login(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
 func CreateUser(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
+
+// Get current user
+//
+// Gets the currently logged-in user
 func GetCurrentUser(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
+
+// Update current user
+//
+// Update user information for current user
 func UpdateCurrentUser(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -131,6 +143,9 @@ type GetProfileByUsernameInput struct {
 	Username string `in:"path" path:"username"` // username of the profile to get
 }
 
+// Get a profile
+//
+// Get a profile of a user of the system. Auth is optional
 func GetProfileByUsername(ctx context.Context, input GetProfileByUsernameInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -139,6 +154,9 @@ type FollowUserByUsernameInput struct {
 	Username string `in:"path" path:"username"` // username of the profile you want to follow
 }
 
+// Follow a user
+//
+// Follow a user by username
 func FollowUserByUsername(ctx context.Context, input FollowUserByUsernameInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -147,16 +165,30 @@ type UnfollowUserByUsernameInput struct {
 	Username string `in:"path" path:"username"` // username of the profile you want to unfollow
 }
 
+// Unfollow a user
+//
+// Unfollow a user by username
 func UnfollowUserByUsername(ctx context.Context, input UnfollowUserByUsernameInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
 
+// Get recent articles from users you follow
+//
+// Get most recent articles from users you follow. Use query parameters to limit. Auth is required
 func GetArticlesFeed(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
+
+// Get recent articles globally
+//
+// Get most recent articles globally. Use query parameters to filter results. Auth is optional
 func GetArticles(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
+
+// Create an article
+//
+// Create an article. Auth is required
 func CreateArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -165,6 +197,9 @@ type GetArticleInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article to get
 }
 
+// Get an article
+//
+// Get an article. Auth not required
 func GetArticle(ctx context.Context, input GetArticleInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -173,6 +208,9 @@ type UpdateArticleInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article to update
 }
 
+// Update an article
+//
+// Update an article. Auth is required
 func UpdateArticle(ctx context.Context, input UpdateArticleInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -181,6 +219,9 @@ type DeleteArticleInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article to delete
 }
 
+// Delete an article
+//
+// Delete an article. Auth is required
 func DeleteArticle(ctx context.Context, input DeleteArticleInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -189,6 +230,9 @@ type GetArticleCommentsInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article that you want to get comments for
 }
 
+// Get comments for an article
+//
+// Get the comments for an article. Auth is optional
 func GetArticleComments(ctx context.Context, input GetArticleCommentsInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -197,6 +241,9 @@ type CreateArticleCommentInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article that you want to create a comment
 }
 
+// Create a comment for an article
+//
+// Create a comment for an article. Auth is required
 func CreateArticleComment(ctx context.Context, input CreateArticleCommentInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -206,6 +253,9 @@ type DeleteArticleCommentInput struct {
 	ID   string `in:"path" path:"id"`   // ID of the comment you want to delete
 }
 
+// Delete a comment for an article
+//
+// Delete a comment for an article. Auth is required.
 func DeleteArticleComment(ctx context.Context, input DeleteArticleCommentInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -214,6 +264,9 @@ type CreateArticleFavoriteInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article that you want to favorite
 }
 
+// Favorite an article
+//
+// Favorite an article. Auth is required
 func CreateArticleFavorite(ctx context.Context, input CreateArticleFavoriteInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
@@ -222,9 +275,16 @@ type DeleteArticleFavoriteInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article that you want to unfavorite
 }
 
+// Unfavorite an article
+//
+// Unfavorite an article. Auth is required
 func DeleteArticleFavorite(ctx context.Context, input DeleteArticleFavoriteInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
+
+// Get tags
+//
+// Get tags. Auth not required
 func GetTags(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }

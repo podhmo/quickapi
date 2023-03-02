@@ -14,30 +14,30 @@ Conduit API documentation
 
 | endpoint | operationId | tags | summary |
 | --- | --- | --- | --- |
-| `GET /articles` | [main.GetArticles](#maingetarticles-get-articles)  | `main` |  |
-| `POST /articles` | [main.CreateArticle](#maincreatearticle-post-articles)  | `main` |  |
-| `GET /articles/feed` | [main.GetArticlesFeed](#maingetarticlesfeed-get-articlesfeed)  | `main` |  |
-| `DELETE /articles/{slug}` | [main.DeleteArticle](#maindeletearticle-delete-articlesslug)  | `main` |  |
-| `GET /articles/{slug}` | [main.GetArticle](#maingetarticle-get-articlesslug)  | `main` |  |
-| `PUT /articles/{slug}` | [main.UpdateArticle](#mainupdatearticle-put-articlesslug)  | `main` |  |
-| `GET /articles/{slug}/comments` | [main.GetArticleComments](#maingetarticlecomments-get-articlesslugcomments)  | `main` |  |
-| `POST /articles/{slug}/comments` | [main.CreateArticleComment](#maincreatearticlecomment-post-articlesslugcomments)  | `main` |  |
-| `DELETE /articles/{slug}/comments/{id}` | [main.DeleteArticleComment](#maindeletearticlecomment-delete-articlesslugcommentsid)  | `main` |  |
-| `DELETE /articles/{slug}/favorite` | [main.DeleteArticleFavorite](#maindeletearticlefavorite-delete-articlesslugfavorite)  | `main` |  |
-| `POST /articles/{slug}/favorite` | [main.CreateArticleFavorite](#maincreatearticlefavorite-post-articlesslugfavorite)  | `main` |  |
-| `GET /profiles/{username}` | [main.GetProfileByUsername](#maingetprofilebyusername-get-profilesusername)  | `main` |  |
-| `DELETE /profiles/{username}/follow` | [main.UnfollowUserByUsername](#mainunfollowuserbyusername-delete-profilesusernamefollow)  | `main` |  |
-| `POST /profiles/{username}/follow` | [main.FollowUserByUsername](#mainfollowuserbyusername-post-profilesusernamefollow)  | `main` |  |
-| `GET /tags` | [main.GetTags](#maingettags-get-tags)  | `main` |  |
-| `GET /user` | [main.GetCurrentUser](#maingetcurrentuser-get-user)  | `main` |  |
-| `PUT /user` | [main.UpdateCurrentUser](#mainupdatecurrentuser-put-user)  | `main` |  |
+| `GET /articles` | [main.GetArticles](#maingetarticles-get-articles)  | `main` | Get recent articles globally |
+| `POST /articles` | [main.CreateArticle](#maincreatearticle-post-articles)  | `main` | Create an article |
+| `GET /articles/feed` | [main.GetArticlesFeed](#maingetarticlesfeed-get-articlesfeed)  | `main` | Get recent articles from users you follow |
+| `DELETE /articles/{slug}` | [main.DeleteArticle](#maindeletearticle-delete-articlesslug)  | `main` | Delete an article |
+| `GET /articles/{slug}` | [main.GetArticle](#maingetarticle-get-articlesslug)  | `main` | Get an article |
+| `PUT /articles/{slug}` | [main.UpdateArticle](#mainupdatearticle-put-articlesslug)  | `main` | Update an article |
+| `GET /articles/{slug}/comments` | [main.GetArticleComments](#maingetarticlecomments-get-articlesslugcomments)  | `main` | Get comments for an article |
+| `POST /articles/{slug}/comments` | [main.CreateArticleComment](#maincreatearticlecomment-post-articlesslugcomments)  | `main` | Create a comment for an article |
+| `DELETE /articles/{slug}/comments/{id}` | [main.DeleteArticleComment](#maindeletearticlecomment-delete-articlesslugcommentsid)  | `main` | Delete a comment for an article |
+| `DELETE /articles/{slug}/favorite` | [main.DeleteArticleFavorite](#maindeletearticlefavorite-delete-articlesslugfavorite)  | `main` | Unfavorite an article |
+| `POST /articles/{slug}/favorite` | [main.CreateArticleFavorite](#maincreatearticlefavorite-post-articlesslugfavorite)  | `main` | Favorite an article |
+| `GET /profiles/{username}` | [main.GetProfileByUsername](#maingetprofilebyusername-get-profilesusername)  | `main` | Get a profile |
+| `DELETE /profiles/{username}/follow` | [main.UnfollowUserByUsername](#mainunfollowuserbyusername-delete-profilesusernamefollow)  | `main` | Unfollow a user |
+| `POST /profiles/{username}/follow` | [main.FollowUserByUsername](#mainfollowuserbyusername-post-profilesusernamefollow)  | `main` | Follow a user |
+| `GET /tags` | [main.GetTags](#maingettags-get-tags)  | `main` | Get tags |
+| `GET /user` | [main.GetCurrentUser](#maingetcurrentuser-get-user)  | `main` | Get current user |
+| `PUT /user` | [main.UpdateCurrentUser](#mainupdatecurrentuser-put-user)  | `main` | Update current user |
 | `POST /users/` | [main.CreateUser](#maincreateuser-post-users)  | `main` |  |
-| `POST /users/login` | [main.Login](#mainlogin-post-userslogin)  | `main` | handlers |
+| `POST /users/login` | [main.Login](#mainlogin-post-userslogin)  | `main` | Existing user login |
 
 
 ### main.GetArticles `GET /articles`
 
-
+Get recent articles globally
 
 | name | value |
 | --- | --- |
@@ -65,9 +65,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Get most recent articles globally. Use query parameters to filter results. Auth is optional
 ### main.CreateArticle `POST /articles`
 
-
+Create an article
 
 | name | value |
 | --- | --- |
@@ -95,9 +99,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Create an article. Auth is required
 ### main.GetArticlesFeed `GET /articles/feed`
 
-
+Get recent articles from users you follow
 
 | name | value |
 | --- | --- |
@@ -125,9 +133,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Get most recent articles from users you follow. Use query parameters to limit. Auth is required
 ### main.DeleteArticle `DELETE /articles/{slug}`
 
-
+Delete an article
 
 | name | value |
 | --- | --- |
@@ -164,9 +176,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Delete an article. Auth is required
 ### main.GetArticle `GET /articles/{slug}`
 
-
+Get an article
 
 | name | value |
 | --- | --- |
@@ -203,9 +219,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Get an article. Auth not required
 ### main.UpdateArticle `PUT /articles/{slug}`
 
-
+Update an article
 
 | name | value |
 | --- | --- |
@@ -242,9 +262,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Update an article. Auth is required
 ### main.GetArticleComments `GET /articles/{slug}/comments`
 
-
+Get comments for an article
 
 | name | value |
 | --- | --- |
@@ -281,9 +305,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Get the comments for an article. Auth is optional
 ### main.CreateArticleComment `POST /articles/{slug}/comments`
 
-
+Create a comment for an article
 
 | name | value |
 | --- | --- |
@@ -320,9 +348,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Create a comment for an article. Auth is required
 ### main.DeleteArticleComment `DELETE /articles/{slug}/comments/{id}`
 
-
+Delete a comment for an article
 
 | name | value |
 | --- | --- |
@@ -361,9 +393,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Delete a comment for an article. Auth is required.
 ### main.DeleteArticleFavorite `DELETE /articles/{slug}/favorite`
 
-
+Unfavorite an article
 
 | name | value |
 | --- | --- |
@@ -400,9 +436,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Unfavorite an article. Auth is required
 ### main.CreateArticleFavorite `POST /articles/{slug}/favorite`
 
-
+Favorite an article
 
 | name | value |
 | --- | --- |
@@ -439,9 +479,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Favorite an article. Auth is required
 ### main.GetProfileByUsername `GET /profiles/{username}`
 
-
+Get a profile
 
 | name | value |
 | --- | --- |
@@ -478,9 +522,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Get a profile of a user of the system. Auth is optional
 ### main.UnfollowUserByUsername `DELETE /profiles/{username}/follow`
 
-
+Unfollow a user
 
 | name | value |
 | --- | --- |
@@ -517,9 +565,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Unfollow a user by username
 ### main.FollowUserByUsername `POST /profiles/{username}/follow`
 
-
+Follow a user
 
 | name | value |
 | --- | --- |
@@ -556,9 +608,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Follow a user by username
 ### main.GetTags `GET /tags`
 
-
+Get tags
 
 | name | value |
 | --- | --- |
@@ -586,9 +642,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Get tags. Auth not required
 ### main.GetCurrentUser `GET /user`
 
-
+Get current user
 
 | name | value |
 | --- | --- |
@@ -616,9 +676,13 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Gets the currently logged-in user
 ### main.UpdateCurrentUser `PUT /user`
 
-
+Update current user
 
 | name | value |
 | --- | --- |
@@ -646,6 +710,10 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Update user information for current user
 ### main.CreateUser `POST /users/`
 
 
@@ -678,7 +746,7 @@ type OutputDefault struct {	// ErrorResponse
 ```
 ### main.Login `POST /users/login`
 
-handlers
+Existing user login
 
 | name | value |
 | --- | --- |
@@ -709,7 +777,7 @@ type OutputDefault struct {	// ErrorResponse
 
 #### description
 
-handlers
+Login for existing user
 
 
 
