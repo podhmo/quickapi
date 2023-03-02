@@ -89,4 +89,31 @@ func run() error {
 }
 
 func mount(bc *define.BuildContext) {
+	define.Post(bc, "/users/login", Handler)
+	define.Post(bc, "/users/", Handler)
+	define.Get(bc, "/user", Handler)
+	define.Put(bc, "/user", Handler)
+	
+	define.Get(bc, "/profiles/{username}", Handler)
+	define.Post(bc, "/profiles/{username}/follow", Handler)
+	define.Delete(bc, "/profiles/{username}/follow", Handler)
+	
+	define.Get(bc, "/articles/feed", Handler)
+	define.Get(bc, "/articles", Handler)
+	define.Post(bc, "/articles", Handler)
+	define.Get(bc, "/articles/{slug}", Handler)
+	define.Put(bc, "/articles/{slug}", Handler)
+	define.Delete(bc, "/articles/{slug}", Handler)
+	define.Get(bc, "/articles/{slug}/comments", Handler)
+	define.Post(bc, "/articles/{slug}/comments", Handler)
+	define.Delete(bc, "/articles/{slug}/comments/{id}", Handler)
+	define.Post(bc, "/articles/{slug}/favorite", Handler)
+	define.Delete(bc, "/articles/{slug}/favorite", Handler)
+	
+	define.Get(bc, "/tags", Handler)
+}
+
+
+func Handler(ctx context.Context, input struct {}) (output struct {}, error) {
+	return nil
 }
