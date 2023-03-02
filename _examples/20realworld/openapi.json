@@ -1,0 +1,43 @@
+{
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "description": "ErrorResponse represents a normal error response type",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "detail": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Conduit API documentation",
+    "title": "Conduit API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.3",
+  "paths": {},
+  "servers": [
+    {
+      "description": "local development",
+      "url": "http://localhost:8080"
+    }
+  ]
+}
