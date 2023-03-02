@@ -127,13 +127,27 @@ func UpdateCurrentUser(ctx context.Context, input struct{}) (output struct{}, er
 	return struct{}{}, nil
 }
 
-func GetProfileByUsername(ctx context.Context, input struct{}) (output struct{}, err error) {
+type GetProfileByUsernameInput struct {
+	Username string `in:"path" path:"username"` // username of the profile to get
+}
+
+func GetProfileByUsername(ctx context.Context, input GetProfileByUsernameInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func FollowUserByUsername(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type FollowUserByUsernameInput struct {
+	Username string `in:"path" path:"username"` // username of the profile you want to follow
+}
+
+func FollowUserByUsername(ctx context.Context, input FollowUserByUsernameInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func UnfollowUserByUsername(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type UnfollowUserByUsernameInput struct {
+	Username string `in:"path" path:"username"` // username of the profile you want to unfollow
+}
+
+func UnfollowUserByUsername(ctx context.Context, input UnfollowUserByUsernameInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
 
@@ -146,28 +160,69 @@ func GetArticles(ctx context.Context, input struct{}) (output struct{}, err erro
 func CreateArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func GetArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type GetArticleInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article to get
+}
+
+func GetArticle(ctx context.Context, input GetArticleInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func UpdateArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type UpdateArticleInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article to update
+}
+
+func UpdateArticle(ctx context.Context, input UpdateArticleInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func DeleteArticle(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type DeleteArticleInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article to delete
+}
+
+func DeleteArticle(ctx context.Context, input DeleteArticleInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func GetArticleComments(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type GetArticleCommentsInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article that you want to get comments for
+}
+
+func GetArticleComments(ctx context.Context, input GetArticleCommentsInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func CreateArticleComment(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type CreateArticleCommentInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article that you want to create a comment
+}
+
+func CreateArticleComment(ctx context.Context, input CreateArticleCommentInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func DeleteArticleComment(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type DeleteArticleCommentInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article that you want to delete a comment
+	ID   string `in:"path" path:"id"`   // ID of the comment you want to delete
+}
+
+func DeleteArticleComment(ctx context.Context, input DeleteArticleCommentInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func CreateArticleFavorite(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type CreateArticleFavoriteInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article that you want to favorite
+}
+
+func CreateArticleFavorite(ctx context.Context, input CreateArticleFavoriteInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
-func DeleteArticleFavorite(ctx context.Context, input struct{}) (output struct{}, err error) {
+
+type DeleteArticleFavoriteInput struct {
+	Slug string `in:"path" path:"slug"` // Slug of the article that you want to unfavorite
+}
+
+func DeleteArticleFavorite(ctx context.Context, input DeleteArticleFavoriteInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
 func GetTags(ctx context.Context, input struct{}) (output struct{}, err error) {

@@ -33,7 +33,696 @@
     "version": "1.0.0"
   },
   "openapi": "3.0.3",
-  "paths": {},
+  "paths": {
+    "/articles": {
+      "get": {
+        "operationId": "main.GetArticles",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      },
+      "post": {
+        "operationId": "main.CreateArticle",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/articles/feed": {
+      "get": {
+        "operationId": "main.GetArticlesFeed",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/articles/{slug}": {
+      "delete": {
+        "operationId": "main.DeleteArticle",
+        "parameters": [
+          {
+            "description": "Slug of the article to delete",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      },
+      "get": {
+        "operationId": "main.GetArticle",
+        "parameters": [
+          {
+            "description": "Slug of the article to get",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      },
+      "put": {
+        "operationId": "main.UpdateArticle",
+        "parameters": [
+          {
+            "description": "Slug of the article to update",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/articles/{slug}/comments": {
+      "get": {
+        "operationId": "main.GetArticleComments",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to get comments for",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      },
+      "post": {
+        "operationId": "main.CreateArticleComment",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to create a comment",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/articles/{slug}/comments/{id}": {
+      "delete": {
+        "operationId": "main.DeleteArticleComment",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to delete a comment",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the comment you want to delete",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/articles/{slug}/favorite": {
+      "delete": {
+        "operationId": "main.DeleteArticleFavorite",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to unfavorite",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      },
+      "post": {
+        "operationId": "main.CreateArticleFavorite",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to favorite",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/profiles/{username}": {
+      "get": {
+        "operationId": "main.GetProfileByUsername",
+        "parameters": [
+          {
+            "description": "username of the profile to get",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/profiles/{username}/follow": {
+      "delete": {
+        "operationId": "main.UnfollowUserByUsername",
+        "parameters": [
+          {
+            "description": "username of the profile you want to unfollow",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      },
+      "post": {
+        "operationId": "main.FollowUserByUsername",
+        "parameters": [
+          {
+            "description": "username of the profile you want to follow",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "main.GetTags",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/user": {
+      "get": {
+        "operationId": "main.GetCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      },
+      "put": {
+        "operationId": "main.UpdateCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/users/": {
+      "post": {
+        "operationId": "main.CreateUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "tags": [
+          "main"
+        ]
+      }
+    },
+    "/users/login": {
+      "post": {
+        "description": "handlers",
+        "operationId": "main.Login",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "handlers",
+        "tags": [
+          "main"
+        ]
+      }
+    }
+  },
   "servers": [
     {
       "description": "local development",
