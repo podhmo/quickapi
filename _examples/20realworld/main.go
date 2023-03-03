@@ -143,6 +143,8 @@ func mount(bc *define.BuildContext) {
 func Login(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }
+
+// Register a new user
 func CreateUser(ctx context.Context, input struct{}) (output struct{}, err error) {
 	return struct{}{}, nil
 }

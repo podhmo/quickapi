@@ -31,7 +31,7 @@ Conduit API documentation
 | `GET /tags` | [main.GetTags](#maingettags-get-tags)  | `Tags` | Get tags |
 | `GET /user` | [main.GetCurrentUser](#maingetcurrentuser-get-user)  | `User and Authentication` | Get current user |
 | `PUT /user` | [main.UpdateCurrentUser](#mainupdatecurrentuser-put-user)  | `User and Authentication` | Update current user |
-| `POST /users/` | [main.CreateUser](#maincreateuser-post-users)  | `User and Authentication` |  |
+| `POST /users/` | [main.CreateUser](#maincreateuser-post-users)  | `User and Authentication` | Register a new user |
 | `POST /users/login` | [main.Login](#mainlogin-post-userslogin)  | `User and Authentication` | Existing user login |
 
 
@@ -740,7 +740,7 @@ type OutputDefault struct {	// ErrorResponse
 Update user information for current user
 ### main.CreateUser `POST /users/`
 
-
+Register a new user
 
 | name | value |
 | --- | --- |
@@ -768,6 +768,10 @@ type OutputDefault struct {	// ErrorResponse
 	detail? []string
 }
 ```
+
+#### description
+
+Register a new user
 ### main.Login `POST /users/login`
 
 Existing user login

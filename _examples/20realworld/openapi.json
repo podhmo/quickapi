@@ -767,6 +767,7 @@
     },
     "/users/": {
       "post": {
+        "description": "Register a new user",
         "operationId": "main.CreateUser",
         "responses": {
           "200": {
@@ -790,6 +791,7 @@
             "description": "default error"
           }
         },
+        "summary": "Register a new user",
         "tags": [
           "User and Authentication"
         ]
