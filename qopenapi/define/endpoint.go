@@ -143,11 +143,13 @@ func (m *EndpointModifier[I, O]) Tags(tags ...string) *EndpointModifier[I, O] {
 	})
 }
 func (m *EndpointModifier[I, O]) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier[I, O] {
+	var schemaRef *openapi3.SchemaRef
+	bc.m.RegisterType(typ, func(ref *openapi3.SchemaRef) {
+		schemaRef = ref
+	})
 	return m.After(func(op *openapi3.Operation) {
-		bc.m.RegisterType(typ, func(ref *openapi3.SchemaRef) {
-			val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
-			op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
-		})
+		val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(schemaRef)
+		op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
 	})
 }
 func (m *EndpointModifier[I, O]) Example(code int, description string, value interface{}) *EndpointModifier[I, O] {
