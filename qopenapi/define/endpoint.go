@@ -124,6 +124,24 @@ func (m *EndpointModifier[I, O]) Status(code int) *EndpointModifier[I, O] {
 		}
 	})
 }
+func (m *EndpointModifier[I, O]) Tags(tags ...string) *EndpointModifier[I, O] {
+	return m.After(func(op *openapi3.Operation) {
+		added := make([]string, 0, len(tags))
+		for _, x := range tags {
+			found := false
+			for _, y := range op.Tags {
+				if x == y {
+					found = true
+					break
+				}
+			}
+			if !found {
+				added = append(added, x)
+			}
+		}
+		op.Tags = append(op.Tags, added...)
+	})
+}
 func (m *EndpointModifier[I, O]) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier[I, O] {
 	return m.After(func(op *openapi3.Operation) {
 		bc.m.RegisterType(typ, func(ref *openapi3.SchemaRef) {
