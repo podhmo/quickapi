@@ -25,6 +25,36 @@
         "title": "ErrorResponse",
         "type": "object"
       },
+      "GenericError": {
+        "additionalProperties": false,
+        "description": "Unexpected error",
+        "properties": {
+          "errors": {
+            "$ref": "#/components/schemas/GenericErrorErrors"
+          }
+        },
+        "required": [
+          "errors"
+        ],
+        "title": "GenericError",
+        "type": "object"
+      },
+      "GenericErrorErrors": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "title": "GenericErrorErrors",
+        "type": "object"
+      },
       "LimitParam": {
         "default": 20,
         "description": "The numbers of items to return.",
@@ -39,6 +69,40 @@
         "title": "OffsetParam",
         "type": "integer",
         "x-go-type": "main.OffsetParam"
+      },
+      "UnauthorizedError": {
+        "description": "Unauthorized",
+        "title": "UnauthorizedError",
+        "type": "object"
+      },
+      "User": {
+        "additionalProperties": false,
+        "properties": {
+          "bio": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "token",
+          "username",
+          "bio",
+          "image"
+        ],
+        "title": "User",
+        "type": "object"
       }
     }
   },
@@ -780,6 +844,26 @@
             },
             "description": ""
           },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
           "default": {
             "content": {
               "application/json": {
@@ -806,7 +890,38 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "LoginOutput",
+                  "type": "object",
+                  "x-go-id": "main.LoginOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
                 }
               }
             },

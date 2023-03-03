@@ -111,7 +111,7 @@ func mount(bc *define.BuildContext) {
 		s.WithMin(1).WithDefault(20)
 	})
 
-	define.Post(bc, "/users/login", Login).Tags(tagUserAndAuthentication)
+	define.Post(bc, "/users/login", Login).Tags(tagUserAndAuthentication).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
 	define.Post(bc, "/users/", CreateUser).Tags(tagUserAndAuthentication)
 	define.Get(bc, "/user", GetCurrentUser).Tags(tagUserAndAuthentication)
 	define.Put(bc, "/user", UpdateCurrentUser).Tags(tagUserAndAuthentication)
@@ -135,13 +135,39 @@ func mount(bc *define.BuildContext) {
 	define.Get(bc, "/tags", GetTags).Tags(tagTags)
 }
 
+// components
+
+type User struct {
+	Email    string `json:"email"`
+	Token    string `json:"token"`
+	Username string `json:"username"`
+	Bio      string `json:"bio"`
+	Image    string `json:"image"`
+}
+
+// Unauthorized
+type UnauthorizedError struct {
+}
+
+// Unexpected error
+type GenericError struct {
+	Errors GenericErrorErrors `json:"errors"`
+}
+type GenericErrorErrors struct {
+	Body []string `json:"body"`
+}
+
 // handlers
+
+type LoginOutput struct {
+	User User `json:"user"`
+}
 
 // Existing user login
 //
 // Login for existing user
-func Login(ctx context.Context, input struct{}) (output struct{}, err error) {
-	return struct{}{}, nil
+func Login(ctx context.Context, input struct{}) (output LoginOutput, err error) {
+	return LoginOutput{}, nil
 }
 
 // Register a new user

@@ -758,6 +758,17 @@ Register a new user
 type Output200 struct {	// 
 }
 
+// POST /users/ (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// POST /users/ (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
+}
+
 // POST /users/ (default)
 // default error
 type OutputDefault struct {	// ErrorResponse
@@ -789,7 +800,29 @@ Existing user login
 
 ```go
 // POST /users/login (200)
-type Output200 struct {	// 
+type Output200 struct {	// LoginOutput
+	user struct {	// User
+		email string
+
+		token string
+
+		username string
+
+		bio string
+
+		image string
+	}
+}
+
+// POST /users/login (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// POST /users/login (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // POST /users/login (default)
@@ -818,8 +851,12 @@ Login for existing user
 | name | summary |
 | --- | --- |
 | [ErrorResponse](#errorresponse) | represents a normal error response type |
+| [GenericError](#genericerror) | Unexpected error |
+| [GenericErrorErrors](#genericerrorerrors) |  |
 | [LimitParam](#limitparam) | The numbers of items to return. |
 | [OffsetParam](#offsetparam) | The number of items to skip before starting to collect the result set. |
+| [UnauthorizedError](#unauthorizederror) | Unauthorized |
+| [User](#user) |  |
 
 
 
@@ -858,6 +895,33 @@ type ErrorResponse struct {
 - [output of main.CreateUser (default) as `ErrorResponse`](#maincreateuser-post-users)
 - [output of main.Login (default) as `ErrorResponse`](#mainlogin-post-userslogin)
 
+### GenericError
+
+Unexpected error
+
+```go
+// Unexpected error
+type GenericError struct {
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
+}
+```
+
+- [output of main.CreateUser (422) as `GenericError`](#maincreateuser-post-users)
+- [output of main.Login (422) as `GenericError`](#mainlogin-post-userslogin)
+
+### GenericErrorErrors
+
+
+
+```go
+type GenericErrorErrors struct {
+	body []string
+}
+```
+
+
 ### LimitParam
 
 The numbers of items to return.
@@ -877,4 +941,36 @@ The number of items to skip before starting to collect the result set.
 // The number of items to skip before starting to collect the result set.
 type OffsetParam integer
 // tags: `minimum:"0"`
+```
+
+
+### UnauthorizedError
+
+Unauthorized
+
+```go
+// Unauthorized
+type UnauthorizedError struct {
+}
+```
+
+- [output of main.CreateUser (401) as `UnauthorizedError`](#maincreateuser-post-users)
+- [output of main.Login (401) as `UnauthorizedError`](#mainlogin-post-userslogin)
+
+### User
+
+
+
+```go
+type User struct {
+	email string
+
+	token string
+
+	username string
+
+	bio string
+
+	image string
+}
 ```
