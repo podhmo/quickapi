@@ -9,6 +9,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
 )
@@ -89,6 +90,14 @@ func run() error {
 }
 
 func mount(bc *define.BuildContext) {
+	define.Type(bc, OffsetParam(0)).After(func(s *openapi3.Schema) {
+		s.WithMin(0)
+	})
+	define.Type(bc, LimitParam(20)).After(func(s *openapi3.Schema) {
+		// TODO: default value by ↑
+		s.WithMin(1).WithDefault(20)
+	})
+
 	define.Post(bc, "/users/login", Login)
 	define.Post(bc, "/users/", CreateUser)
 	define.Get(bc, "/user", GetCurrentUser)
@@ -172,10 +181,21 @@ func UnfollowUserByUsername(ctx context.Context, input UnfollowUserByUsernameInp
 	return struct{}{}, nil
 }
 
+// The numbers of items to return.
+type LimitParam int
+
+// The number of items to skip before starting to collect the result set.
+type OffsetParam int
+
+type GetArticlesFeedInput struct {
+	Limit  LimitParam  `in:"query" query:"limit"`
+	Offset OffsetParam `in:"query" query:"offset"`
+}
+
 // Get recent articles from users you follow
 //
 // Get most recent articles from users you follow. Use query parameters to limit. Auth is required
-func GetArticlesFeed(ctx context.Context, input struct{}) (output struct{}, err error) {
+func GetArticlesFeed(ctx context.Context, input GetArticlesFeedInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }
 
@@ -282,9 +302,18 @@ func DeleteArticleFavorite(ctx context.Context, input DeleteArticleFavoriteInput
 	return struct{}{}, nil
 }
 
+type GetTagsInput struct {
+	Query     string `in:"query" query:"tag"`       // Filter by tag
+	Author    string `in:"query" query:"author"`    // Filter by author (username)
+	Favorited string `in:"query" query:"favorited"` // Filter by favorites of a user (username)
+
+	Limit  LimitParam  `in:"query" query:"limit"`
+	Offset OffsetParam `in:"query" query:"offset"`
+}
+
 // Get tags
 //
 // Get tags. Auth not required
-func GetTags(ctx context.Context, input struct{}) (output struct{}, err error) {
+func GetTags(ctx context.Context, input GetTagsInput) (output struct{}, err error) {
 	return struct{}{}, nil
 }

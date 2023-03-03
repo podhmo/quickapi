@@ -24,6 +24,21 @@
         ],
         "title": "ErrorResponse",
         "type": "object"
+      },
+      "LimitParam": {
+        "default": 20,
+        "description": "The numbers of items to return.",
+        "minimum": 1,
+        "title": "LimitParam",
+        "type": "integer",
+        "x-go-type": "main.LimitParam"
+      },
+      "OffsetParam": {
+        "description": "The number of items to skip before starting to collect the result set.",
+        "minimum": 0,
+        "title": "OffsetParam",
+        "type": "integer",
+        "x-go-type": "main.OffsetParam"
       }
     }
   },
@@ -100,6 +115,22 @@
       "get": {
         "description": "Get recent articles from users you follow\n\nGet most recent articles from users you follow. Use query parameters to limit. Auth is required",
         "operationId": "main.GetArticlesFeed",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "$ref": "#/components/schemas/LimitParam"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "$ref": "#/components/schemas/OffsetParam"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -604,6 +635,46 @@
       "get": {
         "description": "Get tags\n\nGet tags. Auth not required",
         "operationId": "main.GetTags",
+        "parameters": [
+          {
+            "description": "Filter by tag",
+            "in": "query",
+            "name": "tag",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by author (username)",
+            "in": "query",
+            "name": "author",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by favorites of a user (username)",
+            "in": "query",
+            "name": "favorited",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "$ref": "#/components/schemas/LimitParam"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "$ref": "#/components/schemas/OffsetParam"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {

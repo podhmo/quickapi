@@ -115,6 +115,15 @@ Get recent articles from users you follow
 
 
 
+#### input (application/json)
+
+```go
+// GET /articles/feed
+type Input struct {
+	limit? integer `in:"query"`
+	offset? integer `in:"query"`
+}
+```
 
 #### output (application/json)
 
@@ -624,6 +633,21 @@ Get tags
 
 
 
+#### input (application/json)
+
+```go
+// GET /tags
+type Input struct {
+	// Filter by tag
+	tag? string `in:"query"`
+	// Filter by author (username)
+	author? string `in:"query"`
+	// Filter by favorites of a user (username)
+	favorited? string `in:"query"`
+	limit? integer `in:"query"`
+	offset? integer `in:"query"`
+}
+```
 
 #### output (application/json)
 
@@ -790,6 +814,8 @@ Login for existing user
 | name | summary |
 | --- | --- |
 | [ErrorResponse](#errorresponse) | represents a normal error response type |
+| [LimitParam](#limitparam) | The numbers of items to return. |
+| [OffsetParam](#offsetparam) | The number of items to skip before starting to collect the result set. |
 
 
 
@@ -827,3 +853,24 @@ type ErrorResponse struct {
 - [output of main.UpdateCurrentUser (default) as `ErrorResponse`](#mainupdatecurrentuser-put-user)
 - [output of main.CreateUser (default) as `ErrorResponse`](#maincreateuser-post-users)
 - [output of main.Login (default) as `ErrorResponse`](#mainlogin-post-userslogin)
+
+### LimitParam
+
+The numbers of items to return.
+
+```go
+// The numbers of items to return.
+type LimitParam integer
+// tags: `minimum:"1"`	// default: 20
+```
+
+
+### OffsetParam
+
+The number of items to skip before starting to collect the result set.
+
+```go
+// The number of items to skip before starting to collect the result set.
+type OffsetParam integer
+// tags: `minimum:"0"`
+```
