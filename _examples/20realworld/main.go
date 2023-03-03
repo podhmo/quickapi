@@ -12,6 +12,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
+	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
 //go:embed openapi.json
@@ -56,7 +57,12 @@ func run() error {
 	}
 
 	router := quickapi.DefaultRouter()
-	bc := define.MustBuildContext(doc, router)
+	bc, err := define.NewBuildContext(doc, router, func(c *reflectopenapi.Config) {
+		c.EnableAutoTag = false
+	})
+	if err != nil {
+		return fmt.Errorf("build context: %w", err)
+	}
 
 	mount(bc)
 
@@ -90,6 +96,13 @@ func run() error {
 }
 
 func mount(bc *define.BuildContext) {
+	tagArticles := "Articles"
+	tagComments := "Comments"
+	tagFavorites := "Favorites"
+	tagProfile := "Profile"
+	tagTags := "Tags"
+	tagUserAndAuthentication := "User and Authentication"
+
 	define.Type(bc, OffsetParam(0)).After(func(s *openapi3.Schema) {
 		s.WithMin(0)
 	})
@@ -98,28 +111,28 @@ func mount(bc *define.BuildContext) {
 		s.WithMin(1).WithDefault(20)
 	})
 
-	define.Post(bc, "/users/login", Login)
-	define.Post(bc, "/users/", CreateUser)
-	define.Get(bc, "/user", GetCurrentUser)
-	define.Put(bc, "/user", UpdateCurrentUser)
+	define.Post(bc, "/users/login", Login).Tags(tagUserAndAuthentication)
+	define.Post(bc, "/users/", CreateUser).Tags(tagUserAndAuthentication)
+	define.Get(bc, "/user", GetCurrentUser).Tags(tagUserAndAuthentication)
+	define.Put(bc, "/user", UpdateCurrentUser).Tags(tagUserAndAuthentication)
 
-	define.Get(bc, "/profiles/{username}", GetProfileByUsername)
-	define.Post(bc, "/profiles/{username}/follow", FollowUserByUsername)
-	define.Delete(bc, "/profiles/{username}/follow", UnfollowUserByUsername)
+	define.Get(bc, "/profiles/{username}", GetProfileByUsername).Tags(tagProfile)
+	define.Post(bc, "/profiles/{username}/follow", FollowUserByUsername).Tags(tagProfile)
+	define.Delete(bc, "/profiles/{username}/follow", UnfollowUserByUsername).Tags(tagProfile)
 
-	define.Get(bc, "/articles/feed", GetArticlesFeed)
-	define.Get(bc, "/articles", GetArticles)
-	define.Post(bc, "/articles", CreateArticle)
-	define.Get(bc, "/articles/{slug}", GetArticle)
-	define.Put(bc, "/articles/{slug}", UpdateArticle)
-	define.Delete(bc, "/articles/{slug}", DeleteArticle)
-	define.Get(bc, "/articles/{slug}/comments", GetArticleComments)
-	define.Post(bc, "/articles/{slug}/comments", CreateArticleComment)
-	define.Delete(bc, "/articles/{slug}/comments/{id}", DeleteArticleComment)
-	define.Post(bc, "/articles/{slug}/favorite", CreateArticleFavorite)
-	define.Delete(bc, "/articles/{slug}/favorite", DeleteArticleFavorite)
+	define.Get(bc, "/articles/feed", GetArticlesFeed).Tags(tagArticles)
+	define.Get(bc, "/articles", GetArticles).Tags(tagArticles)
+	define.Post(bc, "/articles", CreateArticle).Tags(tagArticles)
+	define.Get(bc, "/articles/{slug}", GetArticle).Tags(tagArticles)
+	define.Put(bc, "/articles/{slug}", UpdateArticle).Tags(tagArticles)
+	define.Delete(bc, "/articles/{slug}", DeleteArticle).Tags(tagArticles)
+	define.Get(bc, "/articles/{slug}/comments", GetArticleComments).Tags(tagComments)
+	define.Post(bc, "/articles/{slug}/comments", CreateArticleComment).Tags(tagComments)
+	define.Delete(bc, "/articles/{slug}/comments/{id}", DeleteArticleComment).Tags(tagComments)
+	define.Post(bc, "/articles/{slug}/favorite", CreateArticleFavorite).Tags(tagFavorites)
+	define.Delete(bc, "/articles/{slug}/favorite", DeleteArticleFavorite).Tags(tagFavorites)
 
-	define.Get(bc, "/tags", GetTags)
+	define.Get(bc, "/tags", GetTags).Tags(tagTags)
 }
 
 // handlers

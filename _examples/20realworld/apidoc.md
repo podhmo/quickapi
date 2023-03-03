@@ -14,25 +14,25 @@ Conduit API documentation
 
 | endpoint | operationId | tags | summary |
 | --- | --- | --- | --- |
-| `GET /articles` | [main.GetArticles](#maingetarticles-get-articles)  | `main` | Get recent articles globally |
-| `POST /articles` | [main.CreateArticle](#maincreatearticle-post-articles)  | `main` | Create an article |
-| `GET /articles/feed` | [main.GetArticlesFeed](#maingetarticlesfeed-get-articlesfeed)  | `main` | Get recent articles from users you follow |
-| `DELETE /articles/{slug}` | [main.DeleteArticle](#maindeletearticle-delete-articlesslug)  | `main` | Delete an article |
-| `GET /articles/{slug}` | [main.GetArticle](#maingetarticle-get-articlesslug)  | `main` | Get an article |
-| `PUT /articles/{slug}` | [main.UpdateArticle](#mainupdatearticle-put-articlesslug)  | `main` | Update an article |
-| `GET /articles/{slug}/comments` | [main.GetArticleComments](#maingetarticlecomments-get-articlesslugcomments)  | `main` | Get comments for an article |
-| `POST /articles/{slug}/comments` | [main.CreateArticleComment](#maincreatearticlecomment-post-articlesslugcomments)  | `main` | Create a comment for an article |
-| `DELETE /articles/{slug}/comments/{id}` | [main.DeleteArticleComment](#maindeletearticlecomment-delete-articlesslugcommentsid)  | `main` | Delete a comment for an article |
-| `DELETE /articles/{slug}/favorite` | [main.DeleteArticleFavorite](#maindeletearticlefavorite-delete-articlesslugfavorite)  | `main` | Unfavorite an article |
-| `POST /articles/{slug}/favorite` | [main.CreateArticleFavorite](#maincreatearticlefavorite-post-articlesslugfavorite)  | `main` | Favorite an article |
-| `GET /profiles/{username}` | [main.GetProfileByUsername](#maingetprofilebyusername-get-profilesusername)  | `main` | Get a profile |
-| `DELETE /profiles/{username}/follow` | [main.UnfollowUserByUsername](#mainunfollowuserbyusername-delete-profilesusernamefollow)  | `main` | Unfollow a user |
-| `POST /profiles/{username}/follow` | [main.FollowUserByUsername](#mainfollowuserbyusername-post-profilesusernamefollow)  | `main` | Follow a user |
-| `GET /tags` | [main.GetTags](#maingettags-get-tags)  | `main` | Get tags |
-| `GET /user` | [main.GetCurrentUser](#maingetcurrentuser-get-user)  | `main` | Get current user |
-| `PUT /user` | [main.UpdateCurrentUser](#mainupdatecurrentuser-put-user)  | `main` | Update current user |
-| `POST /users/` | [main.CreateUser](#maincreateuser-post-users)  | `main` |  |
-| `POST /users/login` | [main.Login](#mainlogin-post-userslogin)  | `main` | Existing user login |
+| `GET /articles` | [main.GetArticles](#maingetarticles-get-articles)  | `Articles` | Get recent articles globally |
+| `POST /articles` | [main.CreateArticle](#maincreatearticle-post-articles)  | `Articles` | Create an article |
+| `GET /articles/feed` | [main.GetArticlesFeed](#maingetarticlesfeed-get-articlesfeed)  | `Articles` | Get recent articles from users you follow |
+| `DELETE /articles/{slug}` | [main.DeleteArticle](#maindeletearticle-delete-articlesslug)  | `Articles` | Delete an article |
+| `GET /articles/{slug}` | [main.GetArticle](#maingetarticle-get-articlesslug)  | `Articles` | Get an article |
+| `PUT /articles/{slug}` | [main.UpdateArticle](#mainupdatearticle-put-articlesslug)  | `Articles` | Update an article |
+| `GET /articles/{slug}/comments` | [main.GetArticleComments](#maingetarticlecomments-get-articlesslugcomments)  | `Comments` | Get comments for an article |
+| `POST /articles/{slug}/comments` | [main.CreateArticleComment](#maincreatearticlecomment-post-articlesslugcomments)  | `Comments` | Create a comment for an article |
+| `DELETE /articles/{slug}/comments/{id}` | [main.DeleteArticleComment](#maindeletearticlecomment-delete-articlesslugcommentsid)  | `Comments` | Delete a comment for an article |
+| `DELETE /articles/{slug}/favorite` | [main.DeleteArticleFavorite](#maindeletearticlefavorite-delete-articlesslugfavorite)  | `Favorites` | Unfavorite an article |
+| `POST /articles/{slug}/favorite` | [main.CreateArticleFavorite](#maincreatearticlefavorite-post-articlesslugfavorite)  | `Favorites` | Favorite an article |
+| `GET /profiles/{username}` | [main.GetProfileByUsername](#maingetprofilebyusername-get-profilesusername)  | `Profile` | Get a profile |
+| `DELETE /profiles/{username}/follow` | [main.UnfollowUserByUsername](#mainunfollowuserbyusername-delete-profilesusernamefollow)  | `Profile` | Unfollow a user |
+| `POST /profiles/{username}/follow` | [main.FollowUserByUsername](#mainfollowuserbyusername-post-profilesusernamefollow)  | `Profile` | Follow a user |
+| `GET /tags` | [main.GetTags](#maingettags-get-tags)  | `Tags` | Get tags |
+| `GET /user` | [main.GetCurrentUser](#maingetcurrentuser-get-user)  | `User and Authentication` | Get current user |
+| `PUT /user` | [main.UpdateCurrentUser](#mainupdatecurrentuser-put-user)  | `User and Authentication` | Update current user |
+| `POST /users/` | [main.CreateUser](#maincreateuser-post-users)  | `User and Authentication` |  |
+| `POST /users/login` | [main.Login](#mainlogin-post-userslogin)  | `User and Authentication` | Existing user login |
 
 
 ### main.GetArticles `GET /articles`
@@ -43,7 +43,7 @@ Get recent articles globally
 | --- | --- |
 | operationId | main.GetArticles |
 | endpoint | `GET /articles` |
-| tags | `main` |
+| tags | `Articles` |
 
 
 
@@ -77,7 +77,7 @@ Create an article
 | --- | --- |
 | operationId | main.CreateArticle |
 | endpoint | `POST /articles` |
-| tags | `main` |
+| tags | `Articles` |
 
 
 
@@ -111,7 +111,7 @@ Get recent articles from users you follow
 | --- | --- |
 | operationId | main.GetArticlesFeed |
 | endpoint | `GET /articles/feed` |
-| tags | `main` |
+| tags | `Articles` |
 
 
 
@@ -154,7 +154,7 @@ Delete an article
 | --- | --- |
 | operationId | main.DeleteArticle |
 | endpoint | `DELETE /articles/{slug}` |
-| tags | `main` |
+| tags | `Articles` |
 
 
 
@@ -197,7 +197,7 @@ Get an article
 | --- | --- |
 | operationId | main.GetArticle |
 | endpoint | `GET /articles/{slug}` |
-| tags | `main` |
+| tags | `Articles` |
 
 
 
@@ -240,7 +240,7 @@ Update an article
 | --- | --- |
 | operationId | main.UpdateArticle |
 | endpoint | `PUT /articles/{slug}` |
-| tags | `main` |
+| tags | `Articles` |
 
 
 
@@ -283,7 +283,7 @@ Get comments for an article
 | --- | --- |
 | operationId | main.GetArticleComments |
 | endpoint | `GET /articles/{slug}/comments` |
-| tags | `main` |
+| tags | `Comments` |
 
 
 
@@ -326,7 +326,7 @@ Create a comment for an article
 | --- | --- |
 | operationId | main.CreateArticleComment |
 | endpoint | `POST /articles/{slug}/comments` |
-| tags | `main` |
+| tags | `Comments` |
 
 
 
@@ -369,7 +369,7 @@ Delete a comment for an article
 | --- | --- |
 | operationId | main.DeleteArticleComment |
 | endpoint | `DELETE /articles/{slug}/comments/{id}` |
-| tags | `main` |
+| tags | `Comments` |
 
 
 
@@ -414,7 +414,7 @@ Unfavorite an article
 | --- | --- |
 | operationId | main.DeleteArticleFavorite |
 | endpoint | `DELETE /articles/{slug}/favorite` |
-| tags | `main` |
+| tags | `Favorites` |
 
 
 
@@ -457,7 +457,7 @@ Favorite an article
 | --- | --- |
 | operationId | main.CreateArticleFavorite |
 | endpoint | `POST /articles/{slug}/favorite` |
-| tags | `main` |
+| tags | `Favorites` |
 
 
 
@@ -500,7 +500,7 @@ Get a profile
 | --- | --- |
 | operationId | main.GetProfileByUsername |
 | endpoint | `GET /profiles/{username}` |
-| tags | `main` |
+| tags | `Profile` |
 
 
 
@@ -543,7 +543,7 @@ Unfollow a user
 | --- | --- |
 | operationId | main.UnfollowUserByUsername |
 | endpoint | `DELETE /profiles/{username}/follow` |
-| tags | `main` |
+| tags | `Profile` |
 
 
 
@@ -586,7 +586,7 @@ Follow a user
 | --- | --- |
 | operationId | main.FollowUserByUsername |
 | endpoint | `POST /profiles/{username}/follow` |
-| tags | `main` |
+| tags | `Profile` |
 
 
 
@@ -629,7 +629,7 @@ Get tags
 | --- | --- |
 | operationId | main.GetTags |
 | endpoint | `GET /tags` |
-| tags | `main` |
+| tags | `Tags` |
 
 
 
@@ -678,7 +678,7 @@ Get current user
 | --- | --- |
 | operationId | main.GetCurrentUser |
 | endpoint | `GET /user` |
-| tags | `main` |
+| tags | `User and Authentication` |
 
 
 
@@ -712,7 +712,7 @@ Update current user
 | --- | --- |
 | operationId | main.UpdateCurrentUser |
 | endpoint | `PUT /user` |
-| tags | `main` |
+| tags | `User and Authentication` |
 
 
 
@@ -746,7 +746,7 @@ Update user information for current user
 | --- | --- |
 | operationId | main.CreateUser |
 | endpoint | `POST /users/` |
-| tags | `main` |
+| tags | `User and Authentication` |
 
 
 
@@ -776,7 +776,7 @@ Existing user login
 | --- | --- |
 | operationId | main.Login |
 | endpoint | `POST /users/login` |
-| tags | `main` |
+| tags | `User and Authentication` |
 
 
 
