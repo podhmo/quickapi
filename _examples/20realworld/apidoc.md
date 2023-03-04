@@ -44,7 +44,7 @@ Get recent articles globally
 | operationId | main.GetArticles |
 | endpoint | `GET /articles` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -54,6 +54,17 @@ Get recent articles globally
 ```go
 // GET /articles (200)
 type Output200 struct {	// 
+}
+
+// GET /articles (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// GET /articles (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // GET /articles (default)
@@ -79,7 +90,7 @@ Create an article
 | operationId | main.CreateArticle |
 | endpoint | `POST /articles` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -89,6 +100,17 @@ Create an article
 ```go
 // POST /articles (200)
 type Output200 struct {	// 
+}
+
+// POST /articles (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// POST /articles (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // POST /articles (default)
@@ -114,7 +136,7 @@ Get recent articles from users you follow
 | operationId | main.GetArticlesFeed |
 | endpoint | `GET /articles/feed` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -134,6 +156,17 @@ type Input struct {
 ```go
 // GET /articles/feed (200)
 type Output200 struct {	// 
+}
+
+// GET /articles/feed (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// GET /articles/feed (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // GET /articles/feed (default)
@@ -159,7 +192,7 @@ Delete an article
 | operationId | main.DeleteArticle |
 | endpoint | `DELETE /articles/{slug}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -178,6 +211,17 @@ type Input struct {
 ```go
 // DELETE /articles/{slug} (200)
 type Output200 struct {	// 
+}
+
+// DELETE /articles/{slug} (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// DELETE /articles/{slug} (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // DELETE /articles/{slug} (default)
@@ -203,7 +247,7 @@ Get an article
 | operationId | main.GetArticle |
 | endpoint | `GET /articles/{slug}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -222,6 +266,13 @@ type Input struct {
 ```go
 // GET /articles/{slug} (200)
 type Output200 struct {	// 
+}
+
+// GET /articles/{slug} (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // GET /articles/{slug} (default)
@@ -247,7 +298,7 @@ Update an article
 | operationId | main.UpdateArticle |
 | endpoint | `PUT /articles/{slug}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -266,6 +317,17 @@ type Input struct {
 ```go
 // PUT /articles/{slug} (200)
 type Output200 struct {	// 
+}
+
+// PUT /articles/{slug} (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// PUT /articles/{slug} (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // PUT /articles/{slug} (default)
@@ -291,7 +353,7 @@ Get comments for an article
 | operationId | main.GetArticleComments |
 | endpoint | `GET /articles/{slug}/comments` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
 
 
@@ -310,6 +372,17 @@ type Input struct {
 ```go
 // GET /articles/{slug}/comments (200)
 type Output200 struct {	// 
+}
+
+// GET /articles/{slug}/comments (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// GET /articles/{slug}/comments (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // GET /articles/{slug}/comments (default)
@@ -335,7 +408,7 @@ Create a comment for an article
 | operationId | main.CreateArticleComment |
 | endpoint | `POST /articles/{slug}/comments` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
 
 
@@ -354,6 +427,17 @@ type Input struct {
 ```go
 // POST /articles/{slug}/comments (200)
 type Output200 struct {	// 
+}
+
+// POST /articles/{slug}/comments (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// POST /articles/{slug}/comments (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // POST /articles/{slug}/comments (default)
@@ -379,7 +463,7 @@ Delete a comment for an article
 | operationId | main.DeleteArticleComment |
 | endpoint | `DELETE /articles/{slug}/comments/{id}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
 
 
@@ -401,6 +485,17 @@ type Input struct {
 ```go
 // DELETE /articles/{slug}/comments/{id} (200)
 type Output200 struct {	// 
+}
+
+// DELETE /articles/{slug}/comments/{id} (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// DELETE /articles/{slug}/comments/{id} (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // DELETE /articles/{slug}/comments/{id} (default)
@@ -426,7 +521,7 @@ Unfavorite an article
 | operationId | main.DeleteArticleFavorite |
 | endpoint | `DELETE /articles/{slug}/favorite` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Favorites` |
 
 
@@ -445,6 +540,17 @@ type Input struct {
 ```go
 // DELETE /articles/{slug}/favorite (200)
 type Output200 struct {	// 
+}
+
+// DELETE /articles/{slug}/favorite (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// DELETE /articles/{slug}/favorite (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // DELETE /articles/{slug}/favorite (default)
@@ -470,7 +576,7 @@ Favorite an article
 | operationId | main.CreateArticleFavorite |
 | endpoint | `POST /articles/{slug}/favorite` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Favorites` |
 
 
@@ -489,6 +595,17 @@ type Input struct {
 ```go
 // POST /articles/{slug}/favorite (200)
 type Output200 struct {	// 
+}
+
+// POST /articles/{slug}/favorite (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// POST /articles/{slug}/favorite (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // POST /articles/{slug}/favorite (default)
@@ -514,7 +631,7 @@ Get a profile
 | operationId | main.GetProfileByUsername |
 | endpoint | `GET /profiles/{username}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
 
 
@@ -533,6 +650,17 @@ type Input struct {
 ```go
 // GET /profiles/{username} (200)
 type Output200 struct {	// 
+}
+
+// GET /profiles/{username} (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// GET /profiles/{username} (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // GET /profiles/{username} (default)
@@ -558,7 +686,7 @@ Unfollow a user
 | operationId | main.UnfollowUserByUsername |
 | endpoint | `DELETE /profiles/{username}/follow` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
 
 
@@ -577,6 +705,17 @@ type Input struct {
 ```go
 // DELETE /profiles/{username}/follow (200)
 type Output200 struct {	// 
+}
+
+// DELETE /profiles/{username}/follow (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// DELETE /profiles/{username}/follow (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // DELETE /profiles/{username}/follow (default)
@@ -602,7 +741,7 @@ Follow a user
 | operationId | main.FollowUserByUsername |
 | endpoint | `POST /profiles/{username}/follow` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
 
 
@@ -621,6 +760,17 @@ type Input struct {
 ```go
 // POST /profiles/{username}/follow (200)
 type Output200 struct {	// 
+}
+
+// POST /profiles/{username}/follow (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// POST /profiles/{username}/follow (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // POST /profiles/{username}/follow (default)
@@ -646,7 +796,7 @@ Get tags
 | operationId | main.GetTags |
 | endpoint | `GET /tags` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Tags` |
 
 
@@ -677,6 +827,13 @@ type Input struct {
 type Output200 struct {	// 
 }
 
+// GET /tags (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
+}
+
 // GET /tags (default)
 // default error
 type OutputDefault struct {	// ErrorResponse
@@ -700,7 +857,7 @@ Get current user
 | operationId | main.GetCurrentUser |
 | endpoint | `GET /user` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
@@ -710,6 +867,17 @@ Get current user
 ```go
 // GET /user (200)
 type Output200 struct {	// 
+}
+
+// GET /user (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// GET /user (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // GET /user (default)
@@ -735,7 +903,7 @@ Update current user
 | operationId | main.UpdateCurrentUser |
 | endpoint | `PUT /user` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
@@ -745,6 +913,17 @@ Update current user
 ```go
 // PUT /user (200)
 type Output200 struct {	// 
+}
+
+// PUT /user (401)
+type Output401 struct {	// UnauthorizedError
+}
+
+// PUT /user (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // PUT /user (default)
@@ -770,7 +949,7 @@ Register a new user
 | operationId | main.CreateUser |
 | endpoint | `POST /users/` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
+| output | `<Anonymous>` ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
@@ -778,8 +957,15 @@ Register a new user
 #### output (application/json)
 
 ```go
-// POST /users/ (200)
-type Output200 struct {	// 
+// POST /users/ (201)
+type Output201 struct {	// 
+}
+
+// POST /users/ (422)
+type Output422 struct {	// GenericError
+	errors struct {	// GenericErrorErrors
+		body []string
+	}
 }
 
 // POST /users/ (default)
@@ -922,6 +1108,24 @@ type GenericError struct {
 }
 ```
 
+- [output of main.GetArticles (422) as `GenericError`](#maingetarticles-get-articles)
+- [output of main.CreateArticle (422) as `GenericError`](#maincreatearticle-post-articles)
+- [output of main.GetArticlesFeed (422) as `GenericError`](#maingetarticlesfeed-get-articlesfeed)
+- [output of main.DeleteArticle (422) as `GenericError`](#maindeletearticle-delete-articlesslug)
+- [output of main.GetArticle (422) as `GenericError`](#maingetarticle-get-articlesslug)
+- [output of main.UpdateArticle (422) as `GenericError`](#mainupdatearticle-put-articlesslug)
+- [output of main.GetArticleComments (422) as `GenericError`](#maingetarticlecomments-get-articlesslugcomments)
+- [output of main.CreateArticleComment (422) as `GenericError`](#maincreatearticlecomment-post-articlesslugcomments)
+- [output of main.DeleteArticleComment (422) as `GenericError`](#maindeletearticlecomment-delete-articlesslugcommentsid)
+- [output of main.DeleteArticleFavorite (422) as `GenericError`](#maindeletearticlefavorite-delete-articlesslugfavorite)
+- [output of main.CreateArticleFavorite (422) as `GenericError`](#maincreatearticlefavorite-post-articlesslugfavorite)
+- [output of main.GetProfileByUsername (422) as `GenericError`](#maingetprofilebyusername-get-profilesusername)
+- [output of main.UnfollowUserByUsername (422) as `GenericError`](#mainunfollowuserbyusername-delete-profilesusernamefollow)
+- [output of main.FollowUserByUsername (422) as `GenericError`](#mainfollowuserbyusername-post-profilesusernamefollow)
+- [output of main.GetTags (422) as `GenericError`](#maingettags-get-tags)
+- [output of main.GetCurrentUser (422) as `GenericError`](#maingetcurrentuser-get-user)
+- [output of main.UpdateCurrentUser (422) as `GenericError`](#mainupdatecurrentuser-put-user)
+- [output of main.CreateUser (422) as `GenericError`](#maincreateuser-post-users)
 - [output of main.Login (422) as `GenericError`](#mainlogin-post-userslogin)
 
 ### GenericErrorErrors
@@ -967,6 +1171,21 @@ type UnauthorizedError struct {
 }
 ```
 
+- [output of main.GetArticles (401) as `UnauthorizedError`](#maingetarticles-get-articles)
+- [output of main.CreateArticle (401) as `UnauthorizedError`](#maincreatearticle-post-articles)
+- [output of main.GetArticlesFeed (401) as `UnauthorizedError`](#maingetarticlesfeed-get-articlesfeed)
+- [output of main.DeleteArticle (401) as `UnauthorizedError`](#maindeletearticle-delete-articlesslug)
+- [output of main.UpdateArticle (401) as `UnauthorizedError`](#mainupdatearticle-put-articlesslug)
+- [output of main.GetArticleComments (401) as `UnauthorizedError`](#maingetarticlecomments-get-articlesslugcomments)
+- [output of main.CreateArticleComment (401) as `UnauthorizedError`](#maincreatearticlecomment-post-articlesslugcomments)
+- [output of main.DeleteArticleComment (401) as `UnauthorizedError`](#maindeletearticlecomment-delete-articlesslugcommentsid)
+- [output of main.DeleteArticleFavorite (401) as `UnauthorizedError`](#maindeletearticlefavorite-delete-articlesslugfavorite)
+- [output of main.CreateArticleFavorite (401) as `UnauthorizedError`](#maincreatearticlefavorite-post-articlesslugfavorite)
+- [output of main.GetProfileByUsername (401) as `UnauthorizedError`](#maingetprofilebyusername-get-profilesusername)
+- [output of main.UnfollowUserByUsername (401) as `UnauthorizedError`](#mainunfollowuserbyusername-delete-profilesusernamefollow)
+- [output of main.FollowUserByUsername (401) as `UnauthorizedError`](#mainfollowuserbyusername-post-profilesusernamefollow)
+- [output of main.GetCurrentUser (401) as `UnauthorizedError`](#maingetcurrentuser-get-user)
+- [output of main.UpdateCurrentUser (401) as `UnauthorizedError`](#mainupdatecurrentuser-put-user)
 - [output of main.Login (401) as `UnauthorizedError`](#mainlogin-post-userslogin)
 
 ### User

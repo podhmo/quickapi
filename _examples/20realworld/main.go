@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -111,27 +112,27 @@ func mount(bc *define.BuildContext) {
 	})
 
 	define.Post(bc, "/users/login", Login).Tags(tagUserAndAuthentication).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
-	define.Post(bc, "/users/", CreateUser).Tags(tagUserAndAuthentication)
-	define.Get(bc, "/user", GetCurrentUser).Tags(tagUserAndAuthentication)
-	define.Put(bc, "/user", UpdateCurrentUser).Tags(tagUserAndAuthentication)
+	define.Post(bc, "/users/", CreateUser).Tags(tagUserAndAuthentication).Status(http.StatusCreated).AnotherError(bc, 422, &GenericError{}, "")
+	define.Get(bc, "/user", GetCurrentUser).Tags(tagUserAndAuthentication).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Put(bc, "/user", UpdateCurrentUser).Tags(tagUserAndAuthentication).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
 
-	define.Get(bc, "/profiles/{username}", GetProfileByUsername).Tags(tagProfile)
-	define.Post(bc, "/profiles/{username}/follow", FollowUserByUsername).Tags(tagProfile)
-	define.Delete(bc, "/profiles/{username}/follow", UnfollowUserByUsername).Tags(tagProfile)
+	define.Get(bc, "/profiles/{username}", GetProfileByUsername).Tags(tagProfile).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Post(bc, "/profiles/{username}/follow", FollowUserByUsername).Tags(tagProfile).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Delete(bc, "/profiles/{username}/follow", UnfollowUserByUsername).Tags(tagProfile).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
 
-	define.Get(bc, "/articles/feed", GetArticlesFeed).Tags(tagArticles)
-	define.Get(bc, "/articles", GetArticles).Tags(tagArticles)
-	define.Post(bc, "/articles", CreateArticle).Tags(tagArticles)
-	define.Get(bc, "/articles/{slug}", GetArticle).Tags(tagArticles)
-	define.Put(bc, "/articles/{slug}", UpdateArticle).Tags(tagArticles)
-	define.Delete(bc, "/articles/{slug}", DeleteArticle).Tags(tagArticles)
-	define.Get(bc, "/articles/{slug}/comments", GetArticleComments).Tags(tagComments)
-	define.Post(bc, "/articles/{slug}/comments", CreateArticleComment).Tags(tagComments)
-	define.Delete(bc, "/articles/{slug}/comments/{id}", DeleteArticleComment).Tags(tagComments)
-	define.Post(bc, "/articles/{slug}/favorite", CreateArticleFavorite).Tags(tagFavorites)
-	define.Delete(bc, "/articles/{slug}/favorite", DeleteArticleFavorite).Tags(tagFavorites)
+	define.Get(bc, "/articles/feed", GetArticlesFeed).Tags(tagArticles).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Get(bc, "/articles", GetArticles).Tags(tagArticles).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Post(bc, "/articles", CreateArticle).Tags(tagArticles).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Get(bc, "/articles/{slug}", GetArticle).Tags(tagArticles).AnotherError(bc, 422, &GenericError{}, "")
+	define.Put(bc, "/articles/{slug}", UpdateArticle).Tags(tagArticles).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Delete(bc, "/articles/{slug}", DeleteArticle).Tags(tagArticles).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Get(bc, "/articles/{slug}/comments", GetArticleComments).Tags(tagComments).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Post(bc, "/articles/{slug}/comments", CreateArticleComment).Tags(tagComments).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Delete(bc, "/articles/{slug}/comments/{id}", DeleteArticleComment).Tags(tagComments).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Post(bc, "/articles/{slug}/favorite", CreateArticleFavorite).Tags(tagFavorites).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
+	define.Delete(bc, "/articles/{slug}/favorite", DeleteArticleFavorite).Tags(tagFavorites).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")
 
-	define.Get(bc, "/tags", GetTags).Tags(tagTags)
+	define.Get(bc, "/tags", GetTags).Tags(tagTags).AnotherError(bc, 422, &GenericError{}, "")
 }
 
 // components
