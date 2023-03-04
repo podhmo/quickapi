@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -111,44 +110,28 @@ func (m *EndpointModifier[I, O]) OperationID(operationID string) *EndpointModifi
 }
 
 func (m *EndpointModifier[I, O]) Description(description string) *EndpointModifier[I, O] {
-	return m.After(func(op *openapi3.Operation) {
-		op.Description = strings.TrimSpace(description)
-	})
+	return &EndpointModifier[I, O]{
+		Handler:  m.Handler,
+		register: m.register.Description(description),
+	}
 }
 func (m *EndpointModifier[I, O]) Status(code int) *EndpointModifier[I, O] {
-	return m.After(func(op *openapi3.Operation) {
-		def, ok := op.Responses["200"]
-		if ok {
-			delete(op.Responses, "200")
-			op.Responses[strconv.Itoa(code)] = def
-		}
-	})
+	return &EndpointModifier[I, O]{
+		Handler:  m.Handler,
+		register: m.register.Status(code),
+	}
 }
 func (m *EndpointModifier[I, O]) Tags(tags ...string) *EndpointModifier[I, O] {
-	return m.After(func(op *openapi3.Operation) {
-		added := make([]string, 0, len(tags))
-		for _, x := range tags {
-			found := false
-			for _, y := range op.Tags {
-				if x == y {
-					found = true
-					break
-				}
-			}
-			if !found {
-				added = append(added, x)
-			}
-		}
-		op.Tags = append(op.Tags, added...)
-	})
+	return &EndpointModifier[I, O]{
+		Handler:  m.Handler,
+		register: m.register.Tags(tags...),
+	}
 }
 func (m *EndpointModifier[I, O]) AnotherError(bc *BuildContext, code int, typ interface{}, description string) *EndpointModifier[I, O] {
-	return m.After(func(op *openapi3.Operation) {
-		bc.m.RegisterType(typ, func(ref *openapi3.SchemaRef) {
-			val := openapi3.NewResponse().WithDescription(description).WithJSONSchemaRef(ref)
-			op.Responses[strconv.Itoa(code)] = &openapi3.ResponseRef{Value: val}
-		})
-	})
+	return &EndpointModifier[I, O]{
+		Handler:  m.Handler,
+		register: m.register.AnotherError(code, typ, description),
+	}
 }
 func (m *EndpointModifier[I, O]) Example(code int, description string, value interface{}) *EndpointModifier[I, O] {
 	return &EndpointModifier[I, O]{
