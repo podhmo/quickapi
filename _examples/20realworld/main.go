@@ -107,8 +107,7 @@ func mount(bc *define.BuildContext) {
 		s.WithMin(0)
 	})
 	define.Type(bc, LimitParam(20)).After(func(s *openapi3.Schema) {
-		// TODO: default value by ↑
-		s.WithMin(1).WithDefault(20)
+		s.WithMin(1)
 	})
 
 	define.Post(bc, "/users/login", Login).Tags(tagUserAndAuthentication).AnotherError(bc, 401, &UnauthorizedError{}, "").AnotherError(bc, 422, &GenericError{}, "")

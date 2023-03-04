@@ -844,26 +844,6 @@
             },
             "description": ""
           },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            },
-            "description": ""
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenericError"
-                }
-              }
-            },
-            "description": ""
-          },
           "default": {
             "content": {
               "application/json": {
@@ -949,6 +929,26 @@
     {
       "description": "local development",
       "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Articles"
+    },
+    {
+      "name": "Comments"
+    },
+    {
+      "name": "Favorites"
+    },
+    {
+      "name": "Profile"
+    },
+    {
+      "name": "Tags"
+    },
+    {
+      "name": "User and Authentication"
     }
   ]
 }

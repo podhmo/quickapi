@@ -43,8 +43,9 @@ Get recent articles globally
 | --- | --- |
 | operationId | main.GetArticles |
 | endpoint | `GET /articles` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
-
 
 
 
@@ -77,8 +78,9 @@ Create an article
 | --- | --- |
 | operationId | main.CreateArticle |
 | endpoint | `POST /articles` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
-
 
 
 
@@ -111,8 +113,9 @@ Get recent articles from users you follow
 | --- | --- |
 | operationId | main.GetArticlesFeed |
 | endpoint | `GET /articles/feed` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
-
 
 
 #### input (application/json)
@@ -121,6 +124,7 @@ Get recent articles from users you follow
 // GET /articles/feed
 type Input struct {
 	limit? integer `in:"query"`
+
 	offset? integer `in:"query"`
 }
 ```
@@ -154,8 +158,9 @@ Delete an article
 | --- | --- |
 | operationId | main.DeleteArticle |
 | endpoint | `DELETE /articles/{slug}` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
-
 
 
 #### input (application/json)
@@ -197,8 +202,9 @@ Get an article
 | --- | --- |
 | operationId | main.GetArticle |
 | endpoint | `GET /articles/{slug}` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
-
 
 
 #### input (application/json)
@@ -240,8 +246,9 @@ Update an article
 | --- | --- |
 | operationId | main.UpdateArticle |
 | endpoint | `PUT /articles/{slug}` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
-
 
 
 #### input (application/json)
@@ -283,8 +290,9 @@ Get comments for an article
 | --- | --- |
 | operationId | main.GetArticleComments |
 | endpoint | `GET /articles/{slug}/comments` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
-
 
 
 #### input (application/json)
@@ -326,8 +334,9 @@ Create a comment for an article
 | --- | --- |
 | operationId | main.CreateArticleComment |
 | endpoint | `POST /articles/{slug}/comments` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
-
 
 
 #### input (application/json)
@@ -369,8 +378,9 @@ Delete a comment for an article
 | --- | --- |
 | operationId | main.DeleteArticleComment |
 | endpoint | `DELETE /articles/{slug}/comments/{id}` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
-
 
 
 #### input (application/json)
@@ -380,6 +390,7 @@ Delete a comment for an article
 type Input struct {
 	// Slug of the article that you want to delete a comment
 	slug string `in:"path"`
+
 	// ID of the comment you want to delete
 	id string `in:"path"`
 }
@@ -414,8 +425,9 @@ Unfavorite an article
 | --- | --- |
 | operationId | main.DeleteArticleFavorite |
 | endpoint | `DELETE /articles/{slug}/favorite` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Favorites` |
-
 
 
 #### input (application/json)
@@ -457,8 +469,9 @@ Favorite an article
 | --- | --- |
 | operationId | main.CreateArticleFavorite |
 | endpoint | `POST /articles/{slug}/favorite` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Favorites` |
-
 
 
 #### input (application/json)
@@ -500,8 +513,9 @@ Get a profile
 | --- | --- |
 | operationId | main.GetProfileByUsername |
 | endpoint | `GET /profiles/{username}` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
-
 
 
 #### input (application/json)
@@ -543,8 +557,9 @@ Unfollow a user
 | --- | --- |
 | operationId | main.UnfollowUserByUsername |
 | endpoint | `DELETE /profiles/{username}/follow` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
-
 
 
 #### input (application/json)
@@ -586,8 +601,9 @@ Follow a user
 | --- | --- |
 | operationId | main.FollowUserByUsername |
 | endpoint | `POST /profiles/{username}/follow` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
-
 
 
 #### input (application/json)
@@ -629,8 +645,9 @@ Get tags
 | --- | --- |
 | operationId | main.GetTags |
 | endpoint | `GET /tags` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Tags` |
-
 
 
 #### input (application/json)
@@ -640,11 +657,15 @@ Get tags
 type Input struct {
 	// Filter by tag
 	tag? string `in:"query"`
+
 	// Filter by author (username)
 	author? string `in:"query"`
+
 	// Filter by favorites of a user (username)
 	favorited? string `in:"query"`
+
 	limit? integer `in:"query"`
+
 	offset? integer `in:"query"`
 }
 ```
@@ -678,8 +699,9 @@ Get current user
 | --- | --- |
 | operationId | main.GetCurrentUser |
 | endpoint | `GET /user` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
-
 
 
 
@@ -712,8 +734,9 @@ Update current user
 | --- | --- |
 | operationId | main.UpdateCurrentUser |
 | endpoint | `PUT /user` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
-
 
 
 
@@ -746,8 +769,9 @@ Register a new user
 | --- | --- |
 | operationId | main.CreateUser |
 | endpoint | `POST /users/` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
-
 
 
 
@@ -756,17 +780,6 @@ Register a new user
 ```go
 // POST /users/ (200)
 type Output200 struct {	// 
-}
-
-// POST /users/ (401)
-type Output401 struct {	// UnauthorizedError
-}
-
-// POST /users/ (422)
-type Output422 struct {	// GenericError
-	errors struct {	// GenericErrorErrors
-		body []string
-	}
 }
 
 // POST /users/ (default)
@@ -791,8 +804,9 @@ Existing user login
 | --- | --- |
 | operationId | main.Login |
 | endpoint | `POST /users/login` |
+| input | Input |
+| output | [`LoginOutput`](#loginoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
-
 
 
 
@@ -908,7 +922,6 @@ type GenericError struct {
 }
 ```
 
-- [output of main.CreateUser (422) as `GenericError`](#maincreateuser-post-users)
 - [output of main.Login (422) as `GenericError`](#mainlogin-post-userslogin)
 
 ### GenericErrorErrors
@@ -954,7 +967,6 @@ type UnauthorizedError struct {
 }
 ```
 
-- [output of main.CreateUser (401) as `UnauthorizedError`](#maincreateuser-post-users)
 - [output of main.Login (401) as `UnauthorizedError`](#mainlogin-post-userslogin)
 
 ### User
