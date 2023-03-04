@@ -3,19 +3,13 @@
     "schemas": {
       "Error": {
         "additionalProperties": false,
-        "default": {
-          "code": 400,
-          "message": "validation error"
-        },
         "properties": {
           "code": {
-            "default": 400,
             "description": "Error code",
             "format": "int32",
             "type": "integer"
           },
           "message": {
-            "default": "validation error",
             "description": "message",
             "type": "string"
           }
@@ -125,7 +119,6 @@
             "in": "query",
             "name": "limit",
             "schema": {
-              "default": 400,
               "description": "Error code",
               "format": "int32",
               "type": "integer"
@@ -269,7 +262,7 @@
                 }
               }
             },
-            "description": "-"
+            "description": "validation error"
           },
           "default": {
             "content": {
@@ -411,6 +404,11 @@
     {
       "description": "local development",
       "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "name": "main"
     }
   ]
 }

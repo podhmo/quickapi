@@ -29,6 +29,8 @@ FindPets returns all pets
 | --- | --- |
 | operationId | main.PetAPI.FindPets |
 | endpoint | `GET /pets` |
+| input | Input |
+| output | `<Anonymous>` ｜ [`Error`](#error) |
 | tags | `main` |
 
 
@@ -38,6 +40,7 @@ FindPets returns all pets
 // GET /pets
 type Input struct {
 	tags? []string `in:"query"`
+
 	limit? integer `in:"query"`
 }
 ```
@@ -64,10 +67,10 @@ type Output200 struct {	//
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`	// default: 400
+	code integer `format:"int32"`
 
 	// message
-	message? string	// default: validation error
+	message? string
 }
 ```
 
@@ -84,6 +87,8 @@ AddPet creates a new pet in the store. Duplicates are allowed
 | --- | --- |
 | operationId | main.PetAPI.AddPet |
 | endpoint | `POST /pets` |
+| input | Input[ [`AddPetInput`](#addpetinput) ] |
+| output | [`Pet`](#pet) ｜ [`Error`](#error) ｜ [`Error`](#error) |
 | tags | `main` |
 
 
@@ -121,23 +126,23 @@ type Output200 struct {	// Pet
 }
 
 // POST /pets (400)
-// -
+// validation error
 type Output400 struct {	// Error
 	// Error code
-	code integer `format:"int32"`	// default: 400
+	code integer `format:"int32"`
 
 	// message
-	message? string	// default: validation error
+	message? string
 }
 
 // POST /pets (default)
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`	// default: 400
+	code integer `format:"int32"`
 
 	// message
-	message? string	// default: validation error
+	message? string
 }
 ```
 
@@ -164,6 +169,8 @@ DeletePet deletes a pet by ID
 | --- | --- |
 | operationId | main.PetAPI.DeletePet |
 | endpoint | `DELETE /pets/{id}` |
+| input | Input |
+| output | [`Empty`](#empty) ｜ [`Error`](#error) |
 | tags | `main` |
 
 
@@ -188,10 +195,10 @@ type Output204 struct {	// Empty
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`	// default: 400
+	code integer `format:"int32"`
 
 	// message
-	message? string	// default: validation error
+	message? string
 }
 ```
 
@@ -206,6 +213,8 @@ FindPetByID returns a pet based on a single ID
 | --- | --- |
 | operationId | main.PetAPI.FindPetByID |
 | endpoint | `GET /pets/{id}` |
+| input | Input |
+| output | [`Pet`](#pet) ｜ [`Error`](#error) |
 | tags | `main` |
 
 
@@ -237,10 +246,10 @@ type Output200 struct {	// Pet
 // default error
 type OutputDefault struct {	// Error
 	// Error code
-	code integer `format:"int32"`	// default: 400
+	code integer `format:"int32"`
 
 	// message
-	message? string	// default: validation error
+	message? string
 }
 ```
 
@@ -257,6 +266,8 @@ FindPetByID returns a pet based on a single ID
 | --- | --- |
 | operationId | main.Hello |
 | endpoint | `GET /hello/{name}` |
+| input | Input |
+| output | string |
 | tags | `main` |
 
 
@@ -288,13 +299,15 @@ return greeting text
 
 ### Error
 
+
+
 ```go
 type Error struct {
 	// Error code
-	code integer `format:"int32"`	// default: 400
+	code integer `format:"int32"`
 
 	// message
-	message? string	// default: validation error
+	message? string
 }
 ```
 
@@ -306,6 +319,8 @@ type Error struct {
 - [output of main.PetAPI.FindPetByID (default) as `Error`](#mainpetapifindpetbyid-get-petsid)
 
 ### Pet
+
+
 
 ```go
 type Pet struct {
