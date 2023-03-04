@@ -145,6 +145,86 @@
         "type": "integer",
         "x-go-type": "main.LimitParam"
       },
+      "LoginUser": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "format": "password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginUser",
+        "type": "object"
+      },
+      "NewArticle": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tagList": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "body"
+        ],
+        "title": "NewArticle",
+        "type": "object"
+      },
+      "NewComment": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "title": "NewComment",
+        "type": "object"
+      },
+      "NewUser": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "format": "password",
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "username"
+        ],
+        "title": "NewUser",
+        "type": "object"
+      },
       "OffsetParam": {
         "description": "The number of items to skip before starting to collect the result set.",
         "minimum": 0,
@@ -185,6 +265,36 @@
       "UnauthorizedError": {
         "description": "Unauthorized",
         "title": "UnauthorizedError",
+        "type": "object"
+      },
+      "UpdateUser": {
+        "additionalProperties": false,
+        "properties": {
+          "bio": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "password": {
+            "format": "password",
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "username",
+          "bio",
+          "image"
+        ],
+        "title": "UpdateUser",
         "type": "object"
       },
       "User": {
@@ -229,6 +339,46 @@
       "get": {
         "description": "Get recent articles globally\n\nGet most recent articles globally. Use query parameters to filter results. Auth is optional",
         "operationId": "main.GetArticles",
+        "parameters": [
+          {
+            "description": "Filter by tag",
+            "in": "query",
+            "name": "tag",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by author (username)",
+            "in": "query",
+            "name": "author",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by favorites of a user (username)",
+            "in": "query",
+            "name": "favorited",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "$ref": "#/components/schemas/LimitParam"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "$ref": "#/components/schemas/OffsetParam"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -297,6 +447,26 @@
       "post": {
         "description": "Create an article\n\nCreate an article. Auth is required",
         "operationId": "main.CreateArticle",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "article": {
+                    "$ref": "#/components/schemas/NewArticle"
+                  }
+                },
+                "required": [
+                  "article"
+                ],
+                "title": "CreateArticleInput",
+                "type": "object",
+                "x-go-id": "main.CreateArticleInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {
@@ -580,6 +750,43 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "article": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "body": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "body"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "article"
+                ],
+                "title": "UpdateArticleInput",
+                "type": "object",
+                "x-go-id": "main.UpdateArticleInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {
@@ -729,6 +936,26 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "comment": {
+                    "$ref": "#/components/schemas/NewComment"
+                  }
+                },
+                "required": [
+                  "comment"
+                ],
+                "title": "CreateArticleCommentInput",
+                "type": "object",
+                "x-go-id": "main.CreateArticleCommentInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {
@@ -1385,6 +1612,26 @@
       "put": {
         "description": "Update current user\n\nUpdate user information for current user",
         "operationId": "main.UpdateCurrentUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "user": {
+                    "$ref": "#/components/schemas/UpdateUser"
+                  }
+                },
+                "required": [
+                  "user"
+                ],
+                "title": "UpdateCurrentUserInput",
+                "type": "object",
+                "x-go-id": "main.UpdateCurrentUserInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {
@@ -1448,6 +1695,26 @@
       "post": {
         "description": "Register a new user",
         "operationId": "main.CreateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "user": {
+                    "$ref": "#/components/schemas/NewUser"
+                  }
+                },
+                "required": [
+                  "user"
+                ],
+                "title": "CreateUserInput",
+                "type": "object",
+                "x-go-id": "main.CreateUserInput"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "content": {
@@ -1501,6 +1768,26 @@
       "post": {
         "description": "Existing user login\n\nLogin for existing user",
         "operationId": "main.Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "user": {
+                    "$ref": "#/components/schemas/LoginUser"
+                  }
+                },
+                "required": [
+                  "user"
+                ],
+                "title": "LoginInput",
+                "type": "object",
+                "x-go-id": "main.LoginInput"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {

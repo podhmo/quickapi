@@ -48,6 +48,25 @@ Get recent articles globally
 | tags | `Articles` |
 
 
+#### input (application/json)
+
+```go
+// GET /articles
+type Input struct {
+	// Filter by tag
+	tag? string `in:"query"`
+
+	// Filter by author (username)
+	author? string `in:"query"`
+
+	// Filter by favorites of a user (username)
+	favorited? string `in:"query"`
+
+	limit? integer `in:"query"`
+
+	offset? integer `in:"query"`
+}
+```
 
 #### output (application/json)
 
@@ -120,11 +139,29 @@ Create an article
 | --- | --- |
 | operationId | main.CreateArticle |
 | endpoint | `POST /articles` |
-| input | Input |
+| input | Input[ [`CreateArticleInput`](#createarticleinput) ] |
 | output | [`CreateArticleOutput`](#createarticleoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
+#### input (application/json)
+
+```go
+// POST /articles
+type Input struct {
+	JSONBody struct {	// CreateArticleInput
+		article struct {	// NewArticle
+			title string
+
+			description string
+
+			body string
+
+			tagList? []string
+		}
+	}
+}
+```
 
 #### output (application/json)
 
@@ -417,7 +454,7 @@ Update an article
 | --- | --- |
 | operationId | main.UpdateArticle |
 | endpoint | `PUT /articles/{slug}` |
-| input | Input |
+| input | Input[ [`UpdateArticleInput`](#updatearticleinput) ] |
 | output | [`UpdateArticleOutput`](#updatearticleoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
@@ -429,6 +466,16 @@ Update an article
 type Input struct {
 	// Slug of the article to update
 	slug string `in:"path"`
+
+	JSONBody struct {	// UpdateArticleInput
+		article struct {	// 
+			title string
+
+			description string
+
+			body string
+		}
+	}
 }
 ```
 
@@ -575,7 +622,7 @@ Create a comment for an article
 | --- | --- |
 | operationId | main.CreateArticleComment |
 | endpoint | `POST /articles/{slug}/comments` |
-| input | Input |
+| input | Input[ [`CreateArticleCommentInput`](#createarticlecommentinput) ] |
 | output | [`CreateArticleCommentOutput`](#createarticlecommentoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
 
@@ -587,6 +634,12 @@ Create a comment for an article
 type Input struct {
 	// Slug of the article that you want to create a comment
 	slug string `in:"path"`
+
+	JSONBody struct {	// CreateArticleCommentInput
+		comment struct {	// NewComment
+			body string
+		}
+	}
 }
 ```
 
@@ -1186,11 +1239,31 @@ Update current user
 | --- | --- |
 | operationId | main.UpdateCurrentUser |
 | endpoint | `PUT /user` |
-| input | Input |
+| input | Input[ [`UpdateCurrentUserInput`](#updatecurrentuserinput) ] |
 | output | [`UpdateCurrentUserOutput`](#updatecurrentuseroutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
+#### input (application/json)
+
+```go
+// PUT /user
+type Input struct {
+	JSONBody struct {	// UpdateCurrentUserInput
+		user struct {	// UpdateUser
+			email string
+
+			password string `format:"password"`
+
+			username string
+
+			bio string
+
+			image string
+		}
+	}
+}
+```
 
 #### output (application/json)
 
@@ -1243,11 +1316,27 @@ Register a new user
 | --- | --- |
 | operationId | main.CreateUser |
 | endpoint | `POST /users/` |
-| input | Input |
+| input | Input[ [`CreateUserInput`](#createuserinput) ] |
 | output | [`CreateUserOutput`](#createuseroutput) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
+#### input (application/json)
+
+```go
+// POST /users/
+type Input struct {
+	JSONBody struct {	// CreateUserInput
+		user struct {	// NewUser
+			email string
+
+			password string `format:"password"`
+
+			username string
+		}
+	}
+}
+```
 
 #### output (application/json)
 
@@ -1296,11 +1385,25 @@ Existing user login
 | --- | --- |
 | operationId | main.Login |
 | endpoint | `POST /users/login` |
-| input | Input |
+| input | Input[ [`LoginInput`](#logininput) ] |
 | output | [`LoginOutput`](#loginoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
+#### input (application/json)
+
+```go
+// POST /users/login
+type Input struct {
+	JSONBody struct {	// LoginInput
+		user struct {	// LoginUser
+			email string
+
+			password string `format:"password"`
+		}
+	}
+}
+```
 
 #### output (application/json)
 
@@ -1362,10 +1465,15 @@ Login for existing user
 | [GenericError](#genericerror) | Unexpected error |
 | [GenericErrorErrors](#genericerrorerrors) |  |
 | [LimitParam](#limitparam) | The numbers of items to return. |
+| [LoginUser](#loginuser) |  |
+| [NewArticle](#newarticle) |  |
+| [NewComment](#newcomment) |  |
+| [NewUser](#newuser) |  |
 | [OffsetParam](#offsetparam) | The number of items to skip before starting to collect the result set. |
 | [Profile](#profile) |  |
 | [Time](#time) |  |
 | [UnauthorizedError](#unauthorizederror) | Unauthorized |
+| [UpdateUser](#updateuser) |  |
 | [User](#user) |  |
 
 
@@ -1524,6 +1632,62 @@ type LimitParam integer
 ```
 
 
+### LoginUser
+
+
+
+```go
+type LoginUser struct {
+	email string
+
+	password string `format:"password"`
+}
+```
+
+
+### NewArticle
+
+
+
+```go
+type NewArticle struct {
+	title string
+
+	description string
+
+	body string
+
+	tagList? []string
+}
+```
+
+
+### NewComment
+
+
+
+```go
+type NewComment struct {
+	body string
+}
+```
+
+
+### NewUser
+
+
+
+```go
+type NewUser struct {
+	email string
+
+	password string `format:"password"`
+
+	username string
+}
+```
+
+
 ### OffsetParam
 
 The number of items to skip before starting to collect the result set.
@@ -1588,6 +1752,25 @@ type UnauthorizedError struct {
 - [output of main.GetCurrentUser (401) as `UnauthorizedError`](#maingetcurrentuser-get-user)
 - [output of main.UpdateCurrentUser (401) as `UnauthorizedError`](#mainupdatecurrentuser-put-user)
 - [output of main.Login (401) as `UnauthorizedError`](#mainlogin-post-userslogin)
+
+### UpdateUser
+
+
+
+```go
+type UpdateUser struct {
+	email string
+
+	password string `format:"password"`
+
+	username string
+
+	bio string
+
+	image string
+}
+```
+
 
 ### User
 
