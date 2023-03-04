@@ -2,13 +2,14 @@ module github.com/podhmo/quickapi/_examples
 
 replace github.com/podhmo/quickapi => ../
 
+replace github.com/podhmo/reflect-openapi => ../../reflect-openapi
+
 go 1.18
 
 require (
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/google/go-cmp v0.5.9
 	github.com/podhmo/quickapi v0.0.0
-	github.com/podhmo/reflect-openapi v0.2.1
 )
 
 require (
@@ -23,8 +24,9 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
-	github.com/podhmo/commentof v0.1.3 // indirect
-	github.com/podhmo/reflect-shape v0.4.0 // indirect
+	github.com/podhmo/commentof v0.1.4 // indirect
+	github.com/podhmo/reflect-openapi v0.2.1 // indirect
+	github.com/podhmo/reflect-shape v0.4.3 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect

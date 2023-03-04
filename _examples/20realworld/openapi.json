@@ -1,0 +1,1850 @@
+{
+  "components": {
+    "schemas": {
+      "Article": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "body": {
+            "type": "string"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Time"
+          },
+          "description": {
+            "type": "string"
+          },
+          "favorited": {
+            "default": false,
+            "type": "boolean"
+          },
+          "favoritesCount": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "tagList": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/Time"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "description",
+          "body",
+          "tagList",
+          "createdAt",
+          "updatedAt",
+          "favorited",
+          "favoritesCount",
+          "author"
+        ],
+        "title": "Article",
+        "type": "object"
+      },
+      "Comment": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "body": {
+            "type": "string"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/Time"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "body",
+          "author"
+        ],
+        "title": "Comment",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "description": "ErrorResponse represents a normal error response type",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "detail": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "GenericError": {
+        "additionalProperties": false,
+        "description": "Unexpected error",
+        "properties": {
+          "errors": {
+            "$ref": "#/components/schemas/GenericErrorErrors"
+          }
+        },
+        "required": [
+          "errors"
+        ],
+        "title": "GenericError",
+        "type": "object"
+      },
+      "GenericErrorErrors": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "title": "GenericErrorErrors",
+        "type": "object"
+      },
+      "LimitParam": {
+        "default": 20,
+        "description": "The numbers of items to return.",
+        "minimum": 1,
+        "title": "LimitParam",
+        "type": "integer",
+        "x-go-type": "main.LimitParam"
+      },
+      "OffsetParam": {
+        "description": "The number of items to skip before starting to collect the result set.",
+        "minimum": 0,
+        "title": "OffsetParam",
+        "type": "integer",
+        "x-go-type": "main.OffsetParam"
+      },
+      "Profile": {
+        "additionalProperties": false,
+        "properties": {
+          "bio": {
+            "type": "string"
+          },
+          "following": {
+            "default": false,
+            "type": "boolean"
+          },
+          "image": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bio",
+          "following",
+          "image",
+          "username"
+        ],
+        "title": "Profile",
+        "type": "object"
+      },
+      "Time": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "UnauthorizedError": {
+        "description": "Unauthorized",
+        "title": "UnauthorizedError",
+        "type": "object"
+      },
+      "User": {
+        "additionalProperties": false,
+        "properties": {
+          "bio": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "token",
+          "username",
+          "bio",
+          "image"
+        ],
+        "title": "User",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Conduit API documentation",
+    "title": "Conduit API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/articles": {
+      "get": {
+        "description": "Get recent articles globally\n\nGet most recent articles globally. Use query parameters to filter results. Auth is optional",
+        "operationId": "main.GetArticles",
+        "parameters": [
+          {
+            "description": "Filter by tag",
+            "in": "query",
+            "name": "tag",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by author (username)",
+            "in": "query",
+            "name": "author",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by favorites of a user (username)",
+            "in": "query",
+            "name": "favorited",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "$ref": "#/components/schemas/LimitParam"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "$ref": "#/components/schemas/OffsetParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "articles": {
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      },
+                      "type": "array"
+                    },
+                    "articlesCount": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "articles",
+                    "articlesCount"
+                  ],
+                  "title": "GetArticlesOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticlesOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Get recent articles globally",
+        "tags": [
+          "Articles"
+        ]
+      },
+      "post": {
+        "description": "Create an article\n\nCreate an article. Auth is required",
+        "operationId": "main.CreateArticle",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "article": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "body": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "tagList": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "body"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "article"
+                ],
+                "title": "CreateArticleInput",
+                "type": "object",
+                "x-go-id": "main.CreateArticleInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "CreateArticleOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateArticleOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Create an article",
+        "tags": [
+          "Articles"
+        ]
+      }
+    },
+    "/articles/feed": {
+      "get": {
+        "description": "Get recent articles from users you follow\n\nGet most recent articles from users you follow. Use query parameters to limit. Auth is required",
+        "operationId": "main.GetArticlesFeed",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "$ref": "#/components/schemas/LimitParam"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "$ref": "#/components/schemas/OffsetParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "articles": {
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      },
+                      "type": "array"
+                    },
+                    "articlesCount": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "articles",
+                    "articlesCount"
+                  ],
+                  "title": "GetArticlesFeedOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticlesFeedOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Get recent articles from users you follow",
+        "tags": [
+          "Articles"
+        ]
+      }
+    },
+    "/articles/{slug}": {
+      "delete": {
+        "description": "Delete an article\n\nDelete an article. Auth is required",
+        "operationId": "main.DeleteArticle",
+        "parameters": [
+          {
+            "description": "Slug of the article to delete",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Delete an article",
+        "tags": [
+          "Articles"
+        ]
+      },
+      "get": {
+        "description": "Get an article\n\nGet an article. Auth not required",
+        "operationId": "main.GetArticle",
+        "parameters": [
+          {
+            "description": "Slug of the article to get",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "GetArticleOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticleOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Get an article",
+        "tags": [
+          "Articles"
+        ]
+      },
+      "put": {
+        "description": "Update an article\n\nUpdate an article. Auth is required",
+        "operationId": "main.UpdateArticle",
+        "parameters": [
+          {
+            "description": "Slug of the article to update",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "article": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "body": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "body"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "article"
+                ],
+                "title": "UpdateArticleInput",
+                "type": "object",
+                "x-go-id": "main.UpdateArticleInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "UpdateArticleOutput",
+                  "type": "object",
+                  "x-go-id": "main.UpdateArticleOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Update an article",
+        "tags": [
+          "Articles"
+        ]
+      }
+    },
+    "/articles/{slug}/comments": {
+      "get": {
+        "description": "Get comments for an article\n\nGet the comments for an article. Auth is optional",
+        "operationId": "main.GetArticleComments",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to get comments for",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "Comments": {
+                      "items": {
+                        "$ref": "#/components/schemas/Comment"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "Comments"
+                  ],
+                  "title": "GetArticleCommentsOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticleCommentsOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Get comments for an article",
+        "tags": [
+          "Comments"
+        ]
+      },
+      "post": {
+        "description": "Create a comment for an article\n\nCreate a comment for an article. Auth is required",
+        "operationId": "main.CreateArticleComment",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to create a comment",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "comment": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "body": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "body"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "comment"
+                ],
+                "title": "CreateArticleCommentInput",
+                "type": "object",
+                "x-go-id": "main.CreateArticleCommentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "Comment": {
+                      "$ref": "#/components/schemas/Comment"
+                    }
+                  },
+                  "required": [
+                    "Comment"
+                  ],
+                  "title": "CreateArticleCommentOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateArticleCommentOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Create a comment for an article",
+        "tags": [
+          "Comments"
+        ]
+      }
+    },
+    "/articles/{slug}/comments/{id}": {
+      "delete": {
+        "description": "Delete a comment for an article\n\nDelete a comment for an article. Auth is required.",
+        "operationId": "main.DeleteArticleComment",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to delete a comment",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the comment you want to delete",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Delete a comment for an article",
+        "tags": [
+          "Comments"
+        ]
+      }
+    },
+    "/articles/{slug}/favorite": {
+      "delete": {
+        "description": "Unfavorite an article\n\nUnfavorite an article. Auth is required",
+        "operationId": "main.DeleteArticleFavorite",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to unfavorite",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "DeleteArticleFavoriteOutput",
+                  "type": "object",
+                  "x-go-id": "main.DeleteArticleFavoriteOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Unfavorite an article",
+        "tags": [
+          "Favorites"
+        ]
+      },
+      "post": {
+        "description": "Favorite an article\n\nFavorite an article. Auth is required",
+        "operationId": "main.CreateArticleFavorite",
+        "parameters": [
+          {
+            "description": "Slug of the article that you want to favorite",
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "CreateArticleFavoriteOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateArticleFavoriteOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Favorite an article",
+        "tags": [
+          "Favorites"
+        ]
+      }
+    },
+    "/profiles/{username}": {
+      "get": {
+        "description": "Get a profile\n\nGet a profile of a user of the system. Auth is optional",
+        "operationId": "main.GetProfileByUsername",
+        "parameters": [
+          {
+            "description": "username of the profile to get",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "profile": {
+                      "$ref": "#/components/schemas/Profile"
+                    }
+                  },
+                  "required": [
+                    "profile"
+                  ],
+                  "title": "GetProfileByUsernameOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetProfileByUsernameOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Get a profile",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profiles/{username}/follow": {
+      "delete": {
+        "description": "Unfollow a user\n\nUnfollow a user by username",
+        "operationId": "main.UnfollowUserByUsername",
+        "parameters": [
+          {
+            "description": "username of the profile you want to unfollow",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "profile": {
+                      "$ref": "#/components/schemas/Profile"
+                    }
+                  },
+                  "required": [
+                    "profile"
+                  ],
+                  "title": "UnfollowUserByUsernameOutput",
+                  "type": "object",
+                  "x-go-id": "main.UnfollowUserByUsernameOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Unfollow a user",
+        "tags": [
+          "Profile"
+        ]
+      },
+      "post": {
+        "description": "Follow a user\n\nFollow a user by username",
+        "operationId": "main.FollowUserByUsername",
+        "parameters": [
+          {
+            "description": "username of the profile you want to follow",
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "profile": {
+                      "$ref": "#/components/schemas/Profile"
+                    }
+                  },
+                  "required": [
+                    "profile"
+                  ],
+                  "title": "FollowUserByUsernameOutput",
+                  "type": "object",
+                  "x-go-id": "main.FollowUserByUsernameOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Follow a user",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/tags": {
+      "get": {
+        "description": "Get tags\n\nGet tags. Auth not required",
+        "operationId": "main.GetTags",
+        "parameters": [
+          {
+            "description": "Filter by tag",
+            "in": "query",
+            "name": "tag",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by author (username)",
+            "in": "query",
+            "name": "author",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by favorites of a user (username)",
+            "in": "query",
+            "name": "favorited",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "$ref": "#/components/schemas/LimitParam"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "$ref": "#/components/schemas/OffsetParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "description": "Tags",
+                  "properties": {
+                    "tags": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "tags"
+                  ],
+                  "title": "GetTagsOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetTagsOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Get tags",
+        "tags": [
+          "Tags"
+        ]
+      }
+    },
+    "/user": {
+      "get": {
+        "description": "Get current user\n\nGets the currently logged-in user",
+        "operationId": "main.GetCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "GetCurrentUserOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetCurrentUserOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Get current user",
+        "tags": [
+          "User and Authentication"
+        ]
+      },
+      "put": {
+        "description": "Update current user\n\nUpdate user information for current user",
+        "operationId": "main.UpdateCurrentUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "user": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "bio": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "image": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "format": "password",
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "user"
+                ],
+                "title": "UpdateCurrentUserInput",
+                "type": "object",
+                "x-go-id": "main.UpdateCurrentUserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "UpdateCurrentUserOutput",
+                  "type": "object",
+                  "x-go-id": "main.UpdateCurrentUserOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Update current user",
+        "tags": [
+          "User and Authentication"
+        ]
+      }
+    },
+    "/users/": {
+      "post": {
+        "description": "Register a new user",
+        "operationId": "main.CreateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "user": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "format": "password",
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "password",
+                      "username"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "user"
+                ],
+                "title": "CreateUserInput",
+                "type": "object",
+                "x-go-id": "main.CreateUserInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "CreateUserOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateUserOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "User and Authentication"
+        ]
+      }
+    },
+    "/users/login": {
+      "post": {
+        "description": "Existing user login\n\nLogin for existing user",
+        "operationId": "main.Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "user": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "format": "password",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "password"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "user"
+                ],
+                "title": "LoginInput",
+                "type": "object",
+                "x-go-id": "main.LoginInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "LoginOutput",
+                  "type": "object",
+                  "x-go-id": "main.LoginOutput"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericError"
+                }
+              }
+            },
+            "description": ""
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "default error"
+          }
+        },
+        "summary": "Existing user login",
+        "tags": [
+          "User and Authentication"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "local development",
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Articles"
+    },
+    {
+      "name": "Comments"
+    },
+    {
+      "name": "Favorites"
+    },
+    {
+      "name": "Profile"
+    },
+    {
+      "name": "Tags"
+    },
+    {
+      "name": "User and Authentication"
+    }
+  ]
+}
