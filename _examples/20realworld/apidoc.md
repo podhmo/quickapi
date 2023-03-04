@@ -150,7 +150,7 @@ Create an article
 // POST /articles
 type Input struct {
 	JSONBody struct {	// CreateArticleInput
-		article struct {	// NewArticle
+		article struct {	// 
 			title string
 
 			description string
@@ -636,7 +636,7 @@ type Input struct {
 	slug string `in:"path"`
 
 	JSONBody struct {	// CreateArticleCommentInput
-		comment struct {	// NewComment
+		comment struct {	// 
 			body string
 		}
 	}
@@ -1250,16 +1250,16 @@ Update current user
 // PUT /user
 type Input struct {
 	JSONBody struct {	// UpdateCurrentUserInput
-		user struct {	// UpdateUser
-			email string
+		user struct {	// 
+			email? string
 
-			password string `format:"password"`
+			password? string `format:"password"`
 
-			username string
+			username? string
 
-			bio string
+			bio? string
 
-			image string
+			image? string
 		}
 	}
 }
@@ -1327,7 +1327,7 @@ Register a new user
 // POST /users/
 type Input struct {
 	JSONBody struct {	// CreateUserInput
-		user struct {	// NewUser
+		user struct {	// 
 			email string
 
 			password string `format:"password"`
@@ -1396,7 +1396,7 @@ Existing user login
 // POST /users/login
 type Input struct {
 	JSONBody struct {	// LoginInput
-		user struct {	// LoginUser
+		user struct {	// 
 			email string
 
 			password string `format:"password"`
@@ -1465,15 +1465,10 @@ Login for existing user
 | [GenericError](#genericerror) | Unexpected error |
 | [GenericErrorErrors](#genericerrorerrors) |  |
 | [LimitParam](#limitparam) | The numbers of items to return. |
-| [LoginUser](#loginuser) |  |
-| [NewArticle](#newarticle) |  |
-| [NewComment](#newcomment) |  |
-| [NewUser](#newuser) |  |
 | [OffsetParam](#offsetparam) | The number of items to skip before starting to collect the result set. |
 | [Profile](#profile) |  |
 | [Time](#time) |  |
 | [UnauthorizedError](#unauthorizederror) | Unauthorized |
-| [UpdateUser](#updateuser) |  |
 | [User](#user) |  |
 
 
@@ -1632,62 +1627,6 @@ type LimitParam integer
 ```
 
 
-### LoginUser
-
-
-
-```go
-type LoginUser struct {
-	email string
-
-	password string `format:"password"`
-}
-```
-
-
-### NewArticle
-
-
-
-```go
-type NewArticle struct {
-	title string
-
-	description string
-
-	body string
-
-	tagList? []string
-}
-```
-
-
-### NewComment
-
-
-
-```go
-type NewComment struct {
-	body string
-}
-```
-
-
-### NewUser
-
-
-
-```go
-type NewUser struct {
-	email string
-
-	password string `format:"password"`
-
-	username string
-}
-```
-
-
 ### OffsetParam
 
 The number of items to skip before starting to collect the result set.
@@ -1752,25 +1691,6 @@ type UnauthorizedError struct {
 - [output of main.GetCurrentUser (401) as `UnauthorizedError`](#maingetcurrentuser-get-user)
 - [output of main.UpdateCurrentUser (401) as `UnauthorizedError`](#mainupdatecurrentuser-put-user)
 - [output of main.Login (401) as `UnauthorizedError`](#mainlogin-post-userslogin)
-
-### UpdateUser
-
-
-
-```go
-type UpdateUser struct {
-	email string
-
-	password string `format:"password"`
-
-	username string
-
-	bio string
-
-	image string
-}
-```
-
 
 ### User
 

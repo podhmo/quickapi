@@ -137,25 +137,6 @@ func mount(bc *define.BuildContext) {
 
 // components
 
-type LoginUser struct {
-	Email    string `json:"email"`
-	Password string `json:"password" openapi-override:"{'format': 'password'}"`
-}
-
-type NewUser struct {
-	Email    string `json:"email"`
-	Password string `json:"password" openapi-override:"{'format': 'password'}"`
-	Username string `json:"username"`
-}
-
-type UpdateUser struct {
-	Email    string `json:"email"`
-	Password string `json:"password" openapi-override:"{'format': 'password'}"`
-	Username string `json:"username"`
-	Bio      string `json:"bio"`
-	Image    string `json:"image"`
-}
-
 type User struct {
 	Email    string `json:"email"`
 	Token    string `json:"token"`
@@ -171,13 +152,6 @@ type Profile struct {
 	Username  string `json:"username"`
 }
 
-type NewArticle struct {
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Body        string   `json:"body"`
-	TagList     []string `json:"tagList,omitempty"`
-}
-
 type Article struct {
 	Slug           string    `json:"slug"`
 	Title          string    `json:"title"`
@@ -189,10 +163,6 @@ type Article struct {
 	Favorited      bool      `json:"favorited"`
 	FavoritesCount int       `json:"favoritesCount"`
 	Author         Profile   `json:"author"`
-}
-
-type NewComment struct {
-	Body string `json:"body"`
 }
 
 type Comment struct {
@@ -218,7 +188,11 @@ type GenericErrorErrors struct {
 // handlers
 
 type LoginInput struct {
-	User LoginUser `json:"user"`
+	// Credentials to use
+	User struct {
+		Email    string `json:"email"`
+		Password string `json:"password" openapi-override:"{'format': 'password'}"`
+	} `json:"user"`
 }
 
 type LoginOutput struct {
@@ -233,7 +207,12 @@ func Login(ctx context.Context, input LoginInput) (output LoginOutput, err error
 }
 
 type CreateUserInput struct {
-	User NewUser `json:"user"`
+	// Details of the new user to register
+	User struct {
+		Email    string `json:"email"`
+		Password string `json:"password" openapi-override:"{'format': 'password'}"`
+		Username string `json:"username"`
+	} `json:"user"`
 }
 
 type CreateUserOutput struct {
@@ -257,7 +236,14 @@ func GetCurrentUser(ctx context.Context, input struct{}) (output GetCurrentUserO
 }
 
 type UpdateCurrentUserInput struct {
-	User UpdateUser `json:"user"`
+	// User details to update. At least **one** field is required
+	User struct {
+		Email    string `json:"email,omitempty"`
+		Password string `json:"password,omitempty" openapi-override:"{'format': 'password'}"`
+		Username string `json:"username,omitempty"`
+		Bio      string `json:"bio,omitempty"`
+		Image    string `json:"image,omitempty"`
+	} `json:"user"`
 }
 
 type UpdateCurrentUserOutput struct {
@@ -361,7 +347,13 @@ func GetArticles(ctx context.Context, input GetArticlesInput) (output GetArticle
 }
 
 type CreateArticleInput struct {
-	Article NewArticle `json:"article"`
+	// Article to create
+	Article struct {
+		Title       string   `json:"title"`
+		Description string   `json:"description"`
+		Body        string   `json:"body"`
+		TagList     []string `json:"tagList,omitempty"`
+	} `json:"article"`
 }
 
 type CreateArticleOutput struct {
@@ -393,6 +385,7 @@ func GetArticle(ctx context.Context, input GetArticleInput) (output GetArticleOu
 type UpdateArticleInput struct {
 	Slug string `in:"path" path:"slug"` // Slug of the article to update
 
+	// Article to update
 	Article struct {
 		Title       string `json:"title"`
 		Description string `json:"description"`
@@ -438,8 +431,12 @@ func GetArticleComments(ctx context.Context, input GetArticleCommentsInput) (out
 }
 
 type CreateArticleCommentInput struct {
-	Slug    string     `in:"path" path:"slug"` // Slug of the article that you want to create a comment
-	Comment NewComment `json:"comment"`
+	Slug string `in:"path" path:"slug"` // Slug of the article that you want to create a comment
+
+	// Comment you want to create
+	Comment struct {
+		Body string `json:"body"`
+	} `json:"comment"`
 }
 
 type CreateArticleCommentOutput struct {

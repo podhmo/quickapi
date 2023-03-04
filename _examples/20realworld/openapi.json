@@ -145,86 +145,6 @@
         "type": "integer",
         "x-go-type": "main.LimitParam"
       },
-      "LoginUser": {
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "format": "password",
-            "type": "string"
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ],
-        "title": "LoginUser",
-        "type": "object"
-      },
-      "NewArticle": {
-        "additionalProperties": false,
-        "properties": {
-          "body": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "tagList": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "title": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "title",
-          "description",
-          "body"
-        ],
-        "title": "NewArticle",
-        "type": "object"
-      },
-      "NewComment": {
-        "additionalProperties": false,
-        "properties": {
-          "body": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "body"
-        ],
-        "title": "NewComment",
-        "type": "object"
-      },
-      "NewUser": {
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "format": "password",
-            "type": "string"
-          },
-          "username": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "email",
-          "password",
-          "username"
-        ],
-        "title": "NewUser",
-        "type": "object"
-      },
       "OffsetParam": {
         "description": "The number of items to skip before starting to collect the result set.",
         "minimum": 0,
@@ -265,36 +185,6 @@
       "UnauthorizedError": {
         "description": "Unauthorized",
         "title": "UnauthorizedError",
-        "type": "object"
-      },
-      "UpdateUser": {
-        "additionalProperties": false,
-        "properties": {
-          "bio": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "image": {
-            "type": "string"
-          },
-          "password": {
-            "format": "password",
-            "type": "string"
-          },
-          "username": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "email",
-          "password",
-          "username",
-          "bio",
-          "image"
-        ],
-        "title": "UpdateUser",
         "type": "object"
       },
       "User": {
@@ -454,7 +344,30 @@
                 "additionalProperties": false,
                 "properties": {
                   "article": {
-                    "$ref": "#/components/schemas/NewArticle"
+                    "additionalProperties": false,
+                    "properties": {
+                      "body": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "tagList": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "body"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -943,7 +856,16 @@
                 "additionalProperties": false,
                 "properties": {
                   "comment": {
-                    "$ref": "#/components/schemas/NewComment"
+                    "additionalProperties": false,
+                    "properties": {
+                      "body": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "body"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -1619,7 +1541,26 @@
                 "additionalProperties": false,
                 "properties": {
                   "user": {
-                    "$ref": "#/components/schemas/UpdateUser"
+                    "additionalProperties": false,
+                    "properties": {
+                      "bio": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "image": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "format": "password",
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -1702,7 +1643,25 @@
                 "additionalProperties": false,
                 "properties": {
                   "user": {
-                    "$ref": "#/components/schemas/NewUser"
+                    "additionalProperties": false,
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "format": "password",
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "password",
+                      "username"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -1775,7 +1734,21 @@
                 "additionalProperties": false,
                 "properties": {
                   "user": {
-                    "$ref": "#/components/schemas/LoginUser"
+                    "additionalProperties": false,
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "format": "password",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "password"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
