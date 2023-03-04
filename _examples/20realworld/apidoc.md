@@ -41,7 +41,7 @@ Get recent articles globally
 
 | name | value |
 | --- | --- |
-| operationId | main.GetArticles |
+| operationId | main.GetArticles[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L352) |
 | endpoint | `GET /articles` |
 | input | Input |
 | output | [`GetArticlesOutput`](#getarticlesoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -137,7 +137,7 @@ Create an article
 
 | name | value |
 | --- | --- |
-| operationId | main.CreateArticle |
+| operationId | main.CreateArticle[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L373) |
 | endpoint | `POST /articles` |
 | input | Input[ [`CreateArticleInput`](#createarticleinput) ] |
 | output | [`CreateArticleOutput`](#createarticleoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -230,7 +230,7 @@ Get recent articles from users you follow
 
 | name | value |
 | --- | --- |
-| operationId | main.GetArticlesFeed |
+| operationId | main.GetArticlesFeed[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L331) |
 | endpoint | `GET /articles/feed` |
 | input | Input |
 | output | [`GetArticlesFeedOutput`](#getarticlesfeedoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -317,7 +317,7 @@ Delete an article
 
 | name | value |
 | --- | --- |
-| operationId | main.DeleteArticle |
+| operationId | main.DeleteArticle[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L421) |
 | endpoint | `DELETE /articles/{slug}` |
 | input | Input |
 | output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -372,7 +372,7 @@ Get an article
 
 | name | value |
 | --- | --- |
-| operationId | main.GetArticle |
+| operationId | main.GetArticle[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L388) |
 | endpoint | `GET /articles/{slug}` |
 | input | Input |
 | output | [`GetArticleOutput`](#getarticleoutput) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -452,7 +452,7 @@ Update an article
 
 | name | value |
 | --- | --- |
-| operationId | main.UpdateArticle |
+| operationId | main.UpdateArticle[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L410) |
 | endpoint | `PUT /articles/{slug}` |
 | input | Input[ [`UpdateArticleInput`](#updatearticleinput) ] |
 | output | [`UpdateArticleOutput`](#updatearticleoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -546,7 +546,7 @@ Get comments for an article
 
 | name | value |
 | --- | --- |
-| operationId | main.GetArticleComments |
+| operationId | main.GetArticleComments[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L436) |
 | endpoint | `GET /articles/{slug}/comments` |
 | input | Input |
 | output | [`GetArticleCommentsOutput`](#getarticlecommentsoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -620,7 +620,7 @@ Create a comment for an article
 
 | name | value |
 | --- | --- |
-| operationId | main.CreateArticleComment |
+| operationId | main.CreateArticleComment[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L456) |
 | endpoint | `POST /articles/{slug}/comments` |
 | input | Input[ [`CreateArticleCommentInput`](#createarticlecommentinput) ] |
 | output | [`CreateArticleCommentOutput`](#createarticlecommentoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -700,7 +700,7 @@ Delete a comment for an article
 
 | name | value |
 | --- | --- |
-| operationId | main.DeleteArticleComment |
+| operationId | main.DeleteArticleComment[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L468) |
 | endpoint | `DELETE /articles/{slug}/comments/{id}` |
 | input | Input |
 | output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -758,7 +758,7 @@ Unfavorite an article
 
 | name | value |
 | --- | --- |
-| operationId | main.DeleteArticleFavorite |
+| operationId | main.DeleteArticleFavorite[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L498) |
 | endpoint | `DELETE /articles/{slug}/favorite` |
 | input | Input |
 | output | [`DeleteArticleFavoriteOutput`](#deletearticlefavoriteoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -842,7 +842,7 @@ Favorite an article
 
 | name | value |
 | --- | --- |
-| operationId | main.CreateArticleFavorite |
+| operationId | main.CreateArticleFavorite[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L483) |
 | endpoint | `POST /articles/{slug}/favorite` |
 | input | Input |
 | output | [`CreateArticleFavoriteOutput`](#createarticlefavoriteoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -926,7 +926,7 @@ Get a profile
 
 | name | value |
 | --- | --- |
-| operationId | main.GetProfileByUsername |
+| operationId | main.GetProfileByUsername[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L278) |
 | endpoint | `GET /profiles/{username}` |
 | input | Input |
 | output | [`GetProfileByUsernameOutput`](#getprofilebyusernameoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -990,7 +990,7 @@ Unfollow a user
 
 | name | value |
 | --- | --- |
-| operationId | main.UnfollowUserByUsername |
+| operationId | main.UnfollowUserByUsername[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L308) |
 | endpoint | `DELETE /profiles/{username}/follow` |
 | input | Input |
 | output | [`UnfollowUserByUsernameOutput`](#unfollowuserbyusernameoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -1054,7 +1054,7 @@ Follow a user
 
 | name | value |
 | --- | --- |
-| operationId | main.FollowUserByUsername |
+| operationId | main.FollowUserByUsername[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L293) |
 | endpoint | `POST /profiles/{username}/follow` |
 | input | Input |
 | output | [`FollowUserByUsernameOutput`](#followuserbyusernameoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -1118,7 +1118,7 @@ Get tags
 
 | name | value |
 | --- | --- |
-| operationId | main.GetTags |
+| operationId | main.GetTags[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L519) |
 | endpoint | `GET /tags` |
 | input | Input |
 | output | [`GetTagsOutput`](#gettagsoutput) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -1180,7 +1180,7 @@ Get current user
 
 | name | value |
 | --- | --- |
-| operationId | main.GetCurrentUser |
+| operationId | main.GetCurrentUser[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L241) |
 | endpoint | `GET /user` |
 | input | Input |
 | output | [`GetCurrentUserOutput`](#getcurrentuseroutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -1237,7 +1237,7 @@ Update current user
 
 | name | value |
 | --- | --- |
-| operationId | main.UpdateCurrentUser |
+| operationId | main.UpdateCurrentUser[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L263) |
 | endpoint | `PUT /user` |
 | input | Input[ [`UpdateCurrentUserInput`](#updatecurrentuserinput) ] |
 | output | [`UpdateCurrentUserOutput`](#updatecurrentuseroutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -1314,7 +1314,7 @@ Register a new user
 
 | name | value |
 | --- | --- |
-| operationId | main.CreateUser |
+| operationId | main.CreateUser[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L230) |
 | endpoint | `POST /users/` |
 | input | Input[ [`CreateUserInput`](#createuserinput) ] |
 | output | [`CreateUserOutput`](#createuseroutput) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
@@ -1383,7 +1383,7 @@ Existing user login
 
 | name | value |
 | --- | --- |
-| operationId | main.Login |
+| operationId | main.Login[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L212) |
 | endpoint | `POST /users/login` |
 | input | Input[ [`LoginInput`](#logininput) ] |
 | output | [`LoginOutput`](#loginoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |

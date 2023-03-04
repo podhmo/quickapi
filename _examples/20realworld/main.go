@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
+	"go/token"
 	"log"
 	"net/http"
 	"time"
@@ -14,6 +15,7 @@ import (
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
 	reflectopenapi "github.com/podhmo/reflect-openapi"
+	reflectshape "github.com/podhmo/reflect-shape"
 )
 
 //go:embed openapi.json
@@ -60,6 +62,11 @@ func run() error {
 	router := quickapi.DefaultRouter()
 	bc, err := define.NewBuildContext(doc, router, func(c *reflectopenapi.Config) {
 		c.EnableAutoTag = false
+		c.GoPositionFunc = func(fset *token.FileSet, f *reflectshape.Func) string {
+			// TODO: multiple package
+			fpos := fset.Position(f.Pos())
+			return fmt.Sprintf("https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L%d", fpos.Line)
+		}
 	})
 	if err != nil {
 		return fmt.Errorf("build context: %w", err)

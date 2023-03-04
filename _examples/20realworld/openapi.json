@@ -332,7 +332,8 @@
         "summary": "Get recent articles globally",
         "tags": [
           "Articles"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L352"
       },
       "post": {
         "description": "Create an article\n\nCreate an article. Auth is required",
@@ -436,7 +437,8 @@
         "summary": "Create an article",
         "tags": [
           "Articles"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L373"
       }
     },
     "/articles/feed": {
@@ -522,7 +524,8 @@
         "summary": "Get recent articles from users you follow",
         "tags": [
           "Articles"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L331"
       }
     },
     "/articles/{slug}": {
@@ -585,7 +588,8 @@
         "summary": "Delete an article",
         "tags": [
           "Articles"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L421"
       },
       "get": {
         "description": "Get an article\n\nGet an article. Auth not required",
@@ -647,7 +651,8 @@
         "summary": "Get an article",
         "tags": [
           "Articles"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L388"
       },
       "put": {
         "description": "Update an article\n\nUpdate an article. Auth is required",
@@ -756,7 +761,8 @@
         "summary": "Update an article",
         "tags": [
           "Articles"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L410"
       }
     },
     "/articles/{slug}/comments": {
@@ -833,7 +839,8 @@
         "summary": "Get comments for an article",
         "tags": [
           "Comments"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L436"
       },
       "post": {
         "description": "Create a comment for an article\n\nCreate a comment for an article. Auth is required",
@@ -934,7 +941,8 @@
         "summary": "Create a comment for an article",
         "tags": [
           "Comments"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L456"
       }
     },
     "/articles/{slug}/comments/{id}": {
@@ -1006,7 +1014,8 @@
         "summary": "Delete a comment for an article",
         "tags": [
           "Comments"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L468"
       }
     },
     "/articles/{slug}/favorite": {
@@ -1080,7 +1089,8 @@
         "summary": "Unfavorite an article",
         "tags": [
           "Favorites"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L498"
       },
       "post": {
         "description": "Favorite an article\n\nFavorite an article. Auth is required",
@@ -1152,7 +1162,8 @@
         "summary": "Favorite an article",
         "tags": [
           "Favorites"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L483"
       }
     },
     "/profiles/{username}": {
@@ -1226,7 +1237,8 @@
         "summary": "Get a profile",
         "tags": [
           "Profile"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L278"
       }
     },
     "/profiles/{username}/follow": {
@@ -1300,7 +1312,8 @@
         "summary": "Unfollow a user",
         "tags": [
           "Profile"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L308"
       },
       "post": {
         "description": "Follow a user\n\nFollow a user by username",
@@ -1372,7 +1385,8 @@
         "summary": "Follow a user",
         "tags": [
           "Profile"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L293"
       }
     },
     "/tags": {
@@ -1466,7 +1480,8 @@
         "summary": "Get tags",
         "tags": [
           "Tags"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L519"
       }
     },
     "/user": {
@@ -1529,7 +1544,8 @@
         "summary": "Get current user",
         "tags": [
           "User and Authentication"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L241"
       },
       "put": {
         "description": "Update current user\n\nUpdate user information for current user",
@@ -1629,7 +1645,8 @@
         "summary": "Update current user",
         "tags": [
           "User and Authentication"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L263"
       }
     },
     "/users/": {
@@ -1720,7 +1737,8 @@
         "summary": "Register a new user",
         "tags": [
           "User and Authentication"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L230"
       }
     },
     "/users/login": {
@@ -1817,7 +1835,8 @@
         "summary": "Existing user login",
         "tags": [
           "User and Authentication"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/20realworld/main.go#L212"
       }
     }
   },

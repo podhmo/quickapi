@@ -6,11 +6,14 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
+	"go/token"
 	"log"
 	"time"
 
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
+	reflectopenapi "github.com/podhmo/reflect-openapi"
+	reflectshape "github.com/podhmo/reflect-shape"
 )
 
 //go:embed openapi.json
@@ -53,7 +56,17 @@ func run() error {
 	}
 
 	router := quickapi.DefaultRouter()
-	bc := define.MustBuildContext(doc, router)
+	bc, err := define.NewBuildContext(doc, router, func(c *reflectopenapi.Config) {
+		c.GoPositionFunc = func(fset *token.FileSet, f *reflectshape.Func) string {
+			// TODO: multiple package
+			fpos := fset.Position(f.Pos())
+			return fmt.Sprintf("https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L%d", fpos.Line)
+		}
+	})
+	if err != nil {
+		return err
+	}
+
 	define.DefaultError(bc, Error{})
 
 	mount(bc)
@@ -131,7 +144,7 @@ type PetAPI struct {
 func (api *PetAPI) FindPets(context.Context, struct {
 	Tags  []string `query:"tags" in:"query"`  // tags to filter by. (style: form)
 	Limit int32    `query:"limit" in:"query"` // maximum number of results to return (format: int32)
-}) (	
+}) (
 	output struct { // list of pets
 		Items []Pet `json:"items"`
 	},

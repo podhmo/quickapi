@@ -27,7 +27,7 @@ FindPets returns all pets
 
 | name | value |
 | --- | --- |
-| operationId | main.PetAPI.FindPets |
+| operationId | main.PetAPI.FindPets[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L144) |
 | endpoint | `GET /pets` |
 | input | Input |
 | output | `<Anonymous>` ｜ [`Error`](#error) |
@@ -85,7 +85,7 @@ AddPet creates a new pet in the store. Duplicates are allowed
 
 | name | value |
 | --- | --- |
-| operationId | main.PetAPI.AddPet |
+| operationId | main.PetAPI.AddPet[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L164) |
 | endpoint | `POST /pets` |
 | input | Input[ [`AddPetInput`](#addpetinput) ] |
 | output | [`Pet`](#pet) ｜ [`Error`](#error) ｜ [`Error`](#error) |
@@ -167,7 +167,7 @@ DeletePet deletes a pet by ID
 
 | name | value |
 | --- | --- |
-| operationId | main.PetAPI.DeletePet |
+| operationId | main.PetAPI.DeletePet[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L182) |
 | endpoint | `DELETE /pets/{id}` |
 | input | Input |
 | output | [`Empty`](#empty) ｜ [`Error`](#error) |
@@ -211,7 +211,7 @@ FindPetByID returns a pet based on a single ID
 
 | name | value |
 | --- | --- |
-| operationId | main.PetAPI.FindPetByID |
+| operationId | main.PetAPI.FindPetByID[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L172) |
 | endpoint | `GET /pets/{id}` |
 | input | Input |
 | output | [`Pet`](#pet) ｜ [`Error`](#error) |
@@ -264,7 +264,7 @@ FindPetByID returns a pet based on a single ID
 
 | name | value |
 | --- | --- |
-| operationId | main.Hello |
+| operationId | main.Hello[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L191) |
 | endpoint | `GET /hello/{name}` |
 | input | Input |
 | output | string |

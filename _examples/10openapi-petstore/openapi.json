@@ -97,7 +97,8 @@
         },
         "tags": [
           "main"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L191"
       }
     },
     "/pets": {
@@ -162,7 +163,8 @@
         "summary": "FindPets returns all pets",
         "tags": [
           "main"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L144"
       },
       "post": {
         "description": "AddPet creates a new pet in the store. Duplicates are allowed",
@@ -278,7 +280,8 @@
         "summary": "AddPet creates a new pet in the store. Duplicates are allowed",
         "tags": [
           "main"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L164"
       }
     },
     "/pets/{id}": {
@@ -324,7 +327,8 @@
         "summary": "DeletePet deletes a pet by ID",
         "tags": [
           "main"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L182"
       },
       "get": {
         "description": "FindPetByID returns a pet based on a single ID",
@@ -393,7 +397,8 @@
         "summary": "FindPetByID returns a pet based on a single ID",
         "tags": [
           "main"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L172"
       }
     }
   },
