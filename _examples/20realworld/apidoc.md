@@ -44,7 +44,7 @@ Get recent articles globally
 | operationId | main.GetArticles |
 | endpoint | `GET /articles` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`GetArticlesOutput`](#getarticlesoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -53,7 +53,38 @@ Get recent articles globally
 
 ```go
 // GET /articles (200)
-type Output200 struct {	// 
+type Output200 struct {	// GetArticlesOutput
+	articles []struct {	// Article
+		slug string
+
+		title string
+
+		description string
+
+		body string
+
+		tagList []string
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		favorited boolean	// default: false
+
+		favoritesCount integer
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
+
+	articlesCount integer
 }
 
 // GET /articles (401)
@@ -90,7 +121,7 @@ Create an article
 | operationId | main.CreateArticle |
 | endpoint | `POST /articles` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`CreateArticleOutput`](#createarticleoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -99,7 +130,36 @@ Create an article
 
 ```go
 // POST /articles (200)
-type Output200 struct {	// 
+type Output200 struct {	// CreateArticleOutput
+	article struct {	// Article
+		slug string
+
+		title string
+
+		description string
+
+		body string
+
+		tagList []string
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		favorited boolean	// default: false
+
+		favoritesCount integer
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
 }
 
 // POST /articles (401)
@@ -136,7 +196,7 @@ Get recent articles from users you follow
 | operationId | main.GetArticlesFeed |
 | endpoint | `GET /articles/feed` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`GetArticlesFeedOutput`](#getarticlesfeedoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -155,7 +215,38 @@ type Input struct {
 
 ```go
 // GET /articles/feed (200)
-type Output200 struct {	// 
+type Output200 struct {	// GetArticlesFeedOutput
+	articles []struct {	// Article
+		slug string
+
+		title string
+
+		description string
+
+		body string
+
+		tagList []string
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		favorited boolean	// default: false
+
+		favoritesCount integer
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
+
+	articlesCount integer
 }
 
 // GET /articles/feed (401)
@@ -247,7 +338,7 @@ Get an article
 | operationId | main.GetArticle |
 | endpoint | `GET /articles/{slug}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`GetArticleOutput`](#getarticleoutput) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -265,7 +356,36 @@ type Input struct {
 
 ```go
 // GET /articles/{slug} (200)
-type Output200 struct {	// 
+type Output200 struct {	// GetArticleOutput
+	article struct {	// Article
+		slug string
+
+		title string
+
+		description string
+
+		body string
+
+		tagList []string
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		favorited boolean	// default: false
+
+		favoritesCount integer
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
 }
 
 // GET /articles/{slug} (422)
@@ -298,7 +418,7 @@ Update an article
 | operationId | main.UpdateArticle |
 | endpoint | `PUT /articles/{slug}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`UpdateArticleOutput`](#updatearticleoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Articles` |
 
 
@@ -316,7 +436,36 @@ type Input struct {
 
 ```go
 // PUT /articles/{slug} (200)
-type Output200 struct {	// 
+type Output200 struct {	// UpdateArticleOutput
+	article struct {	// Article
+		slug string
+
+		title string
+
+		description string
+
+		body string
+
+		tagList []string
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		favorited boolean	// default: false
+
+		favoritesCount integer
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
 }
 
 // PUT /articles/{slug} (401)
@@ -353,7 +502,7 @@ Get comments for an article
 | operationId | main.GetArticleComments |
 | endpoint | `GET /articles/{slug}/comments` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`GetArticleCommentsOutput`](#getarticlecommentsoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
 
 
@@ -371,7 +520,26 @@ type Input struct {
 
 ```go
 // GET /articles/{slug}/comments (200)
-type Output200 struct {	// 
+type Output200 struct {	// GetArticleCommentsOutput
+	Comments []struct {	// Comment
+		id integer
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		body string
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
 }
 
 // GET /articles/{slug}/comments (401)
@@ -408,7 +576,7 @@ Create a comment for an article
 | operationId | main.CreateArticleComment |
 | endpoint | `POST /articles/{slug}/comments` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`CreateArticleCommentOutput`](#createarticlecommentoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Comments` |
 
 
@@ -426,7 +594,26 @@ type Input struct {
 
 ```go
 // POST /articles/{slug}/comments (200)
-type Output200 struct {	// 
+type Output200 struct {	// CreateArticleCommentOutput
+	Comment struct {	// Comment
+		id integer
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		body string
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
 }
 
 // POST /articles/{slug}/comments (401)
@@ -521,7 +708,7 @@ Unfavorite an article
 | operationId | main.DeleteArticleFavorite |
 | endpoint | `DELETE /articles/{slug}/favorite` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`DeleteArticleFavoriteOutput`](#deletearticlefavoriteoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Favorites` |
 
 
@@ -539,7 +726,36 @@ type Input struct {
 
 ```go
 // DELETE /articles/{slug}/favorite (200)
-type Output200 struct {	// 
+type Output200 struct {	// DeleteArticleFavoriteOutput
+	article struct {	// Article
+		slug string
+
+		title string
+
+		description string
+
+		body string
+
+		tagList []string
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		favorited boolean	// default: false
+
+		favoritesCount integer
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
 }
 
 // DELETE /articles/{slug}/favorite (401)
@@ -576,7 +792,7 @@ Favorite an article
 | operationId | main.CreateArticleFavorite |
 | endpoint | `POST /articles/{slug}/favorite` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`CreateArticleFavoriteOutput`](#createarticlefavoriteoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Favorites` |
 
 
@@ -594,7 +810,36 @@ type Input struct {
 
 ```go
 // POST /articles/{slug}/favorite (200)
-type Output200 struct {	// 
+type Output200 struct {	// CreateArticleFavoriteOutput
+	article struct {	// Article
+		slug string
+
+		title string
+
+		description string
+
+		body string
+
+		tagList []string
+
+		createdAt string `format:"date-time"`
+
+		updatedAt string `format:"date-time"`
+
+		favorited boolean	// default: false
+
+		favoritesCount integer
+
+		author struct {	// Profile
+			bio string
+
+			following boolean	// default: false
+
+			image string
+
+			username string
+		}
+	}
 }
 
 // POST /articles/{slug}/favorite (401)
@@ -631,7 +876,7 @@ Get a profile
 | operationId | main.GetProfileByUsername |
 | endpoint | `GET /profiles/{username}` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`GetProfileByUsernameOutput`](#getprofilebyusernameoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
 
 
@@ -649,7 +894,16 @@ type Input struct {
 
 ```go
 // GET /profiles/{username} (200)
-type Output200 struct {	// 
+type Output200 struct {	// GetProfileByUsernameOutput
+	profile struct {	// Profile
+		bio string
+
+		following boolean	// default: false
+
+		image string
+
+		username string
+	}
 }
 
 // GET /profiles/{username} (401)
@@ -686,7 +940,7 @@ Unfollow a user
 | operationId | main.UnfollowUserByUsername |
 | endpoint | `DELETE /profiles/{username}/follow` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`UnfollowUserByUsernameOutput`](#unfollowuserbyusernameoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
 
 
@@ -704,7 +958,16 @@ type Input struct {
 
 ```go
 // DELETE /profiles/{username}/follow (200)
-type Output200 struct {	// 
+type Output200 struct {	// UnfollowUserByUsernameOutput
+	profile struct {	// Profile
+		bio string
+
+		following boolean	// default: false
+
+		image string
+
+		username string
+	}
 }
 
 // DELETE /profiles/{username}/follow (401)
@@ -741,7 +1004,7 @@ Follow a user
 | operationId | main.FollowUserByUsername |
 | endpoint | `POST /profiles/{username}/follow` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`FollowUserByUsernameOutput`](#followuserbyusernameoutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Profile` |
 
 
@@ -759,7 +1022,16 @@ type Input struct {
 
 ```go
 // POST /profiles/{username}/follow (200)
-type Output200 struct {	// 
+type Output200 struct {	// FollowUserByUsernameOutput
+	profile struct {	// Profile
+		bio string
+
+		following boolean	// default: false
+
+		image string
+
+		username string
+	}
 }
 
 // POST /profiles/{username}/follow (401)
@@ -796,7 +1068,7 @@ Get tags
 | operationId | main.GetTags |
 | endpoint | `GET /tags` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`GetTagsOutput`](#gettagsoutput) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `Tags` |
 
 
@@ -824,7 +1096,8 @@ type Input struct {
 
 ```go
 // GET /tags (200)
-type Output200 struct {	// 
+type Output200 struct {	// GetTagsOutput
+	tags string
 }
 
 // GET /tags (422)
@@ -857,7 +1130,7 @@ Get current user
 | operationId | main.GetCurrentUser |
 | endpoint | `GET /user` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`GetCurrentUserOutput`](#getcurrentuseroutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
@@ -866,7 +1139,18 @@ Get current user
 
 ```go
 // GET /user (200)
-type Output200 struct {	// 
+type Output200 struct {	// GetCurrentUserOutput
+	user struct {	// User
+		email string
+
+		token string
+
+		username string
+
+		bio string
+
+		image string
+	}
 }
 
 // GET /user (401)
@@ -903,7 +1187,7 @@ Update current user
 | operationId | main.UpdateCurrentUser |
 | endpoint | `PUT /user` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`UpdateCurrentUserOutput`](#updatecurrentuseroutput) ｜ [`UnauthorizedError`](#unauthorizederror) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
@@ -912,7 +1196,18 @@ Update current user
 
 ```go
 // PUT /user (200)
-type Output200 struct {	// 
+type Output200 struct {	// UpdateCurrentUserOutput
+	user struct {	// User
+		email string
+
+		token string
+
+		username string
+
+		bio string
+
+		image string
+	}
 }
 
 // PUT /user (401)
@@ -949,7 +1244,7 @@ Register a new user
 | operationId | main.CreateUser |
 | endpoint | `POST /users/` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
+| output | [`CreateUserOutput`](#createuseroutput) ｜ [`GenericError`](#genericerror) ｜ [`ErrorResponse`](#errorresponse) |
 | tags | `User and Authentication` |
 
 
@@ -958,7 +1253,18 @@ Register a new user
 
 ```go
 // POST /users/ (201)
-type Output201 struct {	// 
+type Output201 struct {	// CreateUserOutput
+	user struct {	// User
+		email string
+
+		token string
+
+		username string
+
+		bio string
+
+		image string
+	}
 }
 
 // POST /users/ (422)
@@ -1050,14 +1356,82 @@ Login for existing user
 
 | name | summary |
 | --- | --- |
+| [Article](#article) |  |
+| [Comment](#comment) |  |
 | [ErrorResponse](#errorresponse) | represents a normal error response type |
 | [GenericError](#genericerror) | Unexpected error |
 | [GenericErrorErrors](#genericerrorerrors) |  |
 | [LimitParam](#limitparam) | The numbers of items to return. |
 | [OffsetParam](#offsetparam) | The number of items to skip before starting to collect the result set. |
+| [Profile](#profile) |  |
+| [Time](#time) |  |
 | [UnauthorizedError](#unauthorizederror) | Unauthorized |
 | [User](#user) |  |
 
+
+
+### Article
+
+
+
+```go
+type Article struct {
+	slug string
+
+	title string
+
+	description string
+
+	body string
+
+	tagList []string
+
+	createdAt string `format:"date-time"`
+
+	updatedAt string `format:"date-time"`
+
+	favorited boolean	// default: false
+
+	favoritesCount integer
+
+	author struct {	// Profile
+		bio string
+
+		following boolean	// default: false
+
+		image string
+
+		username string
+	}
+}
+```
+
+
+### Comment
+
+
+
+```go
+type Comment struct {
+	id integer
+
+	createdAt string `format:"date-time"`
+
+	updatedAt string `format:"date-time"`
+
+	body string
+
+	author struct {	// Profile
+		bio string
+
+		following boolean	// default: false
+
+		image string
+
+		username string
+	}
+}
+```
 
 
 ### ErrorResponse
@@ -1158,6 +1532,33 @@ The number of items to skip before starting to collect the result set.
 // The number of items to skip before starting to collect the result set.
 type OffsetParam integer
 // tags: `minimum:"0"`
+```
+
+
+### Profile
+
+
+
+```go
+type Profile struct {
+	bio string
+
+	following boolean	// default: false
+
+	image string
+
+	username string
+}
+```
+
+
+### Time
+
+
+
+```go
+type  string
+// tags: `format:"date-time"`
 ```
 
 

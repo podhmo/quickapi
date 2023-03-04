@@ -1,6 +1,88 @@
 {
   "components": {
     "schemas": {
+      "Article": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "body": {
+            "type": "string"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Time"
+          },
+          "description": {
+            "type": "string"
+          },
+          "favorited": {
+            "default": false,
+            "type": "boolean"
+          },
+          "favoritesCount": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "tagList": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/Time"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "description",
+          "body",
+          "tagList",
+          "createdAt",
+          "updatedAt",
+          "favorited",
+          "favoritesCount",
+          "author"
+        ],
+        "title": "Article",
+        "type": "object"
+      },
+      "Comment": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "body": {
+            "type": "string"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Time"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/Time"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "body",
+          "author"
+        ],
+        "title": "Comment",
+        "type": "object"
+      },
       "ErrorResponse": {
         "additionalProperties": false,
         "description": "ErrorResponse represents a normal error response type",
@@ -70,6 +152,36 @@
         "type": "integer",
         "x-go-type": "main.OffsetParam"
       },
+      "Profile": {
+        "additionalProperties": false,
+        "properties": {
+          "bio": {
+            "type": "string"
+          },
+          "following": {
+            "default": false,
+            "type": "boolean"
+          },
+          "image": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bio",
+          "following",
+          "image",
+          "username"
+        ],
+        "title": "Profile",
+        "type": "object"
+      },
+      "Time": {
+        "format": "date-time",
+        "type": "string"
+      },
       "UnauthorizedError": {
         "description": "Unauthorized",
         "title": "UnauthorizedError",
@@ -122,7 +234,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "articles": {
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      },
+                      "type": "array"
+                    },
+                    "articlesCount": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "articles",
+                    "articlesCount"
+                  ],
+                  "title": "GetArticlesOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticlesOutput"
                 }
               }
             },
@@ -172,7 +302,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "CreateArticleOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateArticleOutput"
                 }
               }
             },
@@ -240,7 +381,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "articles": {
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      },
+                      "type": "array"
+                    },
+                    "articlesCount": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "articles",
+                    "articlesCount"
+                  ],
+                  "title": "GetArticlesFeedOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticlesFeedOutput"
                 }
               }
             },
@@ -364,7 +523,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "GetArticleOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticleOutput"
                 }
               }
             },
@@ -415,7 +585,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "UpdateArticleOutput",
+                  "type": "object",
+                  "x-go-id": "main.UpdateArticleOutput"
                 }
               }
             },
@@ -478,7 +659,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "Comments": {
+                      "items": {
+                        "$ref": "#/components/schemas/Comment"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "Comments"
+                  ],
+                  "title": "GetArticleCommentsOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetArticleCommentsOutput"
                 }
               }
             },
@@ -539,7 +734,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "Comment": {
+                      "$ref": "#/components/schemas/Comment"
+                    }
+                  },
+                  "required": [
+                    "Comment"
+                  ],
+                  "title": "CreateArticleCommentOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateArticleCommentOutput"
                 }
               }
             },
@@ -674,7 +880,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "DeleteArticleFavoriteOutput",
+                  "type": "object",
+                  "x-go-id": "main.DeleteArticleFavoriteOutput"
                 }
               }
             },
@@ -735,7 +952,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "article": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  },
+                  "required": [
+                    "article"
+                  ],
+                  "title": "CreateArticleFavoriteOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateArticleFavoriteOutput"
                 }
               }
             },
@@ -798,7 +1026,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "profile": {
+                      "$ref": "#/components/schemas/Profile"
+                    }
+                  },
+                  "required": [
+                    "profile"
+                  ],
+                  "title": "GetProfileByUsernameOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetProfileByUsernameOutput"
                 }
               }
             },
@@ -861,7 +1100,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "profile": {
+                      "$ref": "#/components/schemas/Profile"
+                    }
+                  },
+                  "required": [
+                    "profile"
+                  ],
+                  "title": "UnfollowUserByUsernameOutput",
+                  "type": "object",
+                  "x-go-id": "main.UnfollowUserByUsernameOutput"
                 }
               }
             },
@@ -922,7 +1172,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "profile": {
+                      "$ref": "#/components/schemas/Profile"
+                    }
+                  },
+                  "required": [
+                    "profile"
+                  ],
+                  "title": "FollowUserByUsernameOutput",
+                  "type": "object",
+                  "x-go-id": "main.FollowUserByUsernameOutput"
                 }
               }
             },
@@ -1014,7 +1275,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "description": "Tags",
+                  "properties": {
+                    "tags": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "tags"
+                  ],
+                  "title": "GetTagsOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetTagsOutput"
                 }
               }
             },
@@ -1056,7 +1329,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "GetCurrentUserOutput",
+                  "type": "object",
+                  "x-go-id": "main.GetCurrentUserOutput"
                 }
               }
             },
@@ -1106,7 +1390,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "UpdateCurrentUserOutput",
+                  "type": "object",
+                  "x-go-id": "main.UpdateCurrentUserOutput"
                 }
               }
             },
@@ -1158,7 +1453,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "additionalProperties": false,
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "title": "CreateUserOutput",
+                  "type": "object",
+                  "x-go-id": "main.CreateUserOutput"
                 }
               }
             },
