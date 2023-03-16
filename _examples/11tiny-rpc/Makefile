@@ -1,2 +1,3 @@
-doc:
-	go run . > openapi.json
+default:
+	go generate
+.PHONY: default

@@ -28,8 +28,8 @@
     }
   },
   "info": {
-    "description": "tinyrpc",
-    "title": "tinyrpc",
+    "description": "hello example",
+    "title": "hello example",
     "version": "0.0.0"
   },
   "openapi": "3.0.3",
@@ -94,7 +94,8 @@
         "summary": "hello, greeting message",
         "tags": [
           "main"
-        ]
+        ],
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/11tiny-rpc/main.go#L106"
       }
     }
   },
