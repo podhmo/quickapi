@@ -37,15 +37,15 @@ func TestDecodeResponse(t *testing.T) {
 func TestDoRequest(t *testing.T) {
 	want := person{Name: "foo", Age: 20}
 
+	h := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if err := json.NewEncoder(w).Encode(want); err != nil {
+			t.Fatalf("unexpected error (json.Encode): %+v", err)
+		}
+	})
+
 	path := "/users/1"
 	req := httptest.NewRequest("GET", path, nil)
-	got := DoRequest[person](
-		t, req, http.StatusOK,
-		http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			if err := json.NewEncoder(w).Encode(want); err != nil {
-				t.Fatalf("unexpected error (json.Encode): %+v", err)
-			}
-		}))
+	got := DoRequest[person](t, h, req, http.StatusOK)
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("DoRequest(), path=%q mismatch (-want +got):\n%s", path, diff)
 	}

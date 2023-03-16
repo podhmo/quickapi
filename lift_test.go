@@ -21,7 +21,7 @@ func TestLift_OK(t *testing.T) {
 	handler := quickapi.Lift(action)
 	req := httptest.NewRequest("GET", "/", nil)
 
-	got := quickapitest.DoRequest[[]int](t, req, 200, handler)
+	got := quickapitest.DoRequest[[]int](t, handler, req, 200)
 	want := []int{1, 2, 3}
 	if diff := cmp.Diff(ints{want}, ints{got}); diff != "" {
 		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
@@ -33,7 +33,7 @@ func TestLift_OK_NilAsEmptySlice(t *testing.T) {
 	handler := quickapi.Lift(action)
 	req := httptest.NewRequest("GET", "/", nil)
 
-	got := quickapitest.DoRequest[[]int](t, req, 200, handler)
+	got := quickapitest.DoRequest[[]int](t, handler, req, 200)
 	want := []int{}
 	if diff := cmp.Diff(ints{want}, ints{got}); diff != "" {
 		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
@@ -52,7 +52,7 @@ func TestLift_OK_WithDefault(t *testing.T) {
 
 	req := httptest.NewRequest("POST", "/", strings.NewReader(`{"age": 20}`))
 
-	got := quickapitest.DoRequest[person](t, req, 200, handler)
+	got := quickapitest.DoRequest[person](t, handler, req, 200)
 	want := person{Name: "foo", Age: 20}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
@@ -68,7 +68,7 @@ func TestLift_NotFound(t *testing.T) {
 	handler := quickapi.Lift(action)
 	req := httptest.NewRequest("GET", "/", nil)
 
-	got := quickapitest.DoRequest[quickapi.ErrorResponse](t, req, code, handler)
+	got := quickapitest.DoRequest[quickapi.ErrorResponse](t, handler, req, code)
 	want := quickapi.ErrorResponse{Code: code, Error: "api-error: hmm"}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
@@ -92,7 +92,7 @@ func TestLift_UnprocessableEntity_withValidation(t *testing.T) {
 	handler := quickapi.Lift(action)
 	req := httptest.NewRequest("POST", "/", strings.NewReader(`{"name": "foo"}`))
 
-	got := quickapitest.DoRequest[quickapi.ErrorResponse](t, req, code, handler)
+	got := quickapitest.DoRequest[quickapi.ErrorResponse](t, handler, req, code)
 	want := quickapi.ErrorResponse{Code: code, Error: "api-error: ill"}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Lift() mismatch (-want +got):\n%s", diff)
@@ -151,7 +151,7 @@ func TestLift_BindPathVars(t *testing.T) {
 
 	t.Run("200", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/10", nil)
-		got := quickapitest.DoRequest[Output](t, req, 200, r)
+		got := quickapitest.DoRequest[Output](t, r, req, 200)
 
 		want := Output{InputID: 10}
 		if diff := cmp.Diff(want, got); diff != "" {
@@ -161,7 +161,7 @@ func TestLift_BindPathVars(t *testing.T) {
 
 	t.Run("404", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/foo", nil)
-		quickapitest.DoRequest[quickapi.ErrorResponse](t, req, 404, r)
+		quickapitest.DoRequest[quickapi.ErrorResponse](t, r, req, 404)
 	})
 }
 
@@ -180,7 +180,7 @@ func TestLift_BindData(t *testing.T) {
 
 	t.Run("200", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", strings.NewReader(`{"name": "foo", "age": 20}`))
-		got := quickapitest.DoRequest[Output](t, req, 200, h)
+		got := quickapitest.DoRequest[Output](t, h, req, 200)
 
 		want := Output{Message: "foo(20): hello"}
 		if diff := cmp.Diff(want, got); diff != "" {
@@ -190,11 +190,11 @@ func TestLift_BindData(t *testing.T) {
 
 	t.Run("400-no-body", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", nil)
-		quickapitest.DoRequest[quickapi.ErrorResponse](t, req, 400, h)
+		quickapitest.DoRequest[quickapi.ErrorResponse](t, h, req, 400)
 	})
 	t.Run("400-invalid-type", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/foo", strings.NewReader(`{"name": "foo", "age": "20"}`))
-		quickapitest.DoRequest[Output](t, req, 400, h)
+		quickapitest.DoRequest[Output](t, h, req, 400)
 	})
 }
 
@@ -215,7 +215,7 @@ func TestLift_BindQueryVars(t *testing.T) {
 
 	t.Run("200", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/10", nil)
-		got := quickapitest.DoRequest[Output](t, req, 200, r)
+		got := quickapitest.DoRequest[Output](t, r, req, 200)
 
 		want := Output{InputID: 10}
 		if diff := cmp.Diff(want, got); diff != "" {
@@ -224,7 +224,7 @@ func TestLift_BindQueryVars(t *testing.T) {
 	})
 	t.Run("200-with-query", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/10?sort=-id", nil)
-		got := quickapitest.DoRequest[Output](t, req, 200, r)
+		got := quickapitest.DoRequest[Output](t, r, req, 200)
 
 		want := Output{InputID: 10, InputSort: "-id"}
 		if diff := cmp.Diff(want, got); diff != "" {

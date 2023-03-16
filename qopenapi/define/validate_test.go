@@ -50,7 +50,7 @@ func TestIt(t *testing.T) {
 
 	t.Run("GET", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
-		got := quickapitest.DoRequest[[]Output](t, req, 200, handler)
+		got := quickapitest.DoRequest[[]Output](t, handler, req, 200)
 
 		want := []Output{{Name: "foo"}, {Name: "bar"}}
 		if diff := cmp.Diff(ref{want}, ref{got}); diff != "" {
@@ -60,12 +60,12 @@ func TestIt(t *testing.T) {
 
 	t.Run("POST", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", strings.NewReader(`{"name": "moo"}`))
-		quickapitest.DoRequest[any](t, req, 201, handler)
+		quickapitest.DoRequest[any](t, handler, req, 201)
 	})
 
 	t.Run("POST-invalid", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", strings.NewReader(`{}`))
-		got := quickapitest.DoRequest[quickapi.ErrorResponse](t, req, 400, handler)
+		got := quickapitest.DoRequest[quickapi.ErrorResponse](t, handler, req, 400)
 
 		var want quickapi.ErrorResponse
 		or.Fatal(t, json.NewDecoder(bytes.NewBuffer(ngresponseBody)).Decode(&want))(t)
