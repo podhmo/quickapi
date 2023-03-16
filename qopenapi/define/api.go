@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
@@ -28,7 +29,20 @@ type BuildContext struct {
 	r chi.Router
 
 	mb         *validate.MiddlewareBuilder
+	onceCommit *onceCommit
+}
+
+type onceCommit struct {
 	commitFunc func(context.Context) error
+	err        error
+	once       sync.Once
+}
+
+func (c *onceCommit) Do(ctx context.Context) error {
+	c.once.Do(func() {
+		c.err = c.commitFunc(ctx)
+	})
+	return c.err
 }
 
 func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflectopenapi.Config)) (*BuildContext, error) {
@@ -68,7 +82,7 @@ func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflecto
 		c:          c,
 		m:          m,
 		mb:         validate.NewBuilder(doc, shared.DEBUG),
-		commitFunc: commit,
+		onceCommit: &onceCommit{commitFunc: commit},
 	}, nil
 }
 
@@ -96,7 +110,7 @@ func (bc *BuildContext) ReflectOpenAPIManager() *reflectopenapi.Manager {
 }
 
 func (bc *BuildContext) EmitDoc(ctx context.Context, filename string) error {
-	if err := bc.commit(ctx); err != nil {
+	if err := bc.onceCommit.Do(ctx); err != nil {
 		return fmt.Errorf("EmitDoc (commit): %w", err)
 	}
 
@@ -116,7 +130,7 @@ func (bc *BuildContext) EmitDoc(ctx context.Context, filename string) error {
 }
 
 func (bc *BuildContext) EmitMDDoc(ctx context.Context, filename string) error {
-	if err := bc.commit(ctx); err != nil {
+	if err := bc.onceCommit.Do(ctx); err != nil {
 		return fmt.Errorf("EmitMDDoc (commit): %w", err)
 	}
 
@@ -130,7 +144,7 @@ func (bc *BuildContext) EmitMDDoc(ctx context.Context, filename string) error {
 }
 
 func (bc *BuildContext) BuildHandler(ctx context.Context) (http.Handler, error) {
-	if err := bc.commit(ctx); err != nil {
+	if err := bc.onceCommit.Do(ctx); err != nil {
 		return nil, fmt.Errorf("BuildHandler (commit): %w", err)
 	}
 
@@ -142,30 +156,17 @@ func (bc *BuildContext) BuildHandler(ctx context.Context) (http.Handler, error) 
 }
 
 func (bc *BuildContext) BuildOpenAPIDoc(ctx context.Context) (*openapi3.T, error) {
-	if err := bc.commit(ctx); err != nil {
+	if err := bc.onceCommit.Do(ctx); err != nil {
 		return nil, fmt.Errorf("BuildOpenAPIDoc (commit): %w", err)
 	}
 	return bc.m.Doc, nil
 }
 
 func (bc *BuildContext) BuildDocHandler(ctx context.Context, path string, mdtext []byte) (http.Handler, error) {
-	if err := bc.commit(ctx); err != nil {
+	if err := bc.onceCommit.Do(ctx); err != nil {
 		return nil, fmt.Errorf("BuildDocHandler (commit): %w", err)
 	}
 	return dochandler.New(bc.Doc(), path, bc.c.Info, string(mdtext)), nil
-}
-
-func (bc *BuildContext) commit(ctx context.Context) error {
-	if bc.commitFunc == nil {
-		shared.GetLogger(ctx).Printf("[WARN]  already committed")
-		return nil
-	}
-	defer func() { bc.commitFunc = nil }()
-	commit := bc.commitFunc
-	if err := commit(ctx); err != nil {
-		return err
-	}
-	return nil
 }
 
 func writeFileOrStdout(ctx context.Context, filename string, writeFunc func(context.Context, io.Writer) error) error {
