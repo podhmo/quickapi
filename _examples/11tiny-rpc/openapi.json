@@ -51,6 +51,7 @@
                 "required": [
                   "name"
                 ],
+                "title": "HelloInput",
                 "type": "object",
                 "x-go-id": "main.HelloInput"
               }
@@ -71,6 +72,7 @@
                   "required": [
                     "message"
                   ],
+                  "title": "HelloOutput",
                   "type": "object",
                   "x-go-id": "main.HelloOutput"
                 }
@@ -89,7 +91,10 @@
             "description": "default error"
           }
         },
-        "summary": "hello, greeting message"
+        "summary": "hello, greeting message",
+        "tags": [
+          "main"
+        ]
       }
     }
   },
@@ -97,6 +102,11 @@
     {
       "description": "local development server",
       "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "name": "main"
     }
   ]
 }

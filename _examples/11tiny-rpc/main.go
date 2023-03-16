@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
@@ -23,7 +22,7 @@ func main() {
 	definerpc.Action(bc, Hello)
 
 	ctx := context.Background()
-	if err := bc.EmitDoc(ctx, os.Stdout); err != nil {
+	if err := bc.EmitDoc(ctx, ""); err != nil {
 		log.Fatalf("!! %+v", err)
 	}
 }
