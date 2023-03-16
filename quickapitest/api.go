@@ -44,9 +44,9 @@ func DecodeResponse[T any](
 // DoRequest requests and decode response
 func DoRequest[T any](
 	t *testing.T,
+	handler http.Handler,
 	req *http.Request,
 	code int,
-	handler http.Handler,
 	options ...func(*testing.T, *http.Response),
 ) T {
 	t.Helper()
