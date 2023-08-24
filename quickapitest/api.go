@@ -41,8 +41,8 @@ func DecodeResponse[T any](
 	return got
 }
 
-// DoRequest requests and decode response
-func DoRequest[T any](
+// DoHandler requests and decode response
+func DoHandler[T any](
 	t *testing.T,
 	handler http.Handler,
 	req *http.Request,
