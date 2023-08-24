@@ -24,19 +24,21 @@ type Config struct {
 	EnableRequestValidation  bool // returns 400 if invalid request
 	EnableResponseValidation bool // returns error if invalid response
 
-	ValidationErrorStatusCode int
-	NewErrorResponseFunc      func(int, error) any
+	RequestErrorStatusCode  int
+	ResponseErrorStatusCode int
+	NewErrorResponseFunc    func(int, error) any
 }
 
 func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
 	return &MiddlewareBuilder{
 		Doc: doc,
 		Config: &Config{
-			Debug:                     debug,
-			EnablePathVarValidation:   true,
-			EnableRequestValidation:   true,
-			EnableResponseValidation:  false,
-			ValidationErrorStatusCode: http.StatusBadRequest,
+			Debug:                    debug,
+			EnablePathVarValidation:  true,
+			EnableRequestValidation:  true,
+			EnableResponseValidation: false,
+			RequestErrorStatusCode:   http.StatusBadRequest,
+			ResponseErrorStatusCode:  http.StatusServiceUnavailable,
 			NewErrorResponseFunc: func(code int, err error) any {
 				errRes := shared.ErrorResponse{
 					Code:   code,
@@ -134,7 +136,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// request validation
 	if config.EnableRequestValidation {
 		if err := openapi3filter.ValidateRequest(ctx, input); err != nil {
-			code := v.Config.ValidationErrorStatusCode
+			code := v.Config.RequestErrorStatusCode
 			w.WriteHeader(code)
 
 			enc := json.NewEncoder(w)
@@ -169,7 +171,8 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// 	w.Header().Set("Content-Type", "application/json")
 	// }
 
-	if code := bw.status; 200 <= code && code < 300 && code != http.StatusNoContent { // 2xx
+	code := bw.status
+	if 200 <= code && code < 300 && code != http.StatusNoContent { // 2xx
 		body := bw.body.Bytes()
 		responseValidationInput := &openapi3filter.ResponseValidationInput{
 			RequestValidationInput: input,
@@ -178,12 +181,30 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			Body:                   io.NopCloser(bytes.NewBuffer(body)),
 		}
 		if err := openapi3filter.ValidateResponse(ctx, responseValidationInput); err != nil {
+			code := config.ResponseErrorStatusCode
+			w.WriteHeader(code)
+
+			enc := json.NewEncoder(w)
+			enc.SetIndent("", "\t")
+			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
+				if debug && logger != nil {
+					logger.Printf("unexpected json encode error: %+v", err)
+				}
+			}
+
 			if debug && logger != nil {
 				logger.Printf("response validation: %+v", err)
 				logger.Printf("\tresponse body: %s", body)
 			}
+			return
 		}
 	}
+
+	// strict response
+	if code != 0 {
+		w.WriteHeader(code)
+	}
+	w.Write(bw.body.Bytes())
 }
 
 func RequestOnlyPathValiables(ctx context.Context, input *openapi3filter.RequestValidationInput) error {
@@ -223,11 +244,9 @@ type nethttpBodyWriterProxy struct {
 }
 
 func (p nethttpBodyWriterProxy) Write(b []byte) (int, error) {
-	p.body.Write(b)
-	return p.ResponseWriter.Write(b)
+	return p.body.Write(b)
 }
 
 func (p *nethttpBodyWriterProxy) WriteHeader(code int) {
 	p.status = code
-	p.ResponseWriter.WriteHeader(code)
 }
