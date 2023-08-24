@@ -25,16 +25,18 @@ type Config struct {
 	EnableResponseValidation bool // returns error if invalid response
 
 	ReturnErrorIfResponseValidation bool // if true error, response when response validation
+	ValidationErrorStatusCode       int
 }
 
 func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
 	return &MiddlewareBuilder{
 		Doc: doc,
 		Config: &Config{
-			Debug:                    debug,
-			EnablePathVarValidation:  true,
-			EnableRequestValidation:  true,
-			EnableResponseValidation: true,
+			Debug:                     debug,
+			EnablePathVarValidation:   true,
+			EnableRequestValidation:   true,
+			EnableResponseValidation:  true,
+			ValidationErrorStatusCode: http.StatusUnprocessableEntity,
 		},
 	}
 }
@@ -76,6 +78,7 @@ type Middleware struct {
 
 func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	config := v.Config
+	debug := config.Debug
 
 	ctx := req.Context()
 	logger := shared.GetLoggerOrNil(ctx)
@@ -91,6 +94,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	input := &openapi3filter.RequestValidationInput{
+		Route:       &route,
 		Request:     req,
 		PathParams:  pathParams,
 		QueryParams: req.URL.Query(),
@@ -104,12 +108,12 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(map[string]interface{}{"error": strings.Split(fmt.Sprintf("%+v", err), "\n")}); err != nil {
-				if logger != nil {
+				if debug && logger != nil {
 					logger.Printf("unexpected json encode error: %+v", err)
 				}
 			}
 
-			if logger != nil {
+			if debug && logger != nil {
 				logger.Printf("path vars validation: %+v", err)
 			}
 			return
@@ -119,17 +123,17 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// request validation
 	if config.EnableRequestValidation {
 		if err := openapi3filter.ValidateRequest(ctx, input); err != nil {
-			w.WriteHeader(http.StatusUnprocessableEntity)
+			w.WriteHeader(v.Config.ValidationErrorStatusCode)
 
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(map[string]interface{}{"error": strings.Split(fmt.Sprintf("%+v", err), "\n")}); err != nil {
-				if logger != nil {
+				if debug && logger != nil {
 					logger.Printf("unexpected json encode error: %+v", err)
 				}
 			}
 
-			if logger != nil {
+			if debug && logger != nil {
 				logger.Printf("request validation: %+v", err)
 			}
 
@@ -138,7 +142,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if !config.EnableResponseValidation {
-		if logger != nil {
+		if debug && logger != nil {
 			logger.Printf("skip response validation") // todo: route
 		}
 		v.Next.ServeHTTP(w, req)
@@ -162,7 +166,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			Body:                   io.NopCloser(bytes.NewBuffer(body)),
 		}
 		if err := openapi3filter.ValidateResponse(ctx, responseValidationInput); err != nil {
-			if logger != nil {
+			if debug && logger != nil {
 				logger.Printf("response validation: %+v", err)
 				logger.Printf("\tresponse body: %s", body)
 			}
