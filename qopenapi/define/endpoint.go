@@ -23,7 +23,8 @@ func Method[I any, O any](bc *BuildContext, method, path string, action quickapi
 	m := bc.m
 
 	normalizedPath, _, pathvars := pathutil.NormalizeTemplatedPath(path)
-	if bc.c.Loaded {
+	c := bc.Config.ReflectOpenAPI
+	if c.Loaded {
 		op := findOpenapi3Operation(m.Doc, method, normalizedPath)
 		if op == nil {
 			msg := fmt.Sprintf("path not found: %s %s", method, path)
@@ -151,7 +152,8 @@ func GetHTML[I any](bc *BuildContext, path string, action quickapi.Action[I, str
 	m := bc.m
 	method := "GET"
 
-	if bc.c.Loaded {
+	c := bc.Config.ReflectOpenAPI
+	if c.Loaded {
 		op := findOpenapi3Operation(m.Doc, method, path)
 		if op == nil {
 			msg := fmt.Sprintf("path not found: %s %s", method, path)

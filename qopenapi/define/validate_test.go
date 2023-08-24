@@ -31,7 +31,7 @@ type ref struct {
 	V []Output
 }
 
-//go:embed testdata/post-400-response.json
+//go:embed testdata/post-422-response.json
 var ngresponseBody []byte
 
 func TestIt(t *testing.T) {
@@ -45,12 +45,13 @@ func TestIt(t *testing.T) {
 		define.Post(bc, "/", func(ctx context.Context, input Input) (any, error) {
 			items = append(items, Output(input))
 			return shared.NoContent(http.StatusCreated), nil
-		})
+		}).Status(http.StatusCreated)
 	})
 
 	t.Run("GET", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
-		got := quickapitest.DoHandler[[]Output](t, handler, req, 200)
+		wantCode := 200
+		got := quickapitest.DoHandler[[]Output](t, handler, req, wantCode)
 
 		want := []Output{{Name: "foo"}, {Name: "bar"}}
 		if diff := cmp.Diff(ref{want}, ref{got}); diff != "" {
@@ -60,12 +61,14 @@ func TestIt(t *testing.T) {
 
 	t.Run("POST", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", strings.NewReader(`{"name": "moo"}`))
-		quickapitest.DoHandler[any](t, handler, req, 201)
+		wantCode := 201
+		quickapitest.DoHandler[any](t, handler, req, wantCode)
 	})
 
 	t.Run("POST-invalid", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", strings.NewReader(`{}`))
-		got := quickapitest.DoHandler[quickapi.ErrorResponse](t, handler, req, 400)
+		wantCode := 422
+		got := quickapitest.DoHandler[quickapi.ErrorResponse](t, handler, req, wantCode)
 
 		var want quickapi.ErrorResponse
 		or.Fatal(t, json.NewDecoder(bytes.NewBuffer(ngresponseBody)).Decode(&want))(t)
@@ -80,7 +83,8 @@ func TestIt(t *testing.T) {
 		rec := httptest.NewRecorder()
 		handler.ServeHTTP(rec, req)
 
-		if want, got := 201, rec.Result().StatusCode; want != got {
+		wantCode := 201
+		if want, got := wantCode, rec.Result().StatusCode; want != got {
 			t.Errorf("%s %s, status code: want=%d != got=%d", req.Method, req.URL.Path, want, got)
 		}
 	})

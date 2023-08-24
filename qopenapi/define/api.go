@@ -22,10 +22,15 @@ import (
 	"github.com/podhmo/reflect-openapi/info"
 )
 
-type BuildContext struct {
-	m *reflectopenapi.Manager
-	c *reflectopenapi.Config
+type Config struct {
+	ReflectOpenAPI *reflectopenapi.Config
+	Validation     *validate.Config
+}
 
+type BuildContext struct {
+	Config *Config
+
+	m *reflectopenapi.Manager
 	r chi.Router
 
 	mb         *validate.MiddlewareBuilder
@@ -45,43 +50,48 @@ func (c *onceCommit) Do(ctx context.Context) error {
 	return c.err
 }
 
-func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *reflectopenapi.Config)) (*BuildContext, error) {
+func NewBuildContext(docM DocModifier, r chi.Router, options ...func(c *Config)) (*BuildContext, error) {
 	doc, loaded, err := docM()
 	if err != nil {
 		return nil, err
 	}
-	c := &reflectopenapi.Config{
-		TagNameOption: &reflectopenapi.TagNameOption{
-			NameTag:        "json",
-			RequiredTag:    "required",
-			ParamTypeTag:   "in",
-			DescriptionTag: "description",
-			OverrideTag:    "openapi-override",
-			XNewTypeTag:    "x-go-type",
+
+	mb := validate.NewBuilder(doc, shared.DEBUG)
+	c := &Config{
+		ReflectOpenAPI: &reflectopenapi.Config{
+			TagNameOption: &reflectopenapi.TagNameOption{
+				NameTag:        "json",
+				RequiredTag:    "required",
+				ParamTypeTag:   "in",
+				DescriptionTag: "description",
+				OverrideTag:    "openapi-override",
+				XNewTypeTag:    "x-go-type",
+			},
+			Doc:              doc,
+			Loaded:           loaded,
+			DefaultError:     shared.ErrorResponse{},
+			StrictSchema:     true,
+			EnableAutoTag:    true,
+			Info:             info.New(),
+			DisableInputRef:  true,
+			DisableOutputRef: true,
 		},
-		Doc:              doc,
-		Loaded:           loaded,
-		DefaultError:     shared.ErrorResponse{},
-		StrictSchema:     true,
-		EnableAutoTag:    true,
-		Info:             info.New(),
-		DisableInputRef:  true,
-		DisableOutputRef: true,
+		Validation: mb.Config,
 	}
 
 	for _, opt := range options {
 		opt(c)
 	}
 
-	m, commit, err := c.NewManager()
+	m, commit, err := c.ReflectOpenAPI.NewManager()
 	if err != nil {
 		return nil, err
 	}
 	return &BuildContext{
+		Config:     c,
 		r:          r,
-		c:          c,
 		m:          m,
-		mb:         validate.NewBuilder(doc, shared.DEBUG),
+		mb:         mb,
 		onceCommit: &onceCommit{commitFunc: commit},
 	}, nil
 }
@@ -135,7 +145,8 @@ func (bc *BuildContext) EmitMDDoc(ctx context.Context, filename string) error {
 	}
 
 	return writeFileOrStdout(ctx, filename, func(ctx context.Context, w io.Writer) error {
-		doc := docgen.Generate(bc.Doc(), bc.c.Info)
+		c := bc.Config.ReflectOpenAPI
+		doc := docgen.Generate(bc.Doc(), c.Info)
 		if err := docgen.WriteDoc(w, doc); err != nil {
 			return fmt.Errorf("emitMDDoc (writeDoc): %w", err)
 		}
@@ -166,7 +177,8 @@ func (bc *BuildContext) BuildDocHandler(ctx context.Context, path string, mdtext
 	if err := bc.onceCommit.Do(ctx); err != nil {
 		return nil, fmt.Errorf("BuildDocHandler (commit): %w", err)
 	}
-	return dochandler.New(bc.Doc(), path, bc.c.Info, string(mdtext)), nil
+	c := bc.Config.ReflectOpenAPI
+	return dochandler.New(bc.Doc(), path, c.Info, string(mdtext)), nil
 }
 
 func writeFileOrStdout(ctx context.Context, filename string, writeFunc func(context.Context, io.Writer) error) error {
@@ -187,5 +199,5 @@ func writeFileOrStdout(ctx context.Context, filename string, writeFunc func(cont
 
 // ----------------------------------------
 func DefaultError(bc *BuildContext, typ interface{}) {
-	bc.c.DefaultError = typ
+	bc.Config.ReflectOpenAPI.DefaultError = typ
 }

@@ -1,5 +1,5 @@
   {
-  "code": 400,
+  "code": 422,
   "error": "request body has an error: doesn't match schema Input: Error at \"/name\": property \"name\" is missing",
   "detail": [
     "request body has an error: doesn't match schema Input: Error at \"/name\": property \"name\" is missing",
