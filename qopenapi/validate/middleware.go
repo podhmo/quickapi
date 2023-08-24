@@ -98,6 +98,10 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	route := *v.BaseRoute // shallow copy
 	route.Method = req.Method
 	route.Path = req.URL.Path
+	opID := route.Operation.OperationID
+	if debug && logger != nil {
+		logger.Printf("found operationID=%s", opID)
+	}
 
 	chiURLParams := chi.RouteContext(req.Context()).URLParams
 	pathParams := make(map[string]string, len(chiURLParams.Keys))
@@ -122,12 +126,14 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
 				if debug && logger != nil {
-					logger.Printf("unexpected json encode error: %+v", err)
+					logger.Printf("json encode error(%s): %+v", opID, err)
 				}
 			}
 
 			if debug && logger != nil {
-				logger.Printf("path vars validation: %+v", err)
+				logger.Printf("path vars validation(%s): %+v", opID, err)
+				b, _ := json.MarshalIndent(route.Operation, "", "  ")
+				logger.Printf("operation schema: %s", string(b))
 			}
 			return
 		}
@@ -142,13 +148,15 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
-				if debug && logger != nil {
-					logger.Printf("unexpected json encode error: %+v", err)
+				if logger != nil {
+					logger.Printf("json encode error(%s): %+v", opID, err)
 				}
 			}
 
 			if debug && logger != nil {
-				logger.Printf("request validation: %+v", err)
+				logger.Printf("request validation(%s): %+v", opID, err)
+				b, _ := json.MarshalIndent(route.Operation, "", "  ")
+				logger.Printf("operation schema: %s", string(b))
 			}
 
 			return
@@ -157,7 +165,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if !config.EnableResponseValidation {
 		if debug && logger != nil {
-			logger.Printf("skip response validation") // todo: route
+			logger.Printf("skip response validation(%s)", opID)
 		}
 		v.Next.ServeHTTP(w, req)
 		return
@@ -167,9 +175,9 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	bw := &nethttpBodyWriterProxy{ResponseWriter: w, body: new(bytes.Buffer)}
 	v.Next.ServeHTTP(bw, req)
 
-	// if v := w.Header().Get("Content-Type"); v == "" {
-	// 	w.Header().Set("Content-Type", "application/json")
-	// }
+	if v := w.Header().Get("Content-Type"); v == "" {
+		w.Header().Set("Content-Type", "application/json")
+	}
 
 	code := bw.status
 	if 200 <= code && code < 300 && code != http.StatusNoContent { // 2xx
@@ -187,14 +195,15 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
-				if debug && logger != nil {
-					logger.Printf("unexpected json encode error: %+v", err)
+				if logger != nil {
+					logger.Printf("json encode error(%s): %+v", opID, err)
 				}
 			}
 
 			if debug && logger != nil {
-				logger.Printf("response validation: %+v", err)
-				logger.Printf("\tresponse body: %s", body)
+				logger.Printf("response validation(%s): %+v", opID, err)
+				b, _ := json.MarshalIndent(route.Operation, "", "  ")
+				logger.Printf("operation schema: %s", string(b))
 			}
 			return
 		}
