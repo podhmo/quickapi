@@ -30,7 +30,7 @@ FindPets returns all pets
 | operationId | main.PetAPI.FindPets[  <sub>(source)</sub>](https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L144) |
 | endpoint | `GET /pets` |
 | input | Input |
-| output | `<Anonymous>` ｜ [`Error`](#error) |
+| output | [`[[]Pet]`](#pet) ｜ [`Error`](#error) |
 | tags | `main` |
 
 
@@ -346,5 +346,6 @@ exmaples
 }
 ```
 
+- [output of main.PetAPI.FindPets (200) as `[[]Pet]`](#mainpetapifindpets-get-pets)
 - [output of main.PetAPI.AddPet (200) as `Pet`](#mainpetapiaddpet-post-pets)
 - [output of main.PetAPI.FindPetByID (200) as `Pet`](#mainpetapifindpetbyid-get-petsid)
