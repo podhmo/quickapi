@@ -1,8 +1,11 @@
 package validate
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -10,20 +13,41 @@ import (
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 	"github.com/podhmo/quickapi/shared"
 )
 
+type Config struct {
+	Debug bool
+
+	EnablePathVarValidation bool // returns 404 if invalid pathvar is passed
+
+	EnableRequestValidation  bool // returns 422 if invalid request
+	EnableResponseValidation bool // returns error if invalid response
+
+	ReturnErrorIfResponseValidation bool // if true error, response when response validation
+}
+
 func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
 	return &MiddlewareBuilder{
-		Doc:       doc,
-		Extractor: &Extractor{Debug: debug},
+		Doc: doc,
+		Config: &Config{
+			Debug:                    debug,
+			EnablePathVarValidation:  true,
+			EnableRequestValidation:  true,
+			EnableResponseValidation: true,
+		},
 	}
 }
 
+func NewBuilderForTest(doc *openapi3.T, debug bool) *MiddlewareBuilder {
+	b := NewBuilder(doc, debug)
+	b.Config.ReturnErrorIfResponseValidation = true
+	return b
+}
+
 type MiddlewareBuilder struct {
-	Doc       *openapi3.T
-	Extractor *Extractor
+	Doc    *openapi3.T
+	Config *Config
 }
 
 func (b *MiddlewareBuilder) BuildMiddleware(pattern string, op *openapi3.Operation) func(http.Handler) http.Handler {
@@ -39,7 +63,7 @@ func (b *MiddlewareBuilder) BuildMiddleware(pattern string, op *openapi3.Operati
 		return &Middleware{
 			BaseRoute: route,
 			Next:      next,
-			Extractor: b.Extractor,
+			Config:    b.Config,
 		}
 	}
 }
@@ -47,37 +71,16 @@ func (b *MiddlewareBuilder) BuildMiddleware(pattern string, op *openapi3.Operati
 type Middleware struct {
 	BaseRoute *routers.Route
 	Next      http.Handler
-	Extractor *Extractor
+	Config    *Config
 }
 
 func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	config := v.Config
+
 	ctx := req.Context()
-	reqResult := v.Extractor.ExtractRequestValidation(ctx, req, *v.BaseRoute)
-	if err := reqResult.Error; err != nil {
-		code := http.StatusBadRequest
-		detail := strings.Split(fmt.Sprintf("%v", err), "\n")
-		value := &shared.ErrorResponse{Code: code, Error: detail[0], Detail: detail}
+	logger := shared.GetLoggerOrNil(ctx)
 
-		render.Status(req, code)
-		render.JSON(w, req, value)
-		return
-	}
-	v.Next.ServeHTTP(w, req) // after qdump.Dump()
-	// TODO: response validation
-}
-
-type Extractor struct {
-	Debug bool
-}
-
-type RequestValidation struct {
-	Route *routers.Route
-	Input *openapi3filter.RequestValidationInput
-	Error error
-}
-
-func (e *Extractor) ExtractRequestValidation(ctx context.Context, req *http.Request, base routers.Route) RequestValidation {
-	route := base // shallow copy
+	route := *v.BaseRoute // shallow copy
 	route.Method = req.Method
 	route.Path = req.URL.Path
 
@@ -91,41 +94,124 @@ func (e *Extractor) ExtractRequestValidation(ctx context.Context, req *http.Requ
 		Request:     req,
 		PathParams:  pathParams,
 		QueryParams: req.URL.Query(),
-		Route:       &route,
 	}
-	if err := openapi3filter.ValidateRequest(ctx, input); err != nil {
-		if e.Debug {
-			shared.GetLogger(ctx).Printf("[DEBUG] request is NG (%T) method=%s, path=%s, operationId=%s\n%+v", err, route.Method, route.Path, route.Operation.OperationID, err)
+
+	// path vars validation
+	if config.EnablePathVarValidation {
+		if err := RequestOnlyPathValiables(ctx, input); err != nil {
+			w.WriteHeader(http.StatusNotFound)
+
+			enc := json.NewEncoder(w)
+			enc.SetIndent("", "\t")
+			if err := enc.Encode(map[string]interface{}{"error": strings.Split(fmt.Sprintf("%+v", err), "\n")}); err != nil {
+				if logger != nil {
+					logger.Printf("unexpected json encode error: %+v", err)
+				}
+			}
+
+			if logger != nil {
+				logger.Printf("path vars validation: %+v", err)
+			}
+			return
 		}
-		return RequestValidation{Route: &route, Input: input, Error: err}
 	}
-	if e.Debug {
-		shared.GetLogger(ctx).Printf("[DEBUG] request is OK method=%s, path=%s, operationId=%s", route.Method, route.Path, route.Operation.OperationID)
+
+	// request validation
+	if config.EnableRequestValidation {
+		if err := openapi3filter.ValidateRequest(ctx, input); err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+
+			enc := json.NewEncoder(w)
+			enc.SetIndent("", "\t")
+			if err := enc.Encode(map[string]interface{}{"error": strings.Split(fmt.Sprintf("%+v", err), "\n")}); err != nil {
+				if logger != nil {
+					logger.Printf("unexpected json encode error: %+v", err)
+				}
+			}
+
+			if logger != nil {
+				logger.Printf("request validation: %+v", err)
+			}
+
+			return
+		}
 	}
-	return RequestValidation{Route: &route, Input: input}
+
+	if !config.EnableResponseValidation {
+		if logger != nil {
+			logger.Printf("skip response validation") // todo: route
+		}
+		v.Next.ServeHTTP(w, req)
+		return
+	}
+
+	// response validation
+	bw := &nethttpBodyWriterProxy{ResponseWriter: w, body: new(bytes.Buffer)}
+	v.Next.ServeHTTP(bw, req)
+
+	// if v := w.Header().Get("Content-Type"); v == "" {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// }
+
+	if code := bw.status; 200 <= code && code < 300 && code != http.StatusNoContent { // 2xx
+		body := bw.body.Bytes()
+		responseValidationInput := &openapi3filter.ResponseValidationInput{
+			RequestValidationInput: input,
+			Status:                 code,
+			Header:                 w.Header(),
+			Body:                   io.NopCloser(bytes.NewBuffer(body)),
+		}
+		if err := openapi3filter.ValidateResponse(ctx, responseValidationInput); err != nil {
+			if logger != nil {
+				logger.Printf("response validation: %+v", err)
+				logger.Printf("\tresponse body: %s", body)
+			}
+		}
+	}
 }
 
-type ResponseValidation struct {
-	Route *routers.Route
-	Input *openapi3filter.ResponseValidationInput
-	Error error
+func RequestOnlyPathValiables(ctx context.Context, input *openapi3filter.RequestValidationInput) error {
+	route := input.Route
+	pathParameters := make([]*openapi3.Parameter, 0, 8)
+	for _, p := range route.PathItem.Parameters {
+		if p.Value.In != openapi3.ParameterInPath {
+			continue
+		}
+		if route.Operation.Parameters != nil {
+			if override := route.Operation.Parameters.GetByInAndName(p.Value.In, p.Value.Name); override != nil {
+				continue
+			}
+		}
+		pathParameters = append(pathParameters, p.Value)
+
+	}
+	for _, p := range route.Operation.Parameters {
+		if p.Value.In != openapi3.ParameterInPath {
+			continue
+		}
+		pathParameters = append(pathParameters, p.Value)
+	}
+	for _, p := range pathParameters {
+		if err := openapi3filter.ValidateParameter(ctx, input, p); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func (e *Extractor) ExtractResponseValidation(ctx context.Context, validation *RequestValidation, res *http.Response) ResponseValidation {
-	input := &openapi3filter.ResponseValidationInput{
-		RequestValidationInput: validation.Input,
-		Status:                 res.StatusCode,
-		Header:                 res.Header,
-		Body:                   res.Body,
-	}
-	if err := openapi3filter.ValidateResponse(ctx, input); err != nil {
-		if e.Debug {
-			shared.GetLogger(ctx).Printf("[DEBUG] validate response is failed: %T\n%+v", err, err)
-		}
-		return ResponseValidation{Route: validation.Route, Input: input, Error: err}
-	}
-	if e.Debug {
-		shared.GetLogger(ctx).Printf("[DEBUG] response is OK") // todo: path and parameters
-	}
-	return ResponseValidation{Route: validation.Route, Input: input}
+type nethttpBodyWriterProxy struct {
+	http.ResponseWriter
+
+	status int
+	body   *bytes.Buffer
+}
+
+func (p nethttpBodyWriterProxy) Write(b []byte) (int, error) {
+	p.body.Write(b)
+	return p.ResponseWriter.Write(b)
+}
+
+func (p *nethttpBodyWriterProxy) WriteHeader(code int) {
+	p.status = code
+	p.ResponseWriter.WriteHeader(code)
 }
