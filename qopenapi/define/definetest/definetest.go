@@ -8,14 +8,14 @@ import (
 	"github.com/podhmo/or"
 	"github.com/podhmo/quickapi/qopenapi/define"
 	"github.com/podhmo/quickapi/quickapitest"
-	reflectopenapi "github.com/podhmo/reflect-openapi"
 )
 
 func NewHandler(t *testing.T, options ...func(*define.BuildContext)) http.Handler {
 	t.Helper()
 	ctx := quickapitest.NewContext(t)
-	bc := or.Fatal(define.NewBuildContext(define.Doc(), chi.NewRouter(), func(c *reflectopenapi.Config) {
-		c.SkipExtractComments = true
+	bc := or.Fatal(define.NewBuildContext(define.Doc(), chi.NewRouter(), func(c *define.Config) {
+		c.ReflectOpenAPI.SkipExtractComments = true
+		c.Validation.EnableResponseValidation = true
 	}))(t)
 
 	for _, opt := range options {
