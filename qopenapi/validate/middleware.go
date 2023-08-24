@@ -21,11 +21,11 @@ type Config struct {
 
 	EnablePathVarValidation bool // returns 404 if invalid pathvar is passed
 
-	EnableRequestValidation  bool // returns 422 if invalid request
+	EnableRequestValidation  bool // returns 400 if invalid request
 	EnableResponseValidation bool // returns error if invalid response
 
-	ReturnErrorIfResponseValidation bool // if true error, response when response validation
-	ValidationErrorStatusCode       int
+	ValidationErrorStatusCode int
+	NewErrorResponseFunc      func(int, error) any
 }
 
 func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
@@ -35,15 +35,25 @@ func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
 			Debug:                     debug,
 			EnablePathVarValidation:   true,
 			EnableRequestValidation:   true,
-			EnableResponseValidation:  true,
-			ValidationErrorStatusCode: http.StatusUnprocessableEntity,
+			EnableResponseValidation:  false,
+			ValidationErrorStatusCode: http.StatusBadRequest,
+			NewErrorResponseFunc: func(code int, err error) any {
+				errRes := shared.ErrorResponse{
+					Code:   code,
+					Detail: strings.Split(fmt.Sprintf("%+v", err), "\n"),
+				}
+				if len(errRes.Detail) > 0 {
+					errRes.Error = errRes.Detail[0]
+				}
+				return errRes
+			},
 		},
 	}
 }
 
 func NewBuilderForTest(doc *openapi3.T, debug bool) *MiddlewareBuilder {
 	b := NewBuilder(doc, debug)
-	b.Config.ReturnErrorIfResponseValidation = true
+	b.Config.EnableResponseValidation = true
 	return b
 }
 
@@ -103,11 +113,12 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// path vars validation
 	if config.EnablePathVarValidation {
 		if err := RequestOnlyPathValiables(ctx, input); err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			code := http.StatusNotFound
+			w.WriteHeader(code)
 
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "\t")
-			if err := enc.Encode(map[string]interface{}{"error": strings.Split(fmt.Sprintf("%+v", err), "\n")}); err != nil {
+			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
 				if debug && logger != nil {
 					logger.Printf("unexpected json encode error: %+v", err)
 				}
@@ -123,11 +134,12 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// request validation
 	if config.EnableRequestValidation {
 		if err := openapi3filter.ValidateRequest(ctx, input); err != nil {
-			w.WriteHeader(v.Config.ValidationErrorStatusCode)
+			code := v.Config.ValidationErrorStatusCode
+			w.WriteHeader(code)
 
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "\t")
-			if err := enc.Encode(map[string]interface{}{"error": strings.Split(fmt.Sprintf("%+v", err), "\n")}); err != nil {
+			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
 				if debug && logger != nil {
 					logger.Printf("unexpected json encode error: %+v", err)
 				}
