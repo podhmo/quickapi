@@ -98,7 +98,7 @@
         "tags": [
           "main"
         ],
-        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L191"
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L190"
       }
     },
     "/pets": {
@@ -164,7 +164,7 @@
         "tags": [
           "main"
         ],
-        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L144"
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L143"
       },
       "post": {
         "description": "AddPet creates a new pet in the store. Duplicates are allowed",
@@ -281,7 +281,7 @@
         "tags": [
           "main"
         ],
-        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L164"
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L163"
       }
     },
     "/pets/{id}": {
@@ -328,7 +328,7 @@
         "tags": [
           "main"
         ],
-        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L182"
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L181"
       },
       "get": {
         "description": "FindPetByID returns a pet based on a single ID",
@@ -398,7 +398,7 @@
         "tags": [
           "main"
         ],
-        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L172"
+        "x-go-position": "https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L171"
       }
     }
   },

@@ -20,7 +20,7 @@ func TestListTodo(t *testing.T) {
 	mount(router)
 
 	req := httptest.NewRequest("GET", "/todos?sort=-id", nil)
-	got := quickapitest.DoRequest[TodoListOutput](t, router, req, http.StatusOK)
+	got := quickapitest.DoHandler[TodoListOutput](t, router, req, http.StatusOK)
 
 	want := TodoListOutput{Items: []Todo{
 		{ID: 3, Title: "byebye", Done: false},
@@ -37,7 +37,7 @@ func TestGetTodo(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/todos/1", nil)
-		got := quickapitest.DoRequest[Todo](t, router, req, http.StatusOK)
+		got := quickapitest.DoHandler[Todo](t, router, req, http.StatusOK)
 
 		want := Todo{ID: 1, Title: "hello", Done: false}
 		if diff := cmp.Diff(want, got); diff != "" {
@@ -46,7 +46,7 @@ func TestGetTodo(t *testing.T) {
 	})
 	t.Run("ng", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/todos/10", nil)
-		got := quickapitest.DoRequest[quickapi.ErrorResponse](t, router, req, http.StatusNotFound)
+		got := quickapitest.DoHandler[quickapi.ErrorResponse](t, router, req, http.StatusNotFound)
 
 		want := quickapi.ErrorResponse{Code: 404, Error: "api-error: not found"}
 		if diff := cmp.Diff(want, got); diff != "" {
@@ -60,5 +60,5 @@ func TestMethodNotAllowed(t *testing.T) {
 	mount(router)
 
 	req := httptest.NewRequest("PUT", "/todos", nil)
-	quickapitest.DoRequest[any](t, router, req, http.StatusMethodNotAllowed)
+	quickapitest.DoHandler[any](t, router, req, http.StatusMethodNotAllowed)
 }

@@ -12,7 +12,6 @@ import (
 
 	"github.com/podhmo/quickapi"
 	"github.com/podhmo/quickapi/qopenapi/define"
-	reflectopenapi "github.com/podhmo/reflect-openapi"
 	reflectshape "github.com/podhmo/reflect-shape"
 )
 
@@ -56,8 +55,8 @@ func run() error {
 	}
 
 	router := quickapi.DefaultRouter()
-	bc, err := define.NewBuildContext(doc, router, func(c *reflectopenapi.Config) {
-		c.GoPositionFunc = func(fset *token.FileSet, f *reflectshape.Func) string {
+	bc, err := define.NewBuildContext(doc, router, func(c *define.Config) {
+		c.ReflectOpenAPI.GoPositionFunc = func(fset *token.FileSet, f *reflectshape.Func) string {
 			// TODO: multiple package
 			fpos := fset.Position(f.Pos())
 			return fmt.Sprintf("https://github.com/podhmo/quickapi/blob/main/_examples/10openapi-petstore/main.go#L%d", fpos.Line)

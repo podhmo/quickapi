@@ -14,7 +14,7 @@ func TestOK(t *testing.T) {
 	h := quickapi.Lift(Hello)
 
 	req := httptest.NewRequest("GET", "/", nil)
-	got := quickapitest.DoRequest[HelloOutput](t, h,req, http.StatusOK)
+	got := quickapitest.DoHandler[HelloOutput](t, h, req, http.StatusOK)
 
 	want := HelloOutput{Hello: "world"}
 	if diff := cmp.Diff(want, got); diff != "" {
