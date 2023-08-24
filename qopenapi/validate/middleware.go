@@ -19,10 +19,9 @@ import (
 type Config struct {
 	Debug bool
 
-	EnablePathVarValidation bool // returns 404 if invalid pathvar is passed
-
-	EnableRequestValidation  bool // returns 400 if invalid request
-	EnableResponseValidation bool // returns error if invalid response
+	EnablePathVarValidation  bool // returns 404 if invalid pathvar is passed, default is true
+	EnableRequestValidation  bool // returns 422 if invalid request, default is true
+	EnableResponseValidation bool // returns 503 if invalid response, default is false
 
 	RequestErrorStatusCode  int
 	ResponseErrorStatusCode int
@@ -37,7 +36,7 @@ func NewBuilder(doc *openapi3.T, debug bool) *MiddlewareBuilder {
 			EnablePathVarValidation:  true,
 			EnableRequestValidation:  true,
 			EnableResponseValidation: false,
-			RequestErrorStatusCode:   http.StatusBadRequest,
+			RequestErrorStatusCode:   http.StatusUnprocessableEntity,
 			ResponseErrorStatusCode:  http.StatusServiceUnavailable,
 			NewErrorResponseFunc: func(code int, err error) any {
 				errRes := shared.ErrorResponse{

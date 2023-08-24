@@ -31,7 +31,7 @@ type ref struct {
 	V []Output
 }
 
-//go:embed testdata/post-400-response.json
+//go:embed testdata/post-422-response.json
 var ngresponseBody []byte
 
 func TestIt(t *testing.T) {
@@ -67,7 +67,7 @@ func TestIt(t *testing.T) {
 
 	t.Run("POST-invalid", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", strings.NewReader(`{}`))
-		wantCode := 400
+		wantCode := 422
 		got := quickapitest.DoHandler[quickapi.ErrorResponse](t, handler, req, wantCode)
 
 		var want quickapi.ErrorResponse
