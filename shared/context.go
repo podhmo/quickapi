@@ -2,8 +2,9 @@ package shared
 
 import (
 	"context"
-	"log"
 	"net/http"
+
+	"golang.org/x/exp/slog"
 )
 
 type contextKey string
@@ -23,24 +24,20 @@ const (
 	loggerKey contextKey = "logger"
 )
 
-type logger interface {
-	Printf(format string, v ...any)
-}
-
-func GetLogger(ctx context.Context) logger {
+func GetLogger(ctx context.Context) *slog.Logger {
 	l := ctx.Value(loggerKey)
 	if l == nil {
-		return log.Default()
+		return slog.Default()
 	}
-	return l.(logger)
+	return l.(*slog.Logger)
 }
-func GetLoggerOrNil(ctx context.Context) logger {
+func GetLoggerOrNil(ctx context.Context) *slog.Logger {
 	l := ctx.Value(loggerKey)
 	if l == nil {
 		return nil
 	}
-	return l.(logger)
+	return l.(*slog.Logger)
 }
-func SetLogger(ctx context.Context, l logger) context.Context {
+func SetLogger(ctx context.Context, l *slog.Logger) context.Context {
 	return context.WithValue(ctx, loggerKey, l)
 }
