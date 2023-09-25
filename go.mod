@@ -11,6 +11,7 @@ require (
 	github.com/podhmo/or v0.0.3
 	github.com/podhmo/reflect-openapi v0.3.0
 	github.com/podhmo/reflect-shape v0.4.3
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 )
 
 require (
@@ -23,7 +24,6 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/podhmo/commentof v0.1.4 // indirect
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
