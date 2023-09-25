@@ -14,6 +14,7 @@ import (
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi/shared"
+	"golang.org/x/exp/slog"
 )
 
 type Config struct {
@@ -99,7 +100,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	route.Path = req.URL.Path
 	opID := route.Operation.OperationID
 	if debug && logger != nil {
-		logger.Printf("found operationID=%s", opID)
+		logger.Debug("found route", slog.String("operationId", opID))
 	}
 
 	chiURLParams := chi.RouteContext(req.Context()).URLParams
@@ -125,14 +126,13 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
 				if debug && logger != nil {
-					logger.Printf("json encode error(%s): %+v", opID, err)
+					logger.Debug("json encode error", slog.String("operationId", opID), slog.Any("error", err))
 				}
 			}
 
 			if debug && logger != nil {
-				logger.Printf("path vars validation(%s): %+v", opID, err)
 				b, _ := json.MarshalIndent(route.Operation, "", "  ")
-				logger.Printf("operation schema: %s", string(b))
+				logger.Debug("path vars validation is falied", slog.String("operationId", opID), slog.Any("error", err), slog.String("schema", string(b)))
 			}
 			return
 		}
@@ -148,14 +148,13 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
 				if logger != nil {
-					logger.Printf("json encode error(%s): %+v", opID, err)
+					logger.Debug("json encode error", slog.String("operationId", opID), slog.Any("error", err))
 				}
 			}
 
 			if debug && logger != nil {
-				logger.Printf("request validation(%s): %+v", opID, err)
 				b, _ := json.MarshalIndent(route.Operation, "", "  ")
-				logger.Printf("operation schema: %s", string(b))
+				logger.Debug("request validation is failed", slog.String("operationId", opID), slog.Any("error", err), slog.String("schema", string(b)))
 			}
 
 			return
@@ -164,7 +163,7 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if !config.EnableResponseValidation {
 		if debug && logger != nil {
-			logger.Printf("skip response validation(%s)", opID)
+			logger.Debug("skip response validation", slog.String("operationId", opID))
 		}
 		v.Next.ServeHTTP(w, req)
 		return
@@ -195,14 +194,13 @@ func (v *Middleware) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			enc.SetIndent("", "\t")
 			if err := enc.Encode(config.NewErrorResponseFunc(code, err)); err != nil {
 				if logger != nil {
-					logger.Printf("json encode error(%s): %+v", opID, err)
+					logger.Error("json encode error", slog.String("operationId", opID), slog.Any("error", err))
 				}
 			}
 
 			if debug && logger != nil {
-				logger.Printf("response validation(%s): %+v", opID, err)
 				b, _ := json.MarshalIndent(route.Operation, "", "  ")
-				logger.Printf("operation schema: %s", string(b))
+				logger.Debug("response validation is failed", slog.String("operationId", opID), slog.Any("error", err), slog.String("schema", string(b)))
 			}
 			return
 		}
