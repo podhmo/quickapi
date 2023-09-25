@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/podhmo/quickapi/shared"
+	"golang.org/x/exp/slog"
 )
 
 // TODO: performance up by qbind.Metadata
@@ -16,7 +17,7 @@ func FillNil[O any](ctx context.Context, ob O) (output O) {
 	rv := reflect.ValueOf(ob)
 	defer func() {
 		if err := recover(); err != nil {
-			shared.GetLogger(ctx).Printf("[PANIC] unsupported kind=%s, value=%v", rv.Kind(), rv)
+			shared.GetLogger(ctx).ErrorContext(ctx, "unsupported kind", slog.String("kind", rv.Kind().String()), slog.Any("value", rv))
 		}
 	}()
 
@@ -53,7 +54,7 @@ func fillToplevel(ctx context.Context, rv reflect.Value) (ret reflect.Value, cha
 
 func fill(ctx context.Context, rv reflect.Value, lv int) (ret reflect.Value, changed bool) {
 	if MAX_RECURSION <= lv {
-		shared.GetLogger(ctx).Printf("[INFO]  too deep lv=%d, kind=%s, value=%v", lv, rv.Kind(), rv)
+		shared.GetLogger(ctx).InfoContext(ctx, "too deep", slog.Int("lv", lv), slog.String("kind", rv.Kind().String()), slog.Any("value", rv))
 		return rv, false
 	}
 
@@ -122,7 +123,7 @@ func fill(ctx context.Context, rv reflect.Value, lv int) (ret reflect.Value, cha
 		_, changed := fill(ctx, rv.Elem(), lv+1)
 		return rv, changed
 	default:
-		shared.GetLogger(ctx).Printf("[ERROR] unsupported kind=%s, value=%v ...", rv.Kind(), rv)
+		shared.GetLogger(ctx).ErrorContext(ctx, "unsupported kind", slog.String("kind", rv.Kind().String()), slog.Any("value", rv))
 		return rv, false
 	}
 }

@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/podhmo/quickapi"
+	"github.com/podhmo/quickapi/shared"
+	"golang.org/x/exp/slog"
 )
 
 type Todo struct {
@@ -72,6 +75,13 @@ func mount(r chi.Router) {
 func main() {
 	ctx := context.Background()
 	r := quickapi.DefaultRouter()
+	l := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+		Level:     slog.LevelInfo,
+	}))
+	r.Use(quickapi.InjectMiddleware(
+		quickapi.Inject(l, shared.SetLogger),
+	))
 	mount(r)
 
 	// validation typo, something like  r.Get("/todos/{todo_id}", ...) // id != todo_id
