@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/podhmo/quickapi/shared"
+	"golang.org/x/exp/slog"
 )
 
 func Dump[O any](ctx context.Context, w http.ResponseWriter, req *http.Request, output O, err error) {
@@ -25,7 +26,7 @@ func Dump[O any](ctx context.Context, w http.ResponseWriter, req *http.Request, 
 
 		code := shared.StatusCodeOf(err)
 		if code == 500 {
-			shared.GetLogger(ctx).Printf("[ERROR] unexpected error: %+v", err) // TODO: structured logging
+			shared.GetLogger(ctx).ErrorContext(ctx, "unexpected error (statusCodeOf)", slog.Any("error", err))
 		}
 		DumpError(w, req, err, code)
 		return
