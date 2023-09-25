@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/schema"
 	"github.com/podhmo/quickapi/shared"
+	"golang.org/x/exp/slog"
 )
 
 var (
@@ -50,7 +51,7 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata, inpu
 		}
 		if err := pathDecoder.Decode(input, m); err != nil {
 			if shared.INFO {
-				shared.GetLogger(ctx).Printf("[DEBUG] route path is broken: %v, params=%+v", err, m) // TODO: structured logging
+				shared.GetLogger(ctx).Debug("route path is broken", slog.Any("error", err), slog.Any("params", m))
 			}
 			return shared.NewAPIError(ErrNotFound, http.StatusNotFound)
 		}
@@ -60,18 +61,18 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata, inpu
 		switch req.Method {
 		case http.MethodGet, http.MethodHead, http.MethodConnect, http.MethodOptions, http.MethodTrace:
 			if shared.INFO {
-				shared.GetLogger(ctx).Printf("[INFO ] request method %q cannot receive request body, metadata=%+v, on %T", req.Method, metadata, input) // TODO: structured logging
+				shared.GetLogger(ctx).Info("cannot receive request body", slog.String("method", req.Method), slog.Any("metadata", metadata), slog.Any("input", reflect.TypeOf(input)))
 			}
 			return shared.NewAPIError(ErrCannotReceiveBody, http.StatusBadRequest)
 		default:
 			if req.Body == nil || req.Body == http.NoBody {
 				if shared.INFO {
-					shared.GetLogger(ctx).Printf("[INFO ] decode json is neaded, but request body is nil, metadata=%+v, on %T", metadata, input) // TODO: structured logging
+					shared.GetLogger(ctx).Info("decode json is needed, but request body is nil", slog.String("method", req.Method), slog.Any("metadata", metadata), slog.Any("input", reflect.TypeOf(input)))
 				}
 				return shared.NewAPIError(ErrNoBody, http.StatusBadRequest)
 			} else if err := json.NewDecoder(req.Body).Decode(input); err != nil {
 				if shared.INFO {
-					shared.GetLogger(ctx).Printf("[ERROR] unexpected error (json.Decode): %+v, on %T", err, input) // TODO: structured logging
+					shared.GetLogger(ctx).Error("unexpected error (json.Decode)", slog.Any("error", err), slog.Any("input", reflect.TypeOf(input)))
 				}
 				return err
 			}
@@ -86,7 +87,7 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata, inpu
 		}
 		if err := queryDecoder.Decode(input, m); err != nil {
 			if shared.INFO {
-				shared.GetLogger(ctx).Printf("[ERROR] unexpected query string: %+v, on %T", err, input)
+				shared.GetLogger(ctx).Error("unexpected error (query string)", slog.Any("error", err), slog.Any("input", reflect.TypeOf(input)))
 			}
 		}
 	}
@@ -98,7 +99,7 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata, inpu
 		}
 		if err := headerDecoder.Decode(input, m); err != nil {
 			if shared.INFO {
-				shared.GetLogger(ctx).Printf("[ERROR] unexpected header: %+v, on %T", err, input)
+				shared.GetLogger(ctx).Error("unexpected error (header)", slog.Any("error", err), slog.Any("input", reflect.TypeOf(input)))
 			}
 		}
 
@@ -107,7 +108,7 @@ func Bind[I any](ctx context.Context, req *http.Request, metadata Metadata, inpu
 	if t, ok := any(input).(Validator); ok {
 		if err := t.Validate(req.Context()); err != nil {
 			if shared.INFO {
-				shared.GetLogger(ctx).Printf("[ERROR] validation is failed: %+v, on %T", err, input)
+				shared.GetLogger(ctx).Error("validation is failed", slog.Any("error", err), slog.Any("input", reflect.TypeOf(input)))
 			}
 			return err
 		}
