@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/podhmo/quickapi/shared"
+	"golang.org/x/exp/slog"
 )
 
 // DecodeResponse decodes json response
@@ -54,9 +55,8 @@ func DoHandler[T any](
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Set("Content-Type", "application/json")
 	}
-
 	if l := shared.GetLoggerOrNil(req.Context()); l == nil {
-		req = req.WithContext(shared.SetLogger(req.Context(), &TestLogger{T: t}))
+		req = req.WithContext(shared.SetLogger(req.Context(), NewTestLogger(t)))
 	}
 	t.Logf("request : %-7s %s -- with-body?=%4v", req.Method, req.URL, req.Body != nil && req.Body != http.NoBody)
 
@@ -71,15 +71,32 @@ func DoHandler[T any](
 	return got
 }
 
-type TestLogger struct {
+// TODO: colorful output (pretty output)
+
+type TestWriter struct {
 	T *testing.T
 }
 
-func (l *TestLogger) Printf(format string, v ...any) {
+func (l *TestWriter) Write(b []byte) (int, error) {
 	l.T.Helper()
-	l.T.Logf(format, v...)
+	l.T.Logf(string(b))
+	return len(b), nil
 }
 
 func NewContext(t *testing.T) context.Context {
-	return shared.SetLogger(context.Background(), &TestLogger{T: t})
+	return shared.SetLogger(context.Background(), NewTestLogger(t))
+}
+
+func NewTestLogger(t *testing.T) *slog.Logger {
+	// remove fields {:time:, :source:}
+	return slog.New(slog.NewJSONHandler(&TestWriter{T: t}, &slog.HandlerOptions{
+		AddSource: shared.DEBUG,
+		Level:     slog.LevelInfo,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				return slog.Attr{}
+			}
+			return a
+		},
+	}))
 }
