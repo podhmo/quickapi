@@ -14,7 +14,7 @@ import (
 var DEFAULT_MIDDLEWARES = []func(http.Handler) http.Handler{
 	middleware.RequestID,
 	middleware.RealIP,
-	middleware.Logger,
+	middleware.Logger, // TODO: use slog's logger
 	middleware.Recoverer,
 }
 
